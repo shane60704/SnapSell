@@ -159,11 +159,6 @@
 <body>
 <div id="app">
     <h1>一對多視訊直播</h1>
-    <div id="roomControls">
-        <input type="text" id="roomInput" placeholder="輸入房間 ID">
-        <button id="createRoomBtn">創建房間</button>
-        <button id="joinRoomBtn">加入房間</button>
-    </div>
     <div class="video-container">
         <video id="videoStream" autoplay></video>
         <div class="video-label" id="videoLabel"></div>
@@ -184,9 +179,11 @@
 <script>
     let localStream;
     let peerConnection;
+    let peerConnections = {}; // 新增：用於管理多個觀眾的連線
     let ws;
     let roomId;
     let isBroadcaster = false;
+    let viewerId; // 新增：觀眾的唯一識別碼
 
     const configuration = {
         iceServers: [
@@ -199,27 +196,11 @@
         ]
     };
 
-    // 測試 relay是否可用
-    // const configuration = {
-    //     iceServers: [
-    //         {
-    //             urls: 'turn:54.238.140.240:3478',
-    //             username: 'sean',
-    //             credential: 'sean71507'
-    //         }
-    //     ],
-    //     iceTransportPolicy: 'relay'
-    // };
-
     const videoStream = document.getElementById('videoStream');
     const videoLabel = document.getElementById('videoLabel');
-    const createRoomBtn = document.getElementById('createRoomBtn');
-    const joinRoomBtn = document.getElementById('joinRoomBtn');
     const hangupButton = document.getElementById('hangupButton');
     const sendMessageBtn = document.getElementById('sendMessage');
 
-    createRoomBtn.onclick = createRoom;
-    joinRoomBtn.onclick = joinRoom;
     hangupButton.onclick = hangup;
     sendMessageBtn.onclick = sendChatMessage;
 
@@ -228,31 +209,23 @@
         console.log(`狀態更新: ${message}`);
     }
 
-    function createRoom() {
-        roomId = document.getElementById('roomInput').value;
-        if (!roomId) {
-            alert('請輸入房間 ID');
-            return;
-        }
-        isBroadcaster = true;
-        console.log(`正在創建房間: ${roomId}`);
-        initializeWebSocket();
-    }
+    // 解析 URL 參數
+    const urlParams = new URLSearchParams(window.location.search);
+    roomId = urlParams.get('roomId');
+    const role = urlParams.get('role');
+    isBroadcaster = (role === 'broadcaster');
 
-    function joinRoom() {
-        roomId = document.getElementById('roomInput').value;
-        if (!roomId) {
-            alert('請輸入房間 ID');
-            return;
-        }
-        isBroadcaster = false;
-        console.log(`正在加入房間: ${roomId}`);
+    if (!roomId || !role) {
+        alert('缺少必要的參數，請從大廳頁面進入房間。');
+        window.location.href = 'lobby.html';
+    } else {
         initializeWebSocket();
     }
 
     function initializeWebSocket() {
-        // ws = new WebSocket('ws://localhost:8080/socket');
-        ws = new WebSocket('wss://techwavelab.com/socket');
+        ws = new WebSocket('ws://localhost:8080/socket');
+        // 正式環境使用
+        // ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {
@@ -288,6 +261,8 @@
                 videoLabel.textContent = '直播畫面';
                 console.log('發送創建房間請求');
                 ws.send(JSON.stringify({ type: 'create', roomId }));
+                hangupButton.disabled = false;
+                enableChat();
             })
             .catch(e => {
                 updateStatus('獲取媒體設備失敗: ' + e.message);
@@ -306,29 +281,34 @@
                 enableChat();
                 break;
             case 'joined':
+                viewerId = message.viewerId; // 儲存 viewerId
                 updateStatus('已加入房間，等待直播開始...');
                 videoLabel.textContent = '直播畫面';
                 enableChat();
-                console.log('開始建立對等連接');
-                createPeerConnection();
                 break;
             case 'newViewer':
                 if (isBroadcaster) {
                     console.log('新觀眾加入，創建對等連接');
-                    createPeerConnection();
+                    const newViewerId = message.viewerId;
+                    createPeerConnection(newViewerId);
                 }
                 break;
             case 'offer':
-                console.log('收到連線請求，處理中...');
-                handleOffer(message.offer);
+                if (!isBroadcaster) {
+                    handleOffer(message.offer);
+                }
                 break;
             case 'answer':
-                console.log('收到連線回應，處理中...');
-                handleAnswer(message.answer);
+                if (isBroadcaster) {
+                    handleAnswer(message.answer, message.viewerId);
+                }
                 break;
             case 'candidate':
-                console.log('收到 ICE 候選項，處理中...');
-                handleCandidate(message.candidate);
+                if (isBroadcaster) {
+                    handleCandidate(message.candidate, message.viewerId);
+                } else {
+                    handleCandidate(message.candidate);
+                }
                 break;
             case 'broadcasterLeft':
                 if (!isBroadcaster) {
@@ -343,47 +323,69 @@
         }
     }
 
-    function createPeerConnection() {
-        console.log('創建對等連接...');
-        peerConnection = new RTCPeerConnection(configuration);
+    function createPeerConnection(viewerId) {
+        console.log('創建對等連接，觀眾 ID:', viewerId);
+        const peerConnection = new RTCPeerConnection(configuration);
+        peerConnections[viewerId] = peerConnection;
+
         peerConnection.onicecandidate = e => {
             if (e.candidate) {
-                console.log('發送 ICE 候選項');
-                ws.send(JSON.stringify({ type: 'candidate', candidate: e.candidate, roomId }));
+                console.log('發送 ICE 候選項給觀眾:', viewerId);
+                ws.send(JSON.stringify({
+                    type: 'candidate',
+                    candidate: e.candidate,
+                    roomId,
+                    viewerId
+                }));
             }
         };
         peerConnection.oniceconnectionstatechange = () => {
-            updateStatus('ICE 連接狀態: ' + peerConnection.iceConnectionState);
-            console.log('ICE 連接狀態變更:', peerConnection.iceConnectionState);
+            console.log('ICE 連接狀態變更（觀眾 ID:', viewerId, '）:', peerConnection.iceConnectionState);
         };
-        if (isBroadcaster) {
-            console.log('主播: 添加本地媒體軌道到對等連接');
-            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-            console.log('主播: 創建連線請求');
-            peerConnection.createOffer()
-                .then(offer => {
-                    console.log('設置本地描述');
-                    return peerConnection.setLocalDescription(offer);
-                })
-                .then(() => {
-                    console.log('發送連線請求');
-                    ws.send(JSON.stringify({ type: 'offer', offer: peerConnection.localDescription, roomId }));
-                })
-                .catch(e => {
-                    updateStatus('創建連線請求失敗: ' + e.message);
-                    console.error('創建連線請求失敗:', e);
-                });
-        } else {
-            console.log('觀眾: 設置遠程軌道處理器');
-            peerConnection.ontrack = e => {
-                console.log('接收到遠程媒體軌道');
-                videoStream.srcObject = e.streams[0];
-            };
-        }
+        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+        peerConnection.createOffer()
+            .then(offer => {
+                console.log('設置本地描述，觀眾 ID:', viewerId);
+                return peerConnection.setLocalDescription(offer);
+            })
+            .then(() => {
+                console.log('發送連線請求給觀眾:', viewerId);
+                ws.send(JSON.stringify({
+                    type: 'offer',
+                    offer: peerConnection.localDescription,
+                    roomId,
+                    viewerId
+                }));
+            })
+            .catch(e => {
+                updateStatus('創建連線請求失敗: ' + e.message);
+                console.error('創建連線請求失敗:', e);
+            });
     }
 
     function handleOffer(offer) {
         console.log('處理連線請求...');
+        peerConnection = new RTCPeerConnection(configuration);
+        peerConnection.onicecandidate = e => {
+            if (e.candidate) {
+                console.log('發送 ICE 候選項給主播');
+                ws.send(JSON.stringify({
+                    type: 'candidate',
+                    candidate: e.candidate,
+                    roomId,
+                    viewerId
+                }));
+            }
+        };
+        peerConnection.ontrack = e => {
+            console.log('接收到遠程媒體軌道');
+            videoStream.srcObject = e.streams[0];
+        };
+        peerConnection.oniceconnectionstatechange = () => {
+            console.log('ICE 連接狀態變更:', peerConnection.iceConnectionState);
+        };
+
         peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
             .then(() => {
                 console.log('創建連線回應');
@@ -394,8 +396,13 @@
                 return peerConnection.setLocalDescription(answer);
             })
             .then(() => {
-                console.log('發送連線回應');
-                ws.send(JSON.stringify({ type: 'answer', answer: peerConnection.localDescription, roomId }));
+                console.log('發送連線回應給主播');
+                ws.send(JSON.stringify({
+                    type: 'answer',
+                    answer: peerConnection.localDescription,
+                    roomId,
+                    viewerId
+                }));
             })
             .catch(e => {
                 updateStatus('處理連線請求失敗: ' + e.message);
@@ -403,30 +410,64 @@
             });
     }
 
-    function handleAnswer(answer) {
-        console.log('處理連線回應...');
-        peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
-            .catch(e => {
-                updateStatus('設置遠端描述失敗: ' + e.message);
-                console.error('設置遠端描述失敗:', e);
-            });
+    function handleAnswer(answer, viewerId) {
+        console.log('處理連線回應，觀眾 ID:', viewerId);
+        const peerConnection = peerConnections[viewerId];
+        if (peerConnection) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
+                .catch(e => {
+                    updateStatus('設置遠端描述失敗: ' + e.message);
+                    console.error('設置遠端描述失敗:', e);
+                });
+        } else {
+            console.error('找不到對應的 peerConnection，觀眾 ID:', viewerId);
+        }
     }
 
-    function handleCandidate(candidate) {
-        console.log('處理 ICE 候選項...');
-        peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-            .catch(e => {
-                updateStatus('添加 ICE 候選項失敗: ' + e.message);
-                console.error('添加 ICE 候選項失敗:', e);
-            });
+    function handleCandidate(candidate, viewerId) {
+        if (isBroadcaster) {
+            console.log('處理 ICE 候選項，觀眾 ID:', viewerId);
+            const peerConnection = peerConnections[viewerId];
+            if (peerConnection) {
+                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                    .catch(e => {
+                        updateStatus('添加 ICE 候選項失敗: ' + e.message);
+                        console.error('添加 ICE 候選項失敗:', e);
+                    });
+            } else {
+                console.error('找不到對應的 peerConnection，觀眾 ID:', viewerId);
+            }
+        } else {
+            console.log('處理 ICE 候選項');
+            if (peerConnection) {
+                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                    .catch(e => {
+                        updateStatus('添加 ICE 候選項失敗: ' + e.message);
+                        console.error('添加 ICE 候選項失敗:', e);
+                    });
+            } else {
+                console.error('peerConnection 尚未建立');
+            }
+        }
     }
 
     function hangup() {
         console.log('執行掛斷操作...');
-        if (peerConnection) {
-            console.log('關閉對等連接');
-            peerConnection.close();
-            peerConnection = null;
+        if (isBroadcaster) {
+            for (let viewerId in peerConnections) {
+                const peerConnection = peerConnections[viewerId];
+                if (peerConnection) {
+                    console.log('關閉對等連接，觀眾 ID:', viewerId);
+                    peerConnection.close();
+                }
+            }
+            peerConnections = {};
+        } else {
+            if (peerConnection) {
+                console.log('關閉對等連接');
+                peerConnection.close();
+                peerConnection = null;
+            }
         }
         if (localStream) {
             console.log('停止本地媒體串流');
@@ -471,6 +512,4 @@
         document.getElementById('sendMessage').disabled = true;
     }
 </script>
-</body>
-</html>
 
