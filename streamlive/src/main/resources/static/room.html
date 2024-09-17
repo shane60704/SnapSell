@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一對多視訊直播</title>
+    <title>視訊直播聊天室</title>
     <style>
         * {
             box-sizing: border-box;
@@ -71,19 +71,21 @@
             font-size: 14px;
         }
         #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
             display: flex;
             justify-content: center;
-            margin-top: 20px;
         }
         button {
-            padding: 10px 20px;
+            padding: 5px;
             border: none;
-            border-radius: 5px;
+            border-radius: 3px;
             background-color: #007bff;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
-            font-size: 16px;
+            font-size: 14px;
         }
         button:hover {
             background-color: #0056b3;
@@ -93,7 +95,6 @@
             cursor: not-allowed;
         }
         #status {
-            margin-top: 20px;
             color: #666;
             font-style: italic;
             text-align: center;
@@ -124,6 +125,29 @@
         #sendMessage {
             border-radius: 0 5px 5px 0;
             margin: 0;
+        }
+        #status a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: transparent; /* 背景透明 */
+            color: #6c757d; /* 灰色字體 */
+            text-decoration: none; /* 去掉連結的預設下劃線 */
+            border-radius: 5px; /* 圓角邊框 */
+            font-size: 16px; /* 字體大小 */
+            font-weight: bold; /* 加粗字體 */
+            transition: all 0.3s ease; /* 添加過渡效果 */
+        }
+
+        #status a:hover {
+            background-color: #f8f9fa; /* 滑過時背景變為淡灰色 */
+            color: #495057; /* 滑過時字體變深灰色 */
+            border-color: #495057; /* 邊框變深灰色 */
+        }
+
+        #status a:active {
+            background-color: #e2e6ea; /* 點擊時變為更深的灰色背景 */
+            color: #343a40; /* 點擊時文字變為更深的灰色 */
+            border-color: #343a40; /* 點擊時邊框變為更深的灰色 */
         }
 
         /* Responsive design */
@@ -158,20 +182,20 @@
 </head>
 <body>
 <div id="app">
-    <h1>一對多視訊直播</h1>
+    <h1>直播聊天室</h1>
     <div class="video-container">
         <video id="videoStream" autoplay></video>
         <div class="video-label" id="videoLabel"></div>
-    </div>
-    <div id="controls">
-        <button id="hangupButton" disabled>結束直播/離開房間</button>
+        <div id="controls">
+            <button id="hangupButton" disabled>結束直播</button>
+        </div>
     </div>
     <div id="status"></div>
     <div id="chatArea">
         <div id="chatMessages"></div>
         <div id="chatInput">
             <input type="text" id="messageInput" placeholder="輸入訊息..." disabled>
-            <button id="sendMessage" disabled>發送</button>
+            <button id="sendMessage" disabled>送出</button>
         </div>
     </div>
 </div>
@@ -199,10 +223,16 @@
     const videoStream = document.getElementById('videoStream');
     const videoLabel = document.getElementById('videoLabel');
     const hangupButton = document.getElementById('hangupButton');
+    const messageInput = document.getElementById('messageInput');
     const sendMessageBtn = document.getElementById('sendMessage');
 
     hangupButton.onclick = hangup;
     sendMessageBtn.onclick = sendChatMessage;
+    messageInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && messageInput.value.trim() !== '') {  // 檢查是否按下 Enter 鍵 且輸入框的值不為空
+            sendChatMessage();  // 呼叫送出訊息的函數
+        }
+    });
 
     function updateStatus(message) {
         document.getElementById('status').textContent = message;
@@ -229,18 +259,19 @@
         console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {
-            updateStatus('WebSocket 連接已建立');
+            // updateStatus('WebSocket 連接已建立');
             console.log('WebSocket 連接成功');
             if (isBroadcaster) {
                 console.log('作為主播設置媒體流');
                 setupMediaStream();
             } else {
                 console.log('作為觀眾加入房間');
+                hangupButton.style.display = "none";
                 ws.send(JSON.stringify({ type: 'join', roomId }));
             }
         };
         ws.onclose = () => {
-            updateStatus('WebSocket 連接已關閉');
+            document.getElementById('status').innerHTML = '<a href="index.html">直播已結束，請返回大廳。</a>';
             console.log('WebSocket 連接關閉');
         };
         ws.onerror = (error) => {
@@ -282,13 +313,14 @@
                 break;
             case 'joined':
                 viewerId = message.viewerId; // 儲存 viewerId
-                updateStatus('已加入房間，等待直播開始...');
+                // updateStatus('已加入房間，等待直播開始...');
                 videoLabel.textContent = '直播畫面';
                 enableChat();
                 break;
             case 'newViewer':
                 if (isBroadcaster) {
                     console.log('新觀眾加入，創建對等連接');
+                    document.getElementById('status').style.display= "none";
                     const newViewerId = message.viewerId;
                     createPeerConnection(newViewerId);
                 }
@@ -312,7 +344,7 @@
                 break;
             case 'broadcasterLeft':
                 if (!isBroadcaster) {
-                    updateStatus('直播已結束');
+                    document.getElementById('status').innerHTML = '<a href="index.html">直播已結束，請返回大廳。</a>';
                     console.log('主播離開，結束連接');
                     hangup();
                 }

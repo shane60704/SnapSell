@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>註冊</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        input, button {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #42b72a;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #36a420;
+        }
+        .switch {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .switch a {
+            color: #1877f2;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>註冊</h1>
+    <div class="form-group">
+        <input type="text" id="name" placeholder="姓名" required>
+    </div>
+    <div class="form-group">
+        <input type="email" id="email" placeholder="電子郵件" required>
+    </div>
+    <div class="form-group">
+        <input type="password" id="password" placeholder="密碼" required>
+    </div>
+    <div class="form-group">
+        <button id="registerButton">註冊</button>
+    </div>
+    <div class="switch">
+        已經有帳號了？<a href="login.html">立即登入</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('registerButton').addEventListener('click', function() {
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        fetch('/api/1.0/user/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: nameInput.value,
+                email: emailInput.value,
+                password: passwordInput.value,
+                provider: "native"
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('註冊成功:', data);
+                window.location.href = 'index.html';
+                // 這裡可以添加註冊成功後的處理邏輯，例如自動登入或重定向到登入頁面
+            })
+            .catch((error) => {
+                console.error('錯誤:', error);
+                // 這裡可以添加錯誤處理邏輯
+            });
+    });
+</script>
+</body>
+</html>
