@@ -100,9 +100,9 @@
 </div>
 
 <script>
-    // let ws = new WebSocket('ws://localhost:8080/socket');
+    let ws = new WebSocket('ws://localhost:8080/socket');
     // 正式環境使用
-    let ws = new WebSocket('wss://techwavelab.com/socket');
+    // let ws = new WebSocket('wss://techwavelab.com/socket');
 
     ws.onopen = () => {
         console.log('已連接到 WebSocket');
@@ -130,8 +130,8 @@
             alert('請輸入房間 ID');
             return;
         }
-        // 創建房間後，直接進入 index.html
-        window.location.href = 'index.html?roomId=' + encodeURIComponent(roomId) + '&role=broadcaster';
+        // 創建房間後，直接進入 room.html
+        window.location.href = 'room.html?roomId=' + encodeURIComponent(roomId) + '&role=broadcaster';
     };
 
     function updateRoomList(rooms) {
@@ -160,8 +160,8 @@
             const joinButton = document.createElement('button');
             joinButton.textContent = '加入房間';
             joinButton.onclick = () => {
-                // 加入房間後，進入 index.html
-                window.location.href = 'index.html?roomId=' + encodeURIComponent(room.roomId) + '&role=viewer';
+                // 加入房間後，進入 room.html
+                window.location.href = 'room.html?roomId=' + encodeURIComponent(room.roomId) + '&role=viewer';
             };
 
             roomActions.appendChild(joinButton);

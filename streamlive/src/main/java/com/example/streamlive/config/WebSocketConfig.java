@@ -13,7 +13,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         // 測試環境使用
         registry.addHandler(new SignalingHandler(), "/socket").setAllowedOrigins("*");
-        // 雲端環境使用
+        // 正式環境使用
 //        registry.addHandler(new SignalingHandler(), "/socket").setAllowedOrigins("https://techwavelab.com");
     }
 }

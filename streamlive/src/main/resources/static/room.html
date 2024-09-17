@@ -216,16 +216,16 @@
     isBroadcaster = (role === 'broadcaster');
 
     if (!roomId || !role) {
-        alert('缺少必要的參數，請從大廳頁面進入房間。');
+        alert('請從大廳頁面進入房間。');
         window.location.href = 'lobby.html';
     } else {
         initializeWebSocket();
     }
 
     function initializeWebSocket() {
-        // ws = new WebSocket('ws://localhost:8080/socket');
+        ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        ws = new WebSocket('wss://techwavelab.com/socket');
+        // ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {
@@ -462,6 +462,7 @@
                 }
             }
             peerConnections = {};
+            window.location.href = "index.html";
         } else {
             if (peerConnection) {
                 console.log('關閉對等連接');
@@ -469,6 +470,7 @@
                 peerConnection = null;
             }
         }
+
         if (localStream) {
             console.log('停止本地媒體串流');
             localStream.getTracks().forEach(track => track.stop());
