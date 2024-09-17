@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一對多視訊直播</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        #app {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #roomControls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #roomInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            margin-bottom: 20px;
+        }
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ddd;
+            border-radius: 5px;
+        }
+        .video-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        #controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            color: #666;
+            font-style: italic;
+            text-align: center;
+        }
+        #chatArea {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 300px;
+        }
+        #chatMessages {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        #chatInput {
+            display: flex;
+        }
+        #messageInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+        }
+        #sendMessage {
+            border-radius: 0 5px 5px 0;
+            margin: 0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            #app {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 20px;
+            }
+            #roomControls {
+                flex-direction: column;
+            }
+            #roomControls button {
+                width: 100%;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+            .video-label {
+                font-size: 12px;
+            }
+            #chatArea {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <h1>一對多視訊直播</h1>
+    <div class="video-container">
+        <video id="videoStream" autoplay></video>
+        <div class="video-label" id="videoLabel"></div>
+    </div>
+    <div id="controls">
+        <button id="hangupButton" disabled>結束直播/離開房間</button>
+    </div>
+    <div id="status"></div>
+    <div id="chatArea">
+        <div id="chatMessages"></div>
+        <div id="chatInput">
+            <input type="text" id="messageInput" placeholder="輸入訊息..." disabled>
+            <button id="sendMessage" disabled>發送</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let localStream;
+    let peerConnection;
+    let peerConnections = {}; // 新增：用於管理多個觀眾的連線
+    let ws;
+    let roomId;
+    let isBroadcaster = false;
+    let viewerId; // 新增：觀眾的唯一識別碼
+
+    const configuration = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            {
+                urls: 'turn:54.238.140.240:3478',
+                username: 'sean',
+                credential: 'sean71507'
+            }
+        ]
+    };
+
+    const videoStream = document.getElementById('videoStream');
+    const videoLabel = document.getElementById('videoLabel');
+    const hangupButton = document.getElementById('hangupButton');
+    const sendMessageBtn = document.getElementById('sendMessage');
+
+    hangupButton.onclick = hangup;
+    sendMessageBtn.onclick = sendChatMessage;
+
+    function updateStatus(message) {
+        document.getElementById('status').textContent = message;
+        console.log(`狀態更新: ${message}`);
+    }
+
+    // 解析 URL 參數
+    const urlParams = new URLSearchParams(window.location.search);
+    roomId = urlParams.get('roomId');
+    const role = urlParams.get('role');
+    isBroadcaster = (role === 'broadcaster');
+
+    if (!roomId || !role) {
+        alert('缺少必要的參數，請從大廳頁面進入房間。');
+        window.location.href = 'lobby.html';
+    } else {
+        initializeWebSocket();
+    }
+
+    function initializeWebSocket() {
+        // ws = new WebSocket('ws://localhost:8080/socket');
+        // 正式環境使用
+        ws = new WebSocket('wss://techwavelab.com/socket');
+        console.log('正在初始化 WebSocket 連接...');
+
+        ws.onopen = () => {
+            updateStatus('WebSocket 連接已建立');
+            console.log('WebSocket 連接成功');
+            if (isBroadcaster) {
+                console.log('作為主播設置媒體流');
+                setupMediaStream();
+            } else {
+                console.log('作為觀眾加入房間');
+                ws.send(JSON.stringify({ type: 'join', roomId }));
+            }
+        };
+        ws.onclose = () => {
+            updateStatus('WebSocket 連接已關閉');
+            console.log('WebSocket 連接關閉');
+        };
+        ws.onerror = (error) => {
+            updateStatus('WebSocket 錯誤: ' + error.message);
+            console.error('WebSocket 錯誤:', error);
+        };
+        ws.onmessage = handleMessage;
+    }
+
+    function setupMediaStream() {
+        console.log('正在獲取用戶媒體設備...');
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+            .then(stream => {
+                console.log('成功獲取媒體流');
+                videoStream.srcObject = stream;
+                videoStream.muted = true;
+                localStream = stream;
+                videoLabel.textContent = '直播畫面';
+                console.log('發送創建房間請求');
+                ws.send(JSON.stringify({ type: 'create', roomId }));
+                hangupButton.disabled = false;
+                enableChat();
+            })
+            .catch(e => {
+                updateStatus('獲取媒體設備失敗: ' + e.message);
+                console.error('獲取媒體設備失敗:', e);
+            });
+    }
+
+    function handleMessage(event) {
+        const message = JSON.parse(event.data);
+        console.log('收到消息:', message);
+
+        switch (message.type) {
+            case 'created':
+                updateStatus('房間已創建，等待觀眾加入...');
+                hangupButton.disabled = false;
+                enableChat();
+                break;
+            case 'joined':
+                viewerId = message.viewerId; // 儲存 viewerId
+                updateStatus('已加入房間，等待直播開始...');
+                videoLabel.textContent = '直播畫面';
+                enableChat();
+                break;
+            case 'newViewer':
+                if (isBroadcaster) {
+                    console.log('新觀眾加入，創建對等連接');
+                    const newViewerId = message.viewerId;
+                    createPeerConnection(newViewerId);
+                }
+                break;
+            case 'offer':
+                if (!isBroadcaster) {
+                    handleOffer(message.offer);
+                }
+                break;
+            case 'answer':
+                if (isBroadcaster) {
+                    handleAnswer(message.answer, message.viewerId);
+                }
+                break;
+            case 'candidate':
+                if (isBroadcaster) {
+                    handleCandidate(message.candidate, message.viewerId);
+                } else {
+                    handleCandidate(message.candidate);
+                }
+                break;
+            case 'broadcasterLeft':
+                if (!isBroadcaster) {
+                    updateStatus('直播已結束');
+                    console.log('主播離開，結束連接');
+                    hangup();
+                }
+                break;
+            case 'chat':
+                displayChatMessage(message.content, message.sender);
+                break;
+        }
+    }
+
+    function createPeerConnection(viewerId) {
+        console.log('創建對等連接，觀眾 ID:', viewerId);
+        const peerConnection = new RTCPeerConnection(configuration);
+        peerConnections[viewerId] = peerConnection;
+
+        peerConnection.onicecandidate = e => {
+            if (e.candidate) {
+                console.log('發送 ICE 候選項給觀眾:', viewerId);
+                ws.send(JSON.stringify({
+                    type: 'candidate',
+                    candidate: e.candidate,
+                    roomId,
+                    viewerId
+                }));
+            }
+        };
+        peerConnection.oniceconnectionstatechange = () => {
+            console.log('ICE 連接狀態變更（觀眾 ID:', viewerId, '）:', peerConnection.iceConnectionState);
+        };
+        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+        peerConnection.createOffer()
+            .then(offer => {
+                console.log('設置本地描述，觀眾 ID:', viewerId);
+                return peerConnection.setLocalDescription(offer);
+            })
+            .then(() => {
+                console.log('發送連線請求給觀眾:', viewerId);
+                ws.send(JSON.stringify({
+                    type: 'offer',
+                    offer: peerConnection.localDescription,
+                    roomId,
+                    viewerId
+                }));
+            })
+            .catch(e => {
+                updateStatus('創建連線請求失敗: ' + e.message);
+                console.error('創建連線請求失敗:', e);
+            });
+    }
+
+    function handleOffer(offer) {
+        console.log('處理連線請求...');
+        peerConnection = new RTCPeerConnection(configuration);
+        peerConnection.onicecandidate = e => {
+            if (e.candidate) {
+                console.log('發送 ICE 候選項給主播');
+                ws.send(JSON.stringify({
+                    type: 'candidate',
+                    candidate: e.candidate,
+                    roomId,
+                    viewerId
+                }));
+            }
+        };
+        peerConnection.ontrack = e => {
+            console.log('接收到遠程媒體軌道');
+            videoStream.srcObject = e.streams[0];
+        };
+        peerConnection.oniceconnectionstatechange = () => {
+            console.log('ICE 連接狀態變更:', peerConnection.iceConnectionState);
+        };
+
+        peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
+            .then(() => {
+                console.log('創建連線回應');
+                return peerConnection.createAnswer();
+            })
+            .then(answer => {
+                console.log('設置本地描述');
+                return peerConnection.setLocalDescription(answer);
+            })
+            .then(() => {
+                console.log('發送連線回應給主播');
+                ws.send(JSON.stringify({
+                    type: 'answer',
+                    answer: peerConnection.localDescription,
+                    roomId,
+                    viewerId
+                }));
+            })
+            .catch(e => {
+                updateStatus('處理連線請求失敗: ' + e.message);
+                console.error('處理連線請求失敗:', e);
+            });
+    }
+
+    function handleAnswer(answer, viewerId) {
+        console.log('處理連線回應，觀眾 ID:', viewerId);
+        const peerConnection = peerConnections[viewerId];
+        if (peerConnection) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
+                .catch(e => {
+                    updateStatus('設置遠端描述失敗: ' + e.message);
+                    console.error('設置遠端描述失敗:', e);
+                });
+        } else {
+            console.error('找不到對應的 peerConnection，觀眾 ID:', viewerId);
+        }
+    }
+
+    function handleCandidate(candidate, viewerId) {
+        if (isBroadcaster) {
+            console.log('處理 ICE 候選項，觀眾 ID:', viewerId);
+            const peerConnection = peerConnections[viewerId];
+            if (peerConnection) {
+                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                    .catch(e => {
+                        updateStatus('添加 ICE 候選項失敗: ' + e.message);
+                        console.error('添加 ICE 候選項失敗:', e);
+                    });
+            } else {
+                console.error('找不到對應的 peerConnection，觀眾 ID:', viewerId);
+            }
+        } else {
+            console.log('處理 ICE 候選項');
+            if (peerConnection) {
+                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                    .catch(e => {
+                        updateStatus('添加 ICE 候選項失敗: ' + e.message);
+                        console.error('添加 ICE 候選項失敗:', e);
+                    });
+            } else {
+                console.error('peerConnection 尚未建立');
+            }
+        }
+    }
+
+    function hangup() {
+        console.log('執行掛斷操作...');
+        if (isBroadcaster) {
+            for (let viewerId in peerConnections) {
+                const peerConnection = peerConnections[viewerId];
+                if (peerConnection) {
+                    console.log('關閉對等連接，觀眾 ID:', viewerId);
+                    peerConnection.close();
+                }
+            }
+            peerConnections = {};
+        } else {
+            if (peerConnection) {
+                console.log('關閉對等連接');
+                peerConnection.close();
+                peerConnection = null;
+            }
+        }
+        if (localStream) {
+            console.log('停止本地媒體串流');
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        if (ws) {
+            console.log('關閉 WebSocket 連接');
+            ws.close();
+        }
+        videoStream.srcObject = null;
+        videoLabel.textContent = '';
+        hangupButton.disabled = true;
+        disableChat();
+        updateStatus('已離開房間');
+    }
+
+    function sendChatMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        if (message && ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'chat', content: message, roomId }));
+            messageInput.value = '';
+        }
+    }
+
+    function displayChatMessage(message, sender) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = `${sender}: ${message}`;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function enableChat() {
+        document.getElementById('messageInput').disabled = false;
+        document.getElementById('sendMessage').disabled = false;
+    }
+
+    function disableChat() {
+        document.getElementById('messageInput').disabled = true;
+        document.getElementById('sendMessage').disabled = true;
+    }
+</script>
+
