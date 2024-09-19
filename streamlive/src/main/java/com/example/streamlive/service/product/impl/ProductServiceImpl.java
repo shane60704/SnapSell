@@ -1,0 +1,72 @@
+package com.example.streamlive.service.product.impl;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.example.streamlive.dao.product.ProductDao;
+import com.example.streamlive.dto.product.ProductDto;
+import com.example.streamlive.model.Product;
+import com.example.streamlive.service.product.ProductService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ProductServiceImpl implements ProductService {
+
+    @Value("${aws.s3.baseurl}")
+    private String s3BaseUrl;
+
+    private final AmazonS3 s3Client;
+    private final ProductDao productDao;
+
+    @Override
+    public boolean listProduct(ProductDto productDto) {
+        try {
+            String mainImagePath = uploadProductImage(productDto.getMainImage());
+            String feature = String.join(",", productDto.getFeature());
+            Integer productId = productDao.createProduct(productDto,mainImagePath,feature);
+            if (productId == null) {
+                return false;
+            }
+            return productDao.createDelegation(productId, productDto.getUserId()) != null;
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return false;
+        }
+    }
+    @Override
+    public List<Product> getProductsForDelegation(int userId){
+        return productDao.findProductsForDelegation(userId);
+    }
+
+    public String uploadProductImage(MultipartFile file) throws IOException {
+        File convertedFile = convertMultiPartToFile(file);
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        s3Client.putObject(new PutObjectRequest(getBucketName(), fileName, convertedFile));
+        convertedFile.delete();
+        return "https://" + s3BaseUrl + "/" + fileName;
+    }
+
+    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File convFile = new File(file.getOriginalFilename());
+        try (FileOutputStream fos = new FileOutputStream(convFile)) {
+            fos.write(file.getBytes());
+        }
+        return convFile;
+    }
+
+    private String getBucketName() {
+        // 從s3BaseUrl中提取bucket名稱
+        return s3BaseUrl.split("\\.")[0];
+    }
+
+}

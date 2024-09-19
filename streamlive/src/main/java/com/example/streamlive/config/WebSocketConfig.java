@@ -17,3 +17,4 @@ public class WebSocketConfig implements WebSocketConfigurer {
 //        registry.addHandler(new SignalingHandler(), "/socket").setAllowedOrigins("https://techwavelab.com");
     }
 }
+

@@ -228,4 +228,3 @@ public class SignalingHandler extends TextWebSocketHandler {
         }
     }
 }
-

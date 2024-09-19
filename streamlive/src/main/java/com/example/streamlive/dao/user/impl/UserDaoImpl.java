@@ -26,7 +26,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Integer createNativeUser(UserDto userDto){
         try {
-            String sql = "INSERT INTO users (name,email,password,provider) VALUES (:name,:email,:password,:provider)";
+            String sql = "INSERT INTO user (name,email,password,provider) VALUES (:name,:email,:password,:provider)";
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String encodedPassword = passwordEncoder.encode(userDto.getPassword());
             Map<String, Object> map = new HashMap<>();
@@ -47,7 +47,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public UserDto getNativeUserByEmailAndProvider(String email){
         try {
-            String sql = "SELECT * FROM users WHERE email = :email AND provider = :provider";
+            String sql = "SELECT * FROM user WHERE email = :email AND provider = :provider";
             Map<String, Object> map = new HashMap<>();
             map.put("email", email);
             map.put("provider", "native");
@@ -62,7 +62,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public UserDto getUserById(int userId) {
-        String sql = "SELECT * FROM users WHERE id = :userId";
+        String sql = "SELECT * FROM user WHERE id = :userId";
         Map<String, Object> map = new HashMap<>();
         map.put("userId", userId);
         SqlParameterSource paramSource = new MapSqlParameterSource(map);
