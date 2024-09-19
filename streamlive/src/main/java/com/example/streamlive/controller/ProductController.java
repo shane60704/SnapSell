@@ -31,14 +31,18 @@ public class ProductController {
         return ResponseEntity.ok(new ApiResponse<>(productService.getProductsForDelegation(userId)));
     }
 
-//    // 已委託商品 API
-//    @GetMapping("/delegated")
-//    public ResponseEntity<?> getDelegatedProducts(){}
-//
-//    // 已上架商品 API
-//    @GetMapping("/available")
-//    public ResponseEntity<?> getAvailableProducts(){}
-//
+    // 已上架且未被代理的商品 API
+    @GetMapping("/undelgated")
+    public ResponseEntity<?> getAvailableAndUndelegatedProducts(@RequestParam("userId") int userId){
+        return ResponseEntity.ok(new ApiResponse<>(productService.getUndelegatedProducts(userId)));
+    }
+
+    // 已上架且被代理的商品 API
+    @GetMapping("/delegated")
+    public ResponseEntity<?> getDelegatedProducts(@RequestParam("userId") int userId){
+        return ResponseEntity.ok(new ApiResponse<>(productService.getDelegatedProducts(userId)));
+    }
+
 //    // 已代理商品清單 API
 //    @GetMapping("/my-delegations")
 //    public ResponseEntity<?> getMyDelegatedProducts(){}

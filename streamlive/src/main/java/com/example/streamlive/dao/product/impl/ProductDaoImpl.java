@@ -41,6 +41,7 @@ public class ProductDaoImpl implements ProductDao {
         namedParameterJdbcTemplate.update(sql, paramSource, keyHolder, new String[]{"id"});
         return keyHolder.getKey().intValue();
     }
+
     @Override
     public Integer createDelegation(Integer productId,String client){
         String sql = "INSERT INTO delegation (product_id,client,agent,status) VALUES (:productId,:client,:agent,:status)";
@@ -67,4 +68,31 @@ public class ProductDaoImpl implements ProductDao {
         SqlParameterSource paramSource = new MapSqlParameterSource(map);
         return namedParameterJdbcTemplate.query(sql, paramSource, new BeanPropertyRowMapper<>(Product.class));
     }
+
+    @Override
+    public List<Product> findDelegatedProducts(int userId){
+        String sql = "SELECT product.*, delegation.client, delegation.agent, delegation.status\n" +
+                "FROM product\n" +
+                "INNER JOIN delegation ON product.id = delegation.product_id\n" +
+                "WHERE product.user_id = :userId " +
+                "AND delegation.status = 1";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        SqlParameterSource paramSource = new MapSqlParameterSource(map);
+        return namedParameterJdbcTemplate.query(sql, paramSource, new BeanPropertyRowMapper<>(Product.class));
+    }
+
+    @Override
+    public List<Product> findUndelegatedProducts(int userId){
+        String sql = "SELECT product.*, delegation.client, delegation.agent, delegation.status\n" +
+                "FROM product\n" +
+                "INNER JOIN delegation ON product.id = delegation.product_id\n" +
+                "WHERE product.user_id = :userId " +
+                "AND delegation.status = 0";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        SqlParameterSource paramSource = new MapSqlParameterSource(map);
+        return namedParameterJdbcTemplate.query(sql, paramSource, new BeanPropertyRowMapper<>(Product.class));
+    }
+
 }

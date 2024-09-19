@@ -13,4 +13,5 @@ public class Product {
     private int price;
     private String mainImage;
     private int commission;
+    private int status;
 }

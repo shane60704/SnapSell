@@ -8,4 +8,6 @@ import java.util.List;
 public interface ProductService {
     boolean listProduct(ProductDto productDto);
     List<Product> getProductsForDelegation(int userId);
+    List<Product> getDelegatedProducts(int userId);
+    List<Product> getUndelegatedProducts(int userId);
 }

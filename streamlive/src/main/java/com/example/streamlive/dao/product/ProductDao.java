@@ -9,4 +9,6 @@ public interface ProductDao {
     Integer createProduct(ProductDto productDto, String mainImagePath,String feature);
     Integer createDelegation(Integer productId,String client);
     List<Product> findProductsForDelegation(int userId);
+    List<Product> findDelegatedProducts(int userId);
+    List<Product> findUndelegatedProducts(int userId);
 }
