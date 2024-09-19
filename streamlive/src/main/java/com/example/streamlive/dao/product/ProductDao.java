@@ -13,4 +13,6 @@ public interface ProductDao {
     List<Product> findUndelegatedProducts(int userId);
     List<Product> findMyDelegatedProducts(int userId);
     Product findProductById(int productId);
+    int findProductStockById(int productId);
+    Integer updateProductStockById(int productId, int stock);
 }

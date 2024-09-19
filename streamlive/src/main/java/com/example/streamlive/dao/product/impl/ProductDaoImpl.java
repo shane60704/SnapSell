@@ -4,6 +4,7 @@ import com.example.streamlive.dao.product.ProductDao;
 import com.example.streamlive.dto.product.ProductDto;
 import com.example.streamlive.model.Product;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -114,5 +115,26 @@ public class ProductDaoImpl implements ProductDao {
         map.put("productId", productId);
         SqlParameterSource paramSource = new MapSqlParameterSource(map);
         return namedParameterJdbcTemplate.queryForObject(sql, paramSource, new BeanPropertyRowMapper<>(Product.class));
+    }
+
+    @Override
+    public int findProductStockById(int productId) {
+        String sql = "SELECT stock FROM product WHERE id = :productId";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("productId", productId);
+        return namedParameterJdbcTemplate.queryForObject(sql, paramMap, Integer.class);
+    }
+
+    @Override
+    public Integer updateProductStockById(int productId, int stock){
+        String sql = "UPDATE product SET stock = :stock WHERE id = :productId";
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("stock", stock);
+        paramMap.put("productId", productId);
+        try {
+            return namedParameterJdbcTemplate.update(sql, paramMap);
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 }
