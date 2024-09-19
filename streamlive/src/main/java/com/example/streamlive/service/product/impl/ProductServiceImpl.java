@@ -58,6 +58,16 @@ public class ProductServiceImpl implements ProductService {
         return productDao.findUndelegatedProducts(userId);
     }
 
+    @Override
+    public List<Product> getMyDelegatedProducts(int userId){
+        return productDao.findMyDelegatedProducts(userId);
+    }
+
+    @Override
+    public Product getProductInfo(int productId){
+        return productDao.findProductById(productId);
+    }
+
     public String uploadProductImage(MultipartFile file) throws IOException {
         File convertedFile = convertMultiPartToFile(file);
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();

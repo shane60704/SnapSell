@@ -95,4 +95,24 @@ public class ProductDaoImpl implements ProductDao {
         return namedParameterJdbcTemplate.query(sql, paramSource, new BeanPropertyRowMapper<>(Product.class));
     }
 
+    @Override
+    public List<Product> findMyDelegatedProducts(int userId){
+        String sql = "SELECT product.*, delegation.client, delegation.agent, delegation.status\n" +
+                "FROM product\n" +
+                "INNER JOIN delegation ON product.id = delegation.product_id\n" +
+                "WHERE delegation.agent = :userId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        SqlParameterSource paramSource = new MapSqlParameterSource(map);
+        return namedParameterJdbcTemplate.query(sql, paramSource, new BeanPropertyRowMapper<>(Product.class));
+    }
+
+    @Override
+    public Product findProductById(int productId){
+        String sql = "SELECT * FROM product WHERE id = :productId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("productId", productId);
+        SqlParameterSource paramSource = new MapSqlParameterSource(map);
+        return namedParameterJdbcTemplate.queryForObject(sql, paramSource, new BeanPropertyRowMapper<>(Product.class));
+    }
 }

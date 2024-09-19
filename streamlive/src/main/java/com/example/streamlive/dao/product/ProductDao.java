@@ -11,4 +11,6 @@ public interface ProductDao {
     List<Product> findProductsForDelegation(int userId);
     List<Product> findDelegatedProducts(int userId);
     List<Product> findUndelegatedProducts(int userId);
+    List<Product> findMyDelegatedProducts(int userId);
+    Product findProductById(int productId);
 }

@@ -43,16 +43,17 @@ public class ProductController {
         return ResponseEntity.ok(new ApiResponse<>(productService.getDelegatedProducts(userId)));
     }
 
-//    // 已代理商品清單 API
-//    @GetMapping("/my-delegations")
-//    public ResponseEntity<?> getMyDelegatedProducts(){}
-//
-//    // 取得商品資訊API
-//    @GetMapping("/{productId}")
-//    public ResponseEntity<?> getProductInfo(@PathVariable("productId") int productId) {
-//        // 這裡的 productId 變數已經從 URL 中提取出來，可以直接使用
-//        // 實現查詢商品資訊的邏輯
-//        return ResponseEntity.ok("Product ID: " + productId); // 示例回應
-//    }
+    // 已代理商品清單 API
+    @GetMapping("/my-delegations")
+    public ResponseEntity<?> getMyDelegatedProducts(@RequestParam("userId") int userId){
+        return ResponseEntity.ok(new ApiResponse<>(productService.getMyDelegatedProducts(userId)));
+    }
+
+
+    // 取得商品資訊API
+    @GetMapping("/{productId}")
+    public ResponseEntity<?> getProductInfo(@PathVariable("productId") int productId) {
+        return ResponseEntity.ok(new ApiResponse<>(productService.getProductInfo(productId)));
+    }
 
 }

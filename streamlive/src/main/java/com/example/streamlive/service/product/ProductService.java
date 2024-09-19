@@ -10,4 +10,6 @@ public interface ProductService {
     List<Product> getProductsForDelegation(int userId);
     List<Product> getDelegatedProducts(int userId);
     List<Product> getUndelegatedProducts(int userId);
+    List<Product> getMyDelegatedProducts(int userId);
+    Product getProductInfo(int productId);
 }
