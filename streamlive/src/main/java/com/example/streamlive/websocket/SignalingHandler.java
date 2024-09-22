@@ -1,6 +1,7 @@
 package com.example.streamlive.websocket;
 
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -29,7 +30,12 @@ public class SignalingHandler extends TextWebSocketHandler {
         switch (type) {
             case "create":
                 String createRoomId = jsonMessage.getString("roomId");
-                createRoom(createRoomId, session);
+                JSONArray productsArray = jsonMessage.getJSONArray("products");
+                List<String> productsList = new ArrayList<>();
+                for (int i = 0; i < productsArray.length(); i++) {
+                    productsList.add(productsArray.getString(i));
+                }
+                createRoom(createRoomId, session, productsList);
                 break;
             case "join":
                 String joinRoomId = jsonMessage.getString("roomId");
@@ -55,10 +61,10 @@ public class SignalingHandler extends TextWebSocketHandler {
         }
     }
 
-    private void createRoom(String roomId, WebSocketSession session) {
+    private void createRoom(String roomId, WebSocketSession session, List<String> products) {
         rooms.put(roomId, new CopyOnWriteArrayList<>());
         broadcasters.put(roomId, session);
-        roomInfos.put(roomId, new RoomInfo(roomId, Instant.now(), 0)); // 添加房間資訊
+        roomInfos.put(roomId, new RoomInfo(roomId, Instant.now(), 0, products)); // 添加 products
         sendToSession(session, new JSONObject().put("type", "created").toString());
         broadcastRoomList(); // 更新大廳的房間清單
     }
@@ -138,7 +144,8 @@ public class SignalingHandler extends TextWebSocketHandler {
             JSONObject roomJson = new JSONObject()
                     .put("roomId", roomInfo.getRoomId())
                     .put("startTime", roomInfo.getStartTime().toString())
-                    .put("viewerCount", roomInfo.getViewerCount());
+                    .put("viewerCount", roomInfo.getViewerCount())
+                    .put("products", roomInfo.getProducts());
             roomList.add(roomJson);
         }
         JSONObject message = new JSONObject()
@@ -200,11 +207,13 @@ public class SignalingHandler extends TextWebSocketHandler {
         private String roomId;
         private Instant startTime;
         private int viewerCount;
+        private List<String> products;
 
-        public RoomInfo(String roomId, Instant startTime, int viewerCount) {
+        public RoomInfo(String roomId, Instant startTime, int viewerCount, List<String> products) {
             this.roomId = roomId;
             this.startTime = startTime;
             this.viewerCount = viewerCount;
+            this.products = products;
         }
 
         public String getRoomId() {
@@ -225,6 +234,14 @@ public class SignalingHandler extends TextWebSocketHandler {
 
         public void decrementViewerCount() {
             viewerCount--;
+        }
+
+        public List<String> getProducts() {
+            return products;
+        }
+
+        public void setProducts(List<String> products) {
+            this.products = products;
         }
     }
 }

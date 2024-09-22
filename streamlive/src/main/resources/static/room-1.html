@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>視訊直播聊天室</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 上方區域（視頻和聊天區域） */
+        #mainArea {
+            display: flex;
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+
+        /* 視訊區 */
+        .video-container {
+            flex: 2;
+            background-color: #ddd;
+            border-radius: 10px;
+            position: relative;
+            margin-right: 10px;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .video-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        button {
+            padding: 5px;
+            border: none;
+            border-radius: 3px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* 聊天區 */
+        #chatArea {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        #chatMessages {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: white;
+        }
+
+        #chatInput {
+            display: flex;
+        }
+
+        #messageInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+        }
+
+        #sendMessage {
+            padding: 10px;
+            border-radius: 0 5px 5px 0;
+            border: 1px solid #ddd;
+        }
+
+        /* 商品區域 */
+        #products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+        }
+
+        .product-item {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            width: calc(33.33% - 20px); /* 3個商品並排 */
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .product-item h3 {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-item p {
+            font-size: 1rem;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        /* 我要購買按鈕 */
+        .buy-button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .buy-button:hover {
+            background-color: #218838;
+        }
+
+        .buy-button:active {
+            background-color: #1e7e34;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 上方區域 -->
+    <div id="mainArea">
+        <!-- 視訊區 -->
+        <div class="video-container">
+            <video id="videoStream" autoplay></video>
+            <div class="video-label" id="videoLabel">直播中</div>
+            <div id="controls">
+                <button id="hangupButton" disabled>結束直播</button>
+            </div>
+        </div>
+
+        <!-- 聊天區 -->
+        <div id="chatArea">
+            <div id="chatMessages"></div>
+            <div id="chatInput">
+                <input type="text" id="messageInput" placeholder="輸入訊息..." disabled>
+                <button id="sendMessage" disabled>送出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 狀態顯示區域 -->
+    <div id="status"></div>
+
+    <!-- 商品區域 -->
+    <div id="products">
+        <!-- 這裡是動態生成的商品區塊 -->
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams1 = new URLSearchParams(window.location.search);
+        const products = urlParams1.get('products');
+        const productArray = products ? products.split(',') : [];
+        console.log('Selected Products:', productArray);
+        // 獲取產品資料並渲染
+        getProductInfo(productArray);
+
+        function getProductInfo(productArray) {
+            const productsContainer = document.getElementById('products');  // 產品渲染容器
+
+            // 遍歷每個產品 ID，使用 fetch 獲取資料
+            productArray.forEach(productId => {
+                fetch(`/api/1.0/product/${productId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch product with ID ${productId}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const product = data.data;
+
+                        // 創建 HTML 結構來顯示產品資訊
+                        const productDiv = document.createElement('div');
+                        productDiv.className = 'product-item';  // 可自定義 class 樣式
+
+                        // 渲染產品詳細資料
+                        productDiv.innerHTML = `
+                    <img src="${product.mainImage}" alt="${product.name}" style="width: 100%; height: auto; border-radius: 8px;">
+                    <h3>${product.name}</h3>
+                    <p>庫存: ${product.stock}</p>
+                    <p>價格: NT$ ${product.price}</p>
+                    <button class="buy-button">我要購買</button>
+                `;
+
+                        // 將產品資料添加到產品容器中
+                        productsContainer.appendChild(productDiv);
+
+                        // 處理「我要購買」按鈕點擊事件
+                        const buyButton = productDiv.querySelector('.buy-button');
+                        buyButton.addEventListener('click', () => {
+                            alert(`您已選擇購買 ${product.name}`);
+                            // 在這裡添加購買邏輯
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching product:', error);
+                    });
+            });
+        }
+
+    });
+
+
+    let localStream;
+    let peerConnection;
+    let peerConnections = {}; // 新增：用於管理多個觀眾的連線
+    let ws;
+    let roomId;
+    let isBroadcaster = false;
+    let viewerId; // 新增：觀眾的唯一識別碼
+
+    const configuration = {
+        iceServers: [
+            {urls: 'stun:stun.l.google.com:19302'},
+            {
+                urls: 'turn:54.238.140.240:3478',
+                username: 'sean',
+                credential: 'sean71507'
+            }
+        ]
+    };
+
+    const videoStream = document.getElementById('videoStream');
+    const videoLabel = document.getElementById('videoLabel');
+    const hangupButton = document.getElementById('hangupButton');
+    const messageInput = document.getElementById('messageInput');
+    const sendMessageBtn = document.getElementById('sendMessage');
+
+    hangupButton.onclick = hangup;
+    sendMessageBtn.onclick = sendChatMessage;
+    messageInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' && messageInput.value.trim() !== '') {  // 檢查是否按下 Enter 鍵 且輸入框的值不為空
+            sendChatMessage();  // 呼叫送出訊息的函數
+        }
+    });
+
+    function updateStatus(message) {
+        document.getElementById('status').textContent = message;
+        console.log(`狀態更新: ${message}`);
+    }
+
+    // 解析 URL 參數
+    const urlParams = new URLSearchParams(window.location.search);
+    roomId = urlParams.get('roomId');
+    const role = urlParams.get('role');
+    isBroadcaster = (role === 'broadcaster');
+
+    if (!roomId || !role) {
+        alert('請從大廳頁面進入房間。');
+        window.location.href = 'index-1.html';
+    } else {
+        initializeWebSocket();
+    }
+
+    function initializeWebSocket() {
+        // 測試環境使用
+        ws = new WebSocket('ws://localhost:8080/socket');
+        // 正式環境使用
+        // ws = new WebSocket('wss://techwavelab.com/socket');
+        console.log('正在初始化 WebSocket 連接...');
+
+        ws.onopen = () => {
+            // updateStatus('WebSocket 連接已建立');
+            console.log('WebSocket 連接成功');
+            if (isBroadcaster) {
+                console.log('作為主播設置媒體流');
+                setupMediaStream();
+            } else {
+                console.log('作為觀眾加入房間');
+                hangupButton.style.display = "none";
+                ws.send(JSON.stringify({type: 'join', roomId}));
+            }
+        };
+        ws.onclose = () => {
+            document.getElementById('status').innerHTML = '<a href="index.html">直播已結束，請返回大廳。</a>';
+            console.log('WebSocket 連接關閉');
+        };
+        ws.onerror = (error) => {
+            updateStatus('WebSocket 錯誤: ' + error.message);
+            console.error('WebSocket 錯誤:', error);
+        };
+        ws.onmessage = handleMessage;
+    }
+
+    function setupMediaStream() {
+        console.log('正在獲取用戶媒體設備...');
+        navigator.mediaDevices.getUserMedia({audio: true, video: true})
+            .then(stream => {
+                console.log('成功獲取媒體流');
+                videoStream.srcObject = stream;
+                videoStream.muted = true;
+                localStream = stream;
+                videoLabel.textContent = '直播畫面';
+
+                // console.log('發送創建房間請求');
+                // ws.send(JSON.stringify({type: 'create', roomId}));
+                // 解析 URL 參數來獲取 products
+                const urlParams2 = new URLSearchParams(window.location.search);
+                const products = urlParams2.get('products');
+                const productArray = products ? products.split(',') : [];
+
+                console.log('發送創建房間請求，並附加產品數組:', productArray);
+
+                // 發送 WebSocket 訊息，包含 roomId 和 productArray
+                ws.send(JSON.stringify({
+                    type: 'create',
+                    roomId: roomId,
+                    products: productArray  // 傳送產品數組
+                }));
+
+                hangupButton.disabled = false;
+                enableChat();
+            })
+            .catch(e => {
+                updateStatus('獲取媒體設備失敗: ' + e.message);
+                console.error('獲取媒體設備失敗:', e);
+            });
+    }
+
+    function handleMessage(event) {
+        const message = JSON.parse(event.data);
+        console.log('收到消息:', message);
+
+        switch (message.type) {
+            case 'created':
+                updateStatus('房間已創建，等待觀眾加入...');
+                hangupButton.disabled = false;
+                enableChat();
+                break;
+            case 'joined':
+                viewerId = message.viewerId; // 儲存 viewerId
+                // updateStatus('已加入房間，等待直播開始...');
+                videoLabel.textContent = '直播畫面';
+                enableChat();
+                break;
+            case 'newViewer':
+                if (isBroadcaster) {
+                    console.log('新觀眾加入，創建對等連接');
+                    document.getElementById('status').style.display = "none";
+                    const newViewerId = message.viewerId;
+                    createPeerConnection(newViewerId);
+                }
+                break;
+            case 'offer':
+                if (!isBroadcaster) {
+                    handleOffer(message.offer);
+                }
+                break;
+            case 'answer':
+                if (isBroadcaster) {
+                    handleAnswer(message.answer, message.viewerId);
+                }
+                break;
+            case 'candidate':
+                if (isBroadcaster) {
+                    handleCandidate(message.candidate, message.viewerId);
+                } else {
+                    handleCandidate(message.candidate);
+                }
+                break;
+            case 'broadcasterLeft':
+                if (!isBroadcaster) {
+                    document.getElementById('status').innerHTML = '<a href="index.html">直播已結束，請返回大廳。</a>';
+                    console.log('主播離開，結束連接');
+                    hangup();
+                }
+                break;
+            case 'chat':
+                displayChatMessage(message.content, message.sender);
+                break;
+        }
+    }
+
+    function createPeerConnection(viewerId) {
+        console.log('創建對等連接，觀眾 ID:', viewerId);
+        const peerConnection = new RTCPeerConnection(configuration);
+        peerConnections[viewerId] = peerConnection;
+
+        peerConnection.onicecandidate = e => {
+            if (e.candidate) {
+                console.log('發送 ICE 候選項給觀眾:', viewerId);
+                ws.send(JSON.stringify({
+                    type: 'candidate',
+                    candidate: e.candidate,
+                    roomId,
+                    viewerId
+                }));
+            }
+        };
+        peerConnection.oniceconnectionstatechange = () => {
+            console.log('ICE 連接狀態變更（觀眾 ID:', viewerId, '）:', peerConnection.iceConnectionState);
+        };
+        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+        peerConnection.createOffer()
+            .then(offer => {
+                console.log('設置本地描述，觀眾 ID:', viewerId);
+                return peerConnection.setLocalDescription(offer);
+            })
+            .then(() => {
+                console.log('發送連線請求給觀眾:', viewerId);
+                ws.send(JSON.stringify({
+                    type: 'offer',
+                    offer: peerConnection.localDescription,
+                    roomId,
+                    viewerId
+                }));
+            })
+            .catch(e => {
+                updateStatus('創建連線請求失敗: ' + e.message);
+                console.error('創建連線請求失敗:', e);
+            });
+    }
+
+    function handleOffer(offer) {
+        console.log('處理連線請求...');
+        peerConnection = new RTCPeerConnection(configuration);
+        peerConnection.onicecandidate = e => {
+            if (e.candidate) {
+                console.log('發送 ICE 候選項給主播');
+                ws.send(JSON.stringify({
+                    type: 'candidate',
+                    candidate: e.candidate,
+                    roomId,
+                    viewerId
+                }));
+            }
+        };
+        peerConnection.ontrack = e => {
+            console.log('接收到遠程媒體軌道');
+            videoStream.srcObject = e.streams[0];
+        };
+        peerConnection.oniceconnectionstatechange = () => {
+            console.log('ICE 連接狀態變更:', peerConnection.iceConnectionState);
+        };
+
+        peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
+            .then(() => {
+                console.log('創建連線回應');
+                return peerConnection.createAnswer();
+            })
+            .then(answer => {
+                console.log('設置本地描述');
+                return peerConnection.setLocalDescription(answer);
+            })
+            .then(() => {
+                console.log('發送連線回應給主播');
+                ws.send(JSON.stringify({
+                    type: 'answer',
+                    answer: peerConnection.localDescription,
+                    roomId,
+                    viewerId
+                }));
+            })
+            .catch(e => {
+                updateStatus('處理連線請求失敗: ' + e.message);
+                console.error('處理連線請求失敗:', e);
+            });
+    }
+
+    function handleAnswer(answer, viewerId) {
+        console.log('處理連線回應，觀眾 ID:', viewerId);
+        const peerConnection = peerConnections[viewerId];
+        if (peerConnection) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
+                .catch(e => {
+                    updateStatus('設置遠端描述失敗: ' + e.message);
+                    console.error('設置遠端描述失敗:', e);
+                });
+        } else {
+            console.error('找不到對應的 peerConnection，觀眾 ID:', viewerId);
+        }
+    }
+
+    function handleCandidate(candidate, viewerId) {
+        if (isBroadcaster) {
+            console.log('處理 ICE 候選項，觀眾 ID:', viewerId);
+            const peerConnection = peerConnections[viewerId];
+            if (peerConnection) {
+                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                    .catch(e => {
+                        updateStatus('添加 ICE 候選項失敗: ' + e.message);
+                        console.error('添加 ICE 候選項失敗:', e);
+                    });
+            } else {
+                console.error('找不到對應的 peerConnection，觀眾 ID:', viewerId);
+            }
+        } else {
+            console.log('處理 ICE 候選項');
+            if (peerConnection) {
+                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                    .catch(e => {
+                        updateStatus('添加 ICE 候選項失敗: ' + e.message);
+                        console.error('添加 ICE 候選項失敗:', e);
+                    });
+            } else {
+                console.error('peerConnection 尚未建立');
+            }
+        }
+    }
+
+    function hangup() {
+        console.log('執行掛斷操作...');
+        if (isBroadcaster) {
+            for (let viewerId in peerConnections) {
+                const peerConnection = peerConnections[viewerId];
+                if (peerConnection) {
+                    console.log('關閉對等連接，觀眾 ID:', viewerId);
+                    peerConnection.close();
+                }
+            }
+            peerConnections = {};
+            window.location.href = "index-1.html";
+        } else {
+            if (peerConnection) {
+                console.log('關閉對等連接');
+                peerConnection.close();
+                peerConnection = null;
+            }
+        }
+
+        if (localStream) {
+            console.log('停止本地媒體串流');
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        if (ws) {
+            console.log('關閉 WebSocket 連接');
+            ws.close();
+        }
+        videoStream.srcObject = null;
+        videoLabel.textContent = '';
+        hangupButton.disabled = true;
+        disableChat();
+        updateStatus('已離開房間');
+    }
+
+    function sendChatMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        if (message && ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({type: 'chat', content: message, roomId}));
+            messageInput.value = '';
+        }
+    }
+
+    function displayChatMessage(message, sender) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = `${sender}: ${message}`;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function enableChat() {
+        document.getElementById('messageInput').disabled = false;
+        document.getElementById('sendMessage').disabled = false;
+    }
+
+    function disableChat() {
+        document.getElementById('messageInput').disabled = true;
+        document.getElementById('sendMessage').disabled = true;
+    }
+</script>
+</body>
+</html>

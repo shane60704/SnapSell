@@ -1,0 +1,159 @@
+/* 調整聊天容器背景為灰色，符合圖片風格 */
+.chat-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+    width: 500px;
+    height: 500px;
+    border-radius: 10px;
+    background-color: #F3F3F3; /* 灰色背景，偏淡 */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* 簡化陰影 */
+    overflow: hidden;
+}
+
+.chat-sidebar {
+    width: 25%;
+    background-color: #F3F3F3; /* 調整背景色與主背景一致 */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 2px solid #E0E0E0; /* 調整邊框顏色 */
+}
+
+.chat-room-list {
+    list-style-type: none;
+    padding: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chat-room-list li {
+    padding: 15px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    background-color: #E5E5E5; /* 調整顏色，使其更簡約 */
+    border-radius: 12px;
+    transition: background-color 0.3s;
+    color: #333;
+}
+
+.chat-room-list li:hover {
+    background-color: #CCCCCC; /* 調整hover顏色 */
+}
+
+.chat-main {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    background-color: #F3F3F3;
+}
+
+/* 顯示當前聊天室名稱的區塊 */
+.current-chat-room {
+    position: relative;
+    padding: 5px;
+    background-color: #F3F3F3; /* 背景與整體風格一致 */
+    border-bottom: 2px solid #E0E0E0;
+    color: #333; /* 調整字體顏色為深灰色 */
+    font-weight: bold;
+    text-align: center;
+    font-size: 18px;
+}
+
+.chatRoomHidden {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #666; /* 調整字體顏色為灰色 */
+}
+
+.chat-window {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #F3F3F3; /* 與整體背景一致 */
+}
+
+.message-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    max-width: 70%;
+}
+
+.message-wrapper.right {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.message {
+    padding: 10px 15px;
+    background-color: #E5E5E5; /* 簡約的淺灰色 */
+    color: #333;
+    border-radius: 18px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.2;
+    box-shadow: none; /* 移除陰影效果，使設計更簡潔 */
+}
+
+.message.right {
+    background-color: #CCCCCC; /* 調整右邊訊息的背景色 */
+}
+
+.timestamp {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background-color: #F3F3F3; /* 背景與主體一致 */
+    border-top: 2px solid #E0E0E0;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #E0E0E0;
+    background-color: #E5E5E5; /* 背景簡化為淺灰色 */
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.chat-input input:focus {
+    border-color: #4A90E2; /* 保持藍色邊框以符合主題 */
+}
+
+.chat-input button {
+    padding: 12px 25px;
+    background-color: #4A90E2; /* 藍色按鈕 */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.chat-input button:hover {
+    background-color: #3a78bb; /* 深藍色hover效果 */
+}
+
+
+

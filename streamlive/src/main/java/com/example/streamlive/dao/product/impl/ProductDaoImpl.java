@@ -45,11 +45,11 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Integer createDelegation(Integer productId,String client){
-        String sql = "INSERT INTO delegation (product_id,client,agent,status) VALUES (:productId,:client,:agent,:status)";
+        String sql = "INSERT INTO delegation (product_id,client_id,agent_id,status) VALUES (:productId,:client,:agent,:status)";
         Map<String, Object> map = new HashMap<>();
         map.put("productId", productId);
         map.put("client", client);
-        map.put("agent", "none");
+        map.put("agent", null);
         map.put("status", 0);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new MapSqlParameterSource(map);
@@ -59,7 +59,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> findProductsForDelegation(int userId){
-        String sql = "SELECT product.*, delegation.client, delegation.agent, delegation.status\n" +
+        String sql = "SELECT product.*, delegation.client_id, delegation.agent_id, delegation.status\n" +
                 "FROM product\n" +
                 "INNER JOIN delegation ON product.id = delegation.product_id\n" +
                 "WHERE product.user_id != :userId \n" +
@@ -72,7 +72,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> findDelegatedProducts(int userId){
-        String sql = "SELECT product.*, delegation.client, delegation.agent, delegation.status\n" +
+        String sql = "SELECT product.*, delegation.client_id, delegation.agent_id, delegation.status\n" +
                 "FROM product\n" +
                 "INNER JOIN delegation ON product.id = delegation.product_id\n" +
                 "WHERE product.user_id = :userId " +
@@ -85,7 +85,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> findUndelegatedProducts(int userId){
-        String sql = "SELECT product.*, delegation.client, delegation.agent, delegation.status\n" +
+        String sql = "SELECT product.*, delegation.client_id, delegation.agent_id, delegation.status\n" +
                 "FROM product\n" +
                 "INNER JOIN delegation ON product.id = delegation.product_id\n" +
                 "WHERE product.user_id = :userId " +
@@ -98,10 +98,10 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> findMyDelegatedProducts(int userId){
-        String sql = "SELECT product.*, delegation.client, delegation.agent, delegation.status\n" +
+        String sql = "SELECT product.*, delegation.client_id, delegation.agent_id, delegation.status\n" +
                 "FROM product\n" +
                 "INNER JOIN delegation ON product.id = delegation.product_id\n" +
-                "WHERE delegation.agent = :userId";
+                "WHERE delegation.agent_id = :userId";
         Map<String, Object> map = new HashMap<>();
         map.put("userId", userId);
         SqlParameterSource paramSource = new MapSqlParameterSource(map);

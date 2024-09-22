@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>E-Commerce & Live Streaming Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #222;
+            color: #fff;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        header .logo h1 {
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        header nav ul li {
+            display: inline;
+        }
+
+        header nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            transition: background 0.3s;
+        }
+
+        header nav ul li a:hover {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-actions img {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        #hero {
+            background: url('https://via.placeholder.com/1920x800') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-text h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            animation: fadeInDown 1.5s ease-out;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            animation: fadeInUp 2s ease-out;
+        }
+
+        .hero-btn {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 12px 24px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: background-color 0.3s;
+        }
+
+        .hero-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 商品區 */
+        #products {
+            padding: 60px 0;
+            background-color: #f4f4f4;
+        }
+
+        #products .container {
+            max-width: 1200px;
+            margin: auto;
+            text-align: center;
+        }
+
+        #products h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #007BFF;
+        }
+
+        .product-card p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .product-card .price {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* 直播專區 */
+        #live-streams {
+            padding: 60px 0;
+            background-color: #fff;
+        }
+
+        #live-streams .container {
+            max-width: 1200px;
+            margin: auto;
+            text-align: center;
+        }
+
+        #live-streams h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .live-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .live-card {
+            background-color: #222;
+            color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .live-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .live-card img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .live-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .live-card .live-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            padding: 5px 10px;
+            color: #fff;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        footer {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo">
+            <h1>ShopLive</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#live-streams">Live Streams</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="user-actions">
+            <!-- 訊息通知圖示 -->
+            <img src="assets/image/icon_mail.png" alt="Message Icon">
+            <!-- 使用者頭像 -->
+            <img src="https://via.placeholder.com/30" alt="User Avatar">
+        </div>
+    </div>
+</header>
+
+<section id="hero">
+    <div class="hero-text">
+        <h2>Welcome to ShopLive</h2>
+        <p>Where products meet live streaming.</p>
+        <a href="#products" class="hero-btn">Shop Now</a>
+    </div>
+</section>
+
+<!-- 商品區 -->
+<section id="products">
+    <div class="container">
+        <h2>Our Products</h2>
+        <div class="product-grid">
+            <!-- 商品卡片 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product Image">
+                <h3>Product 1</h3>
+                <p>High quality product for your needs.</p>
+                <p class="price">$50.00</p>
+            </div>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product Image">
+                <h3>Product 2</h3>
+                <p>Top selling product that fits your style.</p>
+                <p class="price">$75.00</p>
+            </div>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product Image">
+                <h3>Product 3</h3>
+                <p>Durable and affordable.</p>
+                <p class="price">$30.00</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 直播專區 -->
+<section id="live-streams">
+    <div class="container">
+        <h2>Live Streams</h2>
+        <div class="live-grid">
+            <!-- 直播卡片 -->
+            <div class="live-card">
+                <div class="live-label">Live</div>
+                <img src="https://via.placeholder.com/300x200" alt="Live Stream">
+                <h3>Stream 1</h3>
+                <p>Join us for an exciting product demo!</p>
+            </div>
+            <div class="live-card">
+                <div class="live-label">Live</div>
+                <img src="https://via.placeholder.com/300x200" alt="Live Stream">
+                <h3>Stream 2</h3>
+                <p>Don't miss our exclusive offers.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 ShopLive. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // Smooth Scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+</body>
+</html>
+
+

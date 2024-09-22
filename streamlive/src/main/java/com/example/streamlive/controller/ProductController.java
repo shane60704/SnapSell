@@ -49,7 +49,6 @@ public class ProductController {
         return ResponseEntity.ok(new ApiResponse<>(productService.getMyDelegatedProducts(userId)));
     }
 
-
     // 取得商品資訊API
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProductInfo(@PathVariable("productId") int productId) {
