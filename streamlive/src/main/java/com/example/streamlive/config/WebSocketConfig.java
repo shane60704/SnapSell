@@ -1,32 +1,25 @@
 package com.example.streamlive.config;
 
 import com.example.streamlive.websocket.SignalingHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.*;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 @Configuration
-@EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, WebSocketConfigurer {
+@EnableWebSocket
+public class WebSocketConfig implements WebSocketConfigurer {
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/app");
-    }
-
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat").setAllowedOriginPatterns("*").withSockJS();
-        registry.addEndpoint("/contract").setAllowedOriginPatterns("*").withSockJS();
-    }
+    @Autowired
+    private SignalingHandler signalingHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         // 測試環境
-        registry.addHandler(new SignalingHandler(), "/socket").setAllowedOrigins("*");
+//        registry.addHandler(signalingHandler, "/socket").setAllowedOrigins("*");
         // 正式環境
-        // registry.addHandler(new SignalingHandler(), "/socket").setAllowedOrigins("https://techwavelab.com");
+         registry.addHandler(signalingHandler, "/socket").setAllowedOrigins("https://techwavelab.com");
     }
 }
 

@@ -8,75 +8,70 @@
         * {
             box-sizing: border-box;
         }
+
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            padding: 20px;
         }
+
         #app {
             display: flex;
             flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 800px;
-            width: 100%;
-        }
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        #roomControls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        #roomInput {
-            flex-grow: 1;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+
+        /* 上方區域（視頻和聊天區域） */
+        #mainArea {
+            display: flex;
+            flex-grow: 1;
             margin-bottom: 20px;
         }
+
+        /* 視訊區 */
+        .video-container {
+            flex: 2;
+            background-color: #ddd;
+            border-radius: 10px;
+            position: relative;
+            margin-right: 10px;
+        }
+
         video {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            background: #ddd;
-            border-radius: 5px;
+            border-radius: 10px;
+            object-fit: cover;
         }
+
         .video-label {
             position: absolute;
             top: 10px;
             left: 10px;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             color: white;
             padding: 5px;
             border-radius: 3px;
             font-size: 14px;
         }
+
         #controls {
             position: absolute;
             top: 10px;
             right: 10px;
-            display: flex;
-            justify-content: center;
         }
+
         button {
             padding: 5px;
             border: none;
@@ -84,27 +79,29 @@
             background-color: #007bff;
             color: white;
             cursor: pointer;
-            transition: background-color 0.3s;
             font-size: 14px;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
-        #status {
-            color: #666;
-            font-style: italic;
-            text-align: center;
-        }
+
+        /* 聊天區 */
         #chatArea {
-            margin-top: 20px;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
         }
+
         #chatMessages {
             flex-grow: 1;
             overflow-y: auto;
@@ -112,122 +109,181 @@
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
+            background-color: white;
         }
+
         #chatInput {
             display: flex;
         }
+
         #messageInput {
             flex-grow: 1;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px 0 0 5px;
         }
+
         #sendMessage {
-            border-radius: 0 5px 5px 0;
-            margin: 0;
-        }
-        #status a {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: transparent; /* 背景透明 */
-            color: #6c757d; /* 灰色字體 */
-            text-decoration: none; /* 去掉連結的預設下劃線 */
-            border-radius: 5px; /* 圓角邊框 */
-            font-size: 16px; /* 字體大小 */
-            font-weight: bold; /* 加粗字體 */
-            transition: all 0.3s ease; /* 添加過渡效果 */
-        }
-
-        #status a:hover {
-            background-color: #f8f9fa; /* 滑過時背景變為淡灰色 */
-            color: #495057; /* 滑過時字體變深灰色 */
-            border-color: #495057; /* 邊框變深灰色 */
-        }
-
-        #status a:active {
-            background-color: #e2e6ea; /* 點擊時變為更深的灰色背景 */
-            color: #343a40; /* 點擊時文字變為更深的灰色 */
-            border-color: #343a40; /* 點擊時邊框變為更深的灰色 */
-        }
-        .small-video-container {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 200px;
-            height: 150px;
-            background: #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .small-video-container video {
-            width: 100%;
-            height: 100%;
-        }
-        .request-button {
             padding: 10px;
-            margin-top: 10px;
+            border-radius: 0 5px 5px 0;
+            border: 1px solid #ddd;
+        }
+
+        /* 商品區域 */
+        #products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+        }
+
+        .product-item {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            width: calc(33.33% - 20px); /* 3個商品並排 */
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .product-item h3 {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-item p {
+            font-size: 1rem;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        /* 我要購買按鈕 */
+        .buy-button {
             background-color: #28a745;
+            color: #fff;
+            padding: 10px 15px;
             border: none;
-            color: white;
             border-radius: 5px;
             cursor: pointer;
-        }
-        .request-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
+            transition: background-color 0.3s ease;
         }
 
-        /* Responsive design */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            #app {
-                padding: 10px;
-            }
-            h1 {
-                font-size: 20px;
-            }
-            #roomControls {
-                flex-direction: column;
-            }
-            #roomControls button {
-                width: 100%;
-            }
-            button {
-                font-size: 14px;
-                padding: 8px 16px;
-            }
-            .video-label {
-                font-size: 12px;
-            }
-            #chatArea {
-                height: 200px;
-            }
+        .buy-button:hover {
+            background-color: #218838;
         }
+
+        .buy-button:active {
+            background-color: #1e7e34;
+        }
+
     </style>
 </head>
 <body>
 <div id="app">
-    <h1>直播聊天室</h1>
-    <div class="video-container">
-        <video id="videoStream" autoplay></video>
-        <div class="video-label" id="videoLabel"></div>
-        <div id="controls">
-            <button id="hangupButton" disabled>結束直播</button>
+    <!-- 上方區域 -->
+    <div id="mainArea">
+        <!-- 視訊區 -->
+        <div class="video-container">
+            <video id="videoStream" autoplay></video>
+            <div class="video-label" id="videoLabel">直播中</div>
+            <div id="controls">
+                <button id="hangupButton" disabled>結束直播</button>
+            </div>
+        </div>
+
+        <!-- 聊天區 -->
+        <div id="chatArea">
+            <div id="chatMessages"></div>
+            <div id="chatInput">
+                <input type="text" id="messageInput" placeholder="輸入訊息..." disabled>
+                <button id="sendMessage" disabled>送出</button>
+            </div>
         </div>
     </div>
+
+    <!-- 狀態顯示區域 -->
     <div id="status"></div>
-    <div id="chatArea">
-        <div id="chatMessages"></div>
-        <div id="chatInput">
-            <input type="text" id="messageInput" placeholder="輸入訊息..." disabled>
-            <button id="sendMessage" disabled>送出</button>
-        </div>
+
+    <!-- 商品區域 -->
+    <div id="products">
+        <!-- 這裡是動態生成的商品區塊 -->
     </div>
 </div>
 
+
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams1 = new URLSearchParams(window.location.search);
+        const products = urlParams1.get('products');
+        const productArray = products ? products.split(',') : [];
+        console.log('Selected Products:', productArray);
+        // 獲取產品資料並渲染
+        getProductInfo(productArray);
+
+        function getProductInfo(productArray) {
+            const productsContainer = document.getElementById('products');  // 產品渲染容器
+
+            // 遍歷每個產品 ID，使用 fetch 獲取資料
+            productArray.forEach(productId => {
+                fetch(`/api/1.0/product/${productId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch product with ID ${productId}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const product = data.data;
+
+                        // 創建 HTML 結構來顯示產品資訊
+                        const productDiv = document.createElement('div');
+                        productDiv.className = 'product-item';  // 可自定義 class 樣式
+
+                        // 渲染產品詳細資料
+                        productDiv.innerHTML = `
+                    <img src="${product.mainImage}" alt="${product.name}" style="width: 100%; height: auto; border-radius: 8px;">
+                    <h3>${product.name}</h3>
+                    <p>庫存: ${product.stock}</p>
+                    <p>價格: NT$ ${product.price}</p>
+                    <button class="buy-button">我要購買</button>
+                `;
+
+                        // 將產品資料添加到產品容器中
+                        productsContainer.appendChild(productDiv);
+
+                        // 處理「我要購買」按鈕點擊事件
+                        const buyButton = productDiv.querySelector('.buy-button');
+                        buyButton.addEventListener('click', () => {
+                            alert(`您已選擇購買 ${product.name}`);
+                            // 在這裡添加購買邏輯
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching product:', error);
+                    });
+            });
+        }
+
+    });
+
+
     let localStream;
     let peerConnection;
     let peerConnections = {}; // 新增：用於管理多個觀眾的連線
@@ -238,7 +294,7 @@
 
     const configuration = {
         iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
+            {urls: 'stun:stun.l.google.com:19302'},
             {
                 urls: 'turn:54.238.140.240:3478',
                 username: 'sean',
@@ -274,16 +330,20 @@
 
     if (!roomId || !role) {
         alert('請從大廳頁面進入房間。');
-        window.location.href = 'lobby.html';
+        window.location.href = 'index.html';
     } else {
         initializeWebSocket();
     }
 
+    window.addEventListener('beforeunload', () => {
+        hangup();
+    });
+
     function initializeWebSocket() {
         // 測試環境使用
-        ws = new WebSocket('ws://localhost:8080/socket');
+        // ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        // ws = new WebSocket('wss://techwavelab.com/socket');
+        ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {
@@ -295,11 +355,12 @@
             } else {
                 console.log('作為觀眾加入房間');
                 hangupButton.style.display = "none";
-                ws.send(JSON.stringify({ type: 'join', roomId }));
+                ws.send(JSON.stringify({type: 'join', roomId}));
             }
         };
         ws.onclose = () => {
-            document.getElementById('status').innerHTML = '<a href="index.html">直播已結束，請返回大廳。</a>';
+            document.getElementById('status').innerHTML = '<a href="live-stream-lobby.html">直播已結束，請返回大廳。</a>';
+            hangup();
             console.log('WebSocket 連接關閉');
         };
         ws.onerror = (error) => {
@@ -311,15 +372,30 @@
 
     function setupMediaStream() {
         console.log('正在獲取用戶媒體設備...');
-        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+        navigator.mediaDevices.getUserMedia({audio: true, video: true})
             .then(stream => {
                 console.log('成功獲取媒體流');
                 videoStream.srcObject = stream;
                 videoStream.muted = true;
                 localStream = stream;
                 videoLabel.textContent = '直播畫面';
-                console.log('發送創建房間請求');
-                ws.send(JSON.stringify({ type: 'create', roomId }));
+
+                // console.log('發送創建房間請求');
+                // ws.send(JSON.stringify({type: 'create', roomId}));
+                // 解析 URL 參數來獲取 products
+                const urlParams2 = new URLSearchParams(window.location.search);
+                const products = urlParams2.get('products');
+                const productArray = products ? products.split(',') : [];
+
+                console.log('發送創建房間請求，並附加產品數組:', productArray);
+
+                // 發送 WebSocket 訊息，包含 roomId 和 productArray
+                ws.send(JSON.stringify({
+                    type: 'create',
+                    roomId: roomId,
+                    products: productArray  // 傳送產品數組
+                }));
+
                 hangupButton.disabled = false;
                 enableChat();
             })
@@ -348,7 +424,7 @@
             case 'newViewer':
                 if (isBroadcaster) {
                     console.log('新觀眾加入，創建對等連接');
-                    document.getElementById('status').style.display= "none";
+                    document.getElementById('status').style.display = "none";
                     const newViewerId = message.viewerId;
                     createPeerConnection(newViewerId);
                 }
@@ -372,7 +448,7 @@
                 break;
             case 'broadcasterLeft':
                 if (!isBroadcaster) {
-                    document.getElementById('status').innerHTML = '<a href="index.html">直播已結束，請返回大廳。</a>';
+                    document.getElementById('status').innerHTML = '<a href="live-stream-lobby.html">直播已結束，請返回大廳。</a>';
                     console.log('主播離開，結束連接');
                     hangup();
                 }
@@ -401,6 +477,11 @@
         };
         peerConnection.oniceconnectionstatechange = () => {
             console.log('ICE 連接狀態變更（觀眾 ID:', viewerId, '）:', peerConnection.iceConnectionState);
+            if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'disconnected') {
+                console.log('ICE 連接失敗或已斷開，觀眾 ID:', viewerId);
+                peerConnection.close();
+                delete peerConnections[viewerId];
+            }
         };
         localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
@@ -444,6 +525,10 @@
         };
         peerConnection.oniceconnectionstatechange = () => {
             console.log('ICE 連接狀態變更:', peerConnection.iceConnectionState);
+            if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'disconnected') {
+                console.log('ICE 連接失敗或已斷開');
+                hangup();  // 呼叫 hangup 函數釋放資源
+            }
         };
 
         peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
@@ -513,6 +598,13 @@
 
     function hangup() {
         console.log('執行掛斷操作...');
+        if (peerConnection) {
+            peerConnection.onicecandidate = null;
+            peerConnection.ontrack = null;
+            peerConnection.oniceconnectionstatechange = null;
+            peerConnection.close();
+            peerConnection = null;
+        }
         if (isBroadcaster) {
             for (let viewerId in peerConnections) {
                 const peerConnection = peerConnections[viewerId];
@@ -522,7 +614,7 @@
                 }
             }
             peerConnections = {};
-            window.location.href = "index.html";
+            window.location.href = "live-stream-lobby.html";
         } else {
             if (peerConnection) {
                 console.log('關閉對等連接');
@@ -545,13 +637,14 @@
         hangupButton.disabled = true;
         disableChat();
         updateStatus('已離開房間');
+        document.getElementById('status').innerHTML = '<a href="live-stream-lobby.html">直播已結束，請返回大廳。</a>';
     }
 
     function sendChatMessage() {
         const messageInput = document.getElementById('messageInput');
         const message = messageInput.value.trim();
         if (message && ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'chat', content: message, roomId }));
+            ws.send(JSON.stringify({type: 'chat', content: message, roomId}));
             messageInput.value = '';
         }
     }

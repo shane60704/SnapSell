@@ -1,13 +1,19 @@
 package com.example.streamlive.dao.contract.impl;
 
 import com.example.streamlive.dao.contract.ContractDao;
+import com.example.streamlive.model.Delegation;
+import com.example.streamlive.model.DelegationDetails;
 import com.example.streamlive.model.SignatureData;
+import com.example.streamlive.model.rowmapper.DelegationDetailsRowMapper;
+import com.example.streamlive.model.rowmapper.DelegationRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -62,4 +68,34 @@ public class ContractDaoImpl implements ContractDao {
         // 執行插入並返回受影響的行數
         return namedParameterJdbcTemplate.update(sql, params);
     }
+
+    // 取得自己是委託者的合約
+    @Override
+    public List<Delegation> findDelegationsByClientId(int clientId){
+        String sql = "SELECT * FROM delegation WHERE client_id = :clientId AND agent_id != 0";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("clientId", clientId);
+        return namedParameterJdbcTemplate.query(sql, params, new DelegationRowMapper());
+    }
+
+    // 取得自己是代理者的合約
+    @Override
+    public List<Delegation> findDelegationsByAgentId(int agentId){
+        String sql = "SELECT * FROM delegation WHERE agent_id = :agentId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("agentId", agentId);
+
+        return namedParameterJdbcTemplate.query(sql, params, new DelegationRowMapper());
+    }
+
+    // 取得合約的詳細資訊
+    @Override
+    public DelegationDetails findDelegationDetailsById(int id){
+        String sql = "SELECT * FROM delegation_details WHERE delegation_id = :id";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+
+        return namedParameterJdbcTemplate.queryForObject(sql, params, new DelegationDetailsRowMapper());
+    }
+
 }

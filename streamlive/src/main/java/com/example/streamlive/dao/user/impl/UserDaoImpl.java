@@ -2,6 +2,8 @@ package com.example.streamlive.dao.user.impl;
 
 import com.example.streamlive.dao.user.UserDao;
 import com.example.streamlive.dto.UserDto;
+import com.example.streamlive.model.Agent;
+import com.example.streamlive.model.Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -73,5 +75,30 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
+    public Client getClientById(int clientId) {
+        String sql = "SELECT id,name FROM user WHERE id = :clientId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("clientId", clientId);
+        SqlParameterSource paramSource = new MapSqlParameterSource(map);
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, paramSource, new BeanPropertyRowMapper<>(Client.class));
+        } catch (DataAccessException e) {
+            throw e;
+        }
+    }
 
+    @Override
+    public Agent getAgentById(int agentId) {
+        String sql = "SELECT id,name FROM user WHERE id = :agentId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("agentId", agentId);
+        SqlParameterSource paramSource = new MapSqlParameterSource(map);
+        try {
+            return namedParameterJdbcTemplate.queryForObject(sql, paramSource, new BeanPropertyRowMapper<>(Agent.class));
+        } catch (DataAccessException e) {
+            throw e;
+        }
+
+    }
 }

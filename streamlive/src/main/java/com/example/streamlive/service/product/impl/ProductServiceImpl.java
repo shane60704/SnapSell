@@ -31,15 +31,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public boolean listProduct(ProductDto productDto) {
         try {
-            String mainImagePath = "111";
-//            String mainImagePath = uploadProductImage(productDto.getMainImage());
+//            String mainImagePath = "111";
+            String mainImagePath = uploadProductImage(productDto.getMainImage());
             String feature = String.join(",", productDto.getFeature());
             Integer productId = productDao.createProduct(productDto,mainImagePath,feature);
             if (productId == null) {
                 return false;
             }
             return productDao.createDelegation(productId, productDto.getUserId()) != null;
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             log.error(e.getMessage());
             return false;
         }

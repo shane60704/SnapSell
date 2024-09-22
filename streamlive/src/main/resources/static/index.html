@@ -1,178 +1,982 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>直播大廳</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>E-Commerce & Live Streaming Platform</title>
+    <link rel="stylesheet" href="assets/css/chat.css">
     <style>
-        /* 全局樣式 */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+        * {
             margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        /* 大廳容器 */
-        #lobby {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        /* 房間清單 */
-        #roomList {
-            list-style: none;
             padding: 0;
+            box-sizing: border-box;
         }
-        .room-item {
+
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #222;
+            color: #fff;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
+            max-width: 1200px;
+            margin: auto;
         }
-        .room-info {
-            flex-grow: 1;
+
+        header .logo h1 {
+            font-size: 24px;
+            letter-spacing: 2px;
         }
-        .room-actions {
-            margin-left: 20px;
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
         }
-        .room-actions button {
-            padding: 8px 16px;
-            background-color: #007bff;
-            border: none;
+
+
+        header nav ul li {
+            display: inline;
+        }
+
+        header nav ul li a {
             color: #fff;
-            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            transition: background 0.3s;
+        }
+
+        header nav ul li a:hover {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-actions img {
+            width: 35px;
+            height: 35px;
             cursor: pointer;
         }
-        .room-actions button:hover {
+
+        #hero {
+            background: url('https://via.placeholder.com/1920x800') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-text h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            animation: fadeInDown 1.5s ease-out;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            animation: fadeInUp 2s ease-out;
+        }
+
+        .hero-btn {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 12px 24px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: background-color 0.3s;
+        }
+
+        .hero-btn:hover {
             background-color: #0056b3;
         }
-        /* 創建房間 */
-        #createRoom {
-            display: flex;
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 商品區 */
+        #products {
+            padding: 60px 0;
+            background-color: #f4f4f4;
+        }
+
+        #products .container {
+            max-width: 1200px;
+            margin: auto;
+            text-align: center;
+        }
+
+        #products h2 {
+            font-size: 32px;
             margin-bottom: 20px;
+            color: #333;
         }
-        #createRoom input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px 0 0 5px;
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
-        #createRoom button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #28a745;
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #007BFF;
+        }
+
+        .product-card p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .product-card .price {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* 直播專區 */
+        #live-streams {
+            padding: 60px 0;
+            background-color: #fff;
+        }
+
+        #live-streams .container {
+            max-width: 1200px;
+            margin: auto;
+            text-align: center;
+        }
+
+        #live-streams h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .live-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .live-card {
+            background-color: #222;
             color: #fff;
-            border-radius: 0 5px 5px 0;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .live-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .live-card img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .live-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .live-card .live-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            padding: 5px 10px;
+            color: #fff;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        footer {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        /* 圓形區塊 */
+        .floating-circle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #007BFF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             cursor: pointer;
+            z-index: 1000; /* 保證在其他元素上方 */
         }
-        #createRoom button:hover {
-            background-color: #218838;
+
+        .floating-circle img {
+            width: 50px;
+            height: 50px;
         }
-        /* 響應式設計 */
-        @media (max-width: 600px) {
-            .room-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .room-actions {
-                margin-left: 0;
-                margin-top: 10px;
-            }
+
+        /* 合約容器樣式 */
+        .contract-signature-container {
+            position: fixed; /* 使元素浮動在螢幕上 */
+            top: 50%; /* 垂直置中 */
+            left: 50%; /* 水平置中 */
+            transform: translate(-50%, -50%); /* 使元素居中對齊 */
+            background-color: #ffffff;
+            padding: 30px;
+            width:25%;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            z-index: 9999; /* 保證元素在其他元素之上 */
+            animation: fadeInContract 1s ease-in-out;
         }
+
+        /* 合約標題樣式 */
+        .contract-signature-container h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        /* 合約段落樣式 */
+        .contract-signature-container p {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        /* 合約中的強調文字 */
+        .contract-signature-container strong {
+            font-weight: bold;
+            color: #007BFF;
+        }
+
+        /* 簽署按鈕樣式 */
+        .contract-signature-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .contract-signature-button:hover {
+            background-color: #3e8e41;
+        }
+
+        /* 簽名區塊樣式 */
+        .contract-signature-block {
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .contract-signature-pad {
+            border: 2px dashed #ccc;
+            width: 300px;
+            height: 150px;
+            background-color: #fff;
+            cursor: crosshair;
+        }
+
+        /* 圖像預覽區塊 */
+        .contract-signature-preview img {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+
+        /* 獨立的合約內容顯示區塊 */
+        .contract-content-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            text-align: left;
+        }
+        .contract-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .contract-close-btn:hover {
+            background-color: #c9302c;
+        }
+        .contract-content-container h3 {
+            color: #4CAF50;
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .contract-content-container hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 10px 0;
+        }
+
+        .contract-content-container p {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .contract-content-container strong {
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .contract-content-container p:last-child {
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .contract-signature-send-button-container {
+            display: flex;
+            justify-content: center; /* 水平置中 */
+            margin-top: 10px; /* 根據需求調整間距 */
+        }
+
+        /* 合約出現的動畫效果 */
+        @keyframes fadeInContract {
+            from { opacity: 0; transform: translate(-50%, -60%); } /* 從稍微上方開始 */
+            to { opacity: 1; transform: translate(-50%, -50%); }   /* 最終停留在正中間 */
+        }
+
     </style>
 </head>
 <body>
-<div id="lobby">
-    <h1>直播大廳</h1>
-    <div id="createRoom">
-        <input type="text" id="newRoomId" placeholder="輸入要創建的房間 ID">
-        <button id="createRoomBtn">創建房間</button>
+<header>
+    <div class="container">
+        <div class="logo">
+            <h1>ShopLive</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">想委託</a></li>
+                <li><a href="#products">想代理</a></li>
+                <li><a href="live-stream-lobby.html">帶貨區</a></li>
+                <li><a href="#contact">更多商品</a></li>
+            </ul>
+        </nav>
+        <div class="user-actions">
+            <!-- 使用者頭像 -->
+                <img src="assets/image/user.png" alt="User Avatar">
+        </div>
     </div>
-    <ul id="roomList">
-        <!-- 房間清單將動態生成 -->
-    </ul>
+</header>
+
+<section id="hero">
+    <div class="hero-text">
+        <h2>Welcome to ShopLive</h2>
+        <p>Where products meet live streaming.</p>
+        <a href="#products" class="hero-btn">Shop Now</a>
+    </div>
+</section>
+
+<!-- 商品區 -->
+<section id="products">
+    <div class="container">
+        <h2>Our Products</h2>
+        <div class="product-grid">
+            <!-- 商品卡片 -->
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product Image">
+                <h3>Product 1</h3>
+                <p>High quality product for your needs.</p>
+                <p class="price">$50.00</p>
+            </div>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product Image">
+                <h3>Product 2</h3>
+                <p>Top selling product that fits your style.</p>
+                <p class="price">$75.00</p>
+            </div>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/250" alt="Product Image">
+                <h3>Product 3</h3>
+                <p>Durable and affordable.</p>
+                <p class="price">$30.00</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 直播專區 -->
+<section id="live-streams">
+    <div class="container">
+        <h2>Live Streams</h2>
+        <div class="live-grid">
+            <!-- 直播卡片 -->
+            <div class="live-card">
+                <div class="live-label">Live</div>
+                <img src="https://via.placeholder.com/300x200" alt="Live Stream">
+                <h3>Stream 1</h3>
+                <p>Join us for an exciting product demo!</p>
+            </div>
+            <div class="live-card">
+                <div class="live-label">Live</div>
+                <img src="https://via.placeholder.com/300x200" alt="Live Stream">
+                <h3>Stream 2</h3>
+                <p>Don't miss our exclusive offers.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 ShopLive. All Rights Reserved.</p>
+    </div>
+</footer>
+
+
+<!-- 圓形區塊 -->
+<div class="floating-circle">
+    <img src="assets/image/messenger.png" alt="Chat Icon">
 </div>
 
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <ul id="chatRoomList" class="chat-room-list"></ul>
+        <button id="createChatRoomBtn" style="padding: 10px; background-color: #FF5A5F; border: none; border-radius: 30px; color: white; cursor: pointer;">新增聊天室</button>
+    </div>
+
+    <div class="chat-main">
+        <!-- 顯示當前聊天室名稱的區塊 -->
+        <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
+        <div class = "chatRoomHidden">---</div>
+
+        <!-- 訊息區 -->
+        <div id="chatWindow" class="chat-window">
+            <div id="messageArea" class="message-area"></div>
+        </div>
+
+        <!-- 創建合約按鈕 -->
+        <button id="createContractBtn" style="padding: 5px; background-color: #4CAF50; border: none; color: white; border-radius: 30px; cursor: pointer;">創建合約</button>
+
+        <!-- 聊天輸入框 -->
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="輸入訊息...">
+            <button id="sendMessageBtn">發送</button>
+        </div>
+    </div>
+</div>
+
+<!-- 合約生成區塊 -->
+<div class="contract-signature-container">
+    <button class="contract-close-btn" id="contract-closeBtn">X</button>
+<div class="contract-input-container">
+    <h2>產生合約</h2>
+
+    <div class="contract-input-field">
+        <label for="clientName">委託者名稱</label>
+        <input type="text" id="clientName" placeholder="輸入委託者名稱">
+    </div>
+
+    <div class="contract-input-field">
+        <label for="sellerName">代理者名稱</label>
+        <input type="text" id="sellerName" placeholder="輸入代理者名稱">
+    </div>
+
+    <div class="contract-input-field">
+        <label for="productName">商品名稱</label>
+        <select id="productName">
+            <option value="">請選擇商品</option>
+        </select>
+    </div>
+
+    <!-- 隱藏欄位，用來儲存選擇的商品 ID -->
+    <input type="hidden" id="productId" name="productId">
+
+    <div class="contract-input-field">
+        <label for="salesPeriod">銷售期間</label>
+        <input type="text" id="salesPeriod" placeholder="輸入銷售期間">
+    </div>
+
+    <div class="contract-input-field">
+        <label for="commissionRate">佣金比例 (%)</label>
+        <input type="number" id="commissionRate" placeholder="輸入佣金比例">
+    </div>
+
+    <button id="generateContractBtn" class="contract-signature-button">生成合約</button>
+</div>
+    <!-- 顯示生成的合約 -->
+    <div id="generated-contract" class="contract-signature-generated"></div>
+
+    <!-- 簽名區塊 -->
+    <div class="contract-signature-block">
+        <div class="signature-block-A">
+            <h4>委託者簽名區</h4>
+            <canvas id="signature-pad-a" class="contract-signature-pad"></canvas>
+            <div class="signature-button-group">
+                <button id="clearSignatureA" class="contract-signature-button">清除簽名</button>
+                <button id="saveSignatureA" class="contract-signature-button">保存簽名</button>
+            </div>
+        </div>
+        <div class="signature-block-B">
+            <h4>代理者簽名區</h4>
+            <canvas id="signature-pad-b" class="contract-signature-pad"></canvas>
+            <div class="signature-button-group">
+                <button id="clearSignatureB" class="contract-signature-button">清除簽名</button>
+                <button id="saveSignatureB" class="contract-signature-button">保存簽名</button>
+            </div>
+        </div>
+    </div>
+    <!-- 圖像預覽區 -->
+    <div id="signature-preview" class="contract-signature-preview">
+        <div class ="signature-A">
+            <h4>簽名圖片預覽</h4>
+            <img id="signatureImageA" src="" alt="簽名圖片預覽">
+        </div>
+        <div class ="signature-B">
+            <h4>簽名圖片預覽</h4>
+            <img id="signatureImageB" src="" alt="簽名圖片預覽">
+        </div>
+    </div>
+    <!-- 發送合約按鈕 -->
+    <div class="contract-signature-send-button-container">
+        <button id="sendContractBtn" class="contract-signature-send-button contract-signature-button">發送合約給代理者</button>
+        <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
+        <button id="sendRejectBtn" class=" contract-signature-button">拒絕合約</button>
+    </div>
+</div>
+
+<!-- 引入js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="assets/js/chat.js"></script>
 <script>
-    // 測試環境使用
-    let ws = new WebSocket('ws://localhost:8080/socket');
-    // 正式環境使用
-    // let ws = new WebSocket('wss://techwavelab.com/socket');
 
-    ws.onopen = () => {
-        console.log('已連接到 WebSocket');
-        ws.send(JSON.stringify({ type: 'lobby' }));
-    };
 
-    ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        if (message.type === 'roomList') {
-            updateRoomList(message.rooms);
+        // Smooth Scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // 取得下拉選單和隱藏欄位的元素
+            const productSelect = document.getElementById('productName');
+            const productIdInput = document.getElementById('productId');
+
+            // 使用 fetch API 來從後端取得商品數據
+            fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
+                .then(response => response.json())
+                .then(data => {
+                    const products = data.data;
+
+                    // 將每個商品加入到下拉選單中
+                    products.forEach(product => {
+                        const option = document.createElement('option');
+                        option.value = product.id; // 將商品的 id 作為選項的值
+                        option.textContent = product.name; // 將商品的名稱顯示出來
+                        productSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching product data:', error);
+                });
+
+
+            // 當使用者選擇商品時，更新隱藏欄位的值
+            productSelect.addEventListener('change', function () {
+                productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
+            });
+        })
+
+
+    document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
+        document.querySelector('.chat-container').style.display = "none";
+        document.querySelector('.floating-circle').style.display = "flex"
+    });
+    document.querySelector('.floating-circle').addEventListener('click',()=>{
+        document.querySelector('.floating-circle').style.display = "none"
+        document.querySelector('.chat-container').style.display = "flex";
+    });
+
+    document.querySelector('.contract-signature-container').style.display="none";
+    document.querySelector('.contract-signature-block').style.display="none";
+    document.querySelector('.signature-block-A').style.display="none";
+    document.querySelector('.signature-block-B').style.display="none";
+    document.querySelector('.signature-A').style.display="none";
+    document.querySelector('.signature-B').style.display="none";
+    document.querySelector('.contract-signature-send-button').style.display='none';
+    document.getElementById('sendAcceptBtn').style.display='none';
+    document.getElementById('sendRejectBtn').style.display='none';
+
+    document.getElementById('contract-closeBtn').addEventListener('click', function () {
+        document.querySelector('.contract-signature-container').style.display = 'none';
+    });
+    document.getElementById('createContractBtn').addEventListener('click',function () {
+        document.querySelector('.contract-signature-container').style.display = 'block';
+    });
+
+    document.querySelector('.user-actions').addEventListener('click',function (){
+       window.location.href="my-contract.html";
+    });
+
+
+    // 生成合約
+    document.getElementById('generateContractBtn').addEventListener('click', function () {
+        const contractData = {
+            clientName: document.getElementById('clientName').value,
+            sellerName: document.getElementById('sellerName').value,
+            productName: document.getElementById('productName').value,
+            salesPeriod: document.getElementById('salesPeriod').value,
+            commissionRate: document.getElementById('commissionRate').value
+        };
+        const productSelect = document.getElementById('productName');
+        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
+        const contract_container = document.querySelector('.contract-content-container');
+        const signature_container = document.querySelector('.contract-signature-block');
+
+        const contract = `
+        <div class="contract-content-container">
+    <h3>委託銷售合約</h3>
+    <hr>
+    <p><strong>委託者</strong>：${contractData.clientName}</p>
+    <p><strong>代理者</strong>：${contractData.sellerName}</p>
+    <p><strong>商品名稱</strong>：${selectedProductName}</p>
+    <p><strong>銷售期間</strong>：${contractData.salesPeriod}</p>
+    <p><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${contractData.commissionRate}% 的佣金。</p>
+    <p>此合約由雙方協議達成，並自簽署日起生效。</p>
+    <hr>
+</div>
+    `;
+        document.getElementById('generated-contract').innerHTML = contract;
+        document.querySelector('.contract-input-container').style.display = "none";
+        document.getElementById('generated-contract').appendChild(signature_container);
+        document.querySelector('.contract-signature-block').style.display="flex";
+        document.querySelector('.signature-block-A').style.display="block";
+    });
+
+
+    // 初始化畫布
+    const signaturePadA = document.getElementById('signature-pad-a');
+    // 清除畫布按鈕
+    const clearSignatureA = document.getElementById('clearSignatureA');
+    // 將簽名保存變成圖片
+    const saveSignatureA = document.getElementById('saveSignatureA');
+    // 顯示照片的區域
+    const signatureImageA = document.getElementById('signatureImageA');
+    // 2D繪製
+    const ctxA = signaturePadA.getContext('2d');
+    // A是否可畫
+    let drawingA = false;
+
+
+    // 開始簽名
+    signaturePadA.addEventListener('mousedown', function(event) {
+        drawingA = true;
+        ctxA.beginPath();
+        ctxA.moveTo(event.offsetX, event.offsetY);
+    });
+
+    // 畫簽名的過程
+    signaturePadA.addEventListener('mousemove', function(event) {
+        if (drawingA) {
+            ctxA.lineTo(event.offsetX, event.offsetY);
+            ctxA.stroke();
         }
-    };
+    });
 
-    ws.onclose = () => {
-        console.log('WebSocket 連接已關閉');
-    };
+    // 停止畫簽名
+    signaturePadA.addEventListener('mouseup', function() {
+        drawingA = false;
+    });
 
-    ws.onerror = (error) => {
-        console.error('WebSocket 發生錯誤:', error);
-    };
+    saveSignatureA.addEventListener('click',function () {
+        saveSignature(signaturePadA,signatureImageA);
+        clearSignature(ctxA,signaturePadA);
+        document.querySelector('.signature-A').style.display = "block";
+    })
 
-    document.getElementById('createRoomBtn').onclick = () => {
-        const roomId = document.getElementById('newRoomId').value.trim();
-        if (!roomId) {
-            alert('請輸入房間 ID');
-            return;
+    // 初始化畫布
+    const signaturePadB = document.getElementById('signature-pad-b');
+    // 清除畫布按鈕
+    const clearSignatureB = document.getElementById('clearSignatureB');
+    // 將簽名保存變成圖片
+    const saveSignatureB = document.getElementById('saveSignatureB');
+    // 顯示照片的區域
+    const signatureImageB = document.getElementById('signatureImageB');
+    // 2D繪製
+    const ctxB = signaturePadB.getContext('2d');
+    // A是否可畫
+    let drawingB = false;
+
+
+    // 開始簽名
+    signaturePadB.addEventListener('mousedown', function(event) {
+        drawingB = true;
+        ctxB.beginPath();
+        ctxB.moveTo(event.offsetX, event.offsetY);
+    });
+
+    // 畫簽名的過程
+    signaturePadB.addEventListener('mousemove', function(event) {
+        if (drawingB) {
+            ctxB.lineTo(event.offsetX, event.offsetY);
+            ctxB.stroke();
         }
-        // 創建房間後，直接進入 room.html
-        window.location.href = 'room.html?roomId=' + encodeURIComponent(roomId) + '&role=broadcaster';
-    };
+    });
 
-    function updateRoomList(rooms) {
-        const roomListElement = document.getElementById('roomList');
-        roomListElement.innerHTML = ''; // 清空當前的房間清單
+    // 停止畫簽名
+    signaturePadB.addEventListener('mouseup', function() {
+        drawingB = false;
+    });
 
-        if (rooms.length === 0) {
-            roomListElement.innerHTML = '<li>目前沒有可加入的房間。</li>';
-            return;
+    saveSignatureB.addEventListener('click',function () {
+        saveSignature(signaturePadB,signatureImageB);
+        clearSignature(ctxB,signaturePadB);
+        document.querySelector('.signature-B').style.display = "block";
+    })
+
+    // 保存簽名並清除畫布
+    function saveSignature(signaturePad,signatureImage) {
+        let dataURL = signaturePad.toDataURL();
+        signatureImage.src = dataURL; // 顯示簽名圖片
+        document.querySelector('.contract-signature-block').style.display="none";
+        if (signatureImage === signatureImageA){
+            document.querySelector('.signature-B').style.display="none";
+            document.querySelector('.contract-signature-send-button').style.display="block";
+        }else{
+            document.querySelector('.signature-A').style.display="none";
+            document.getElementById('sendAcceptBtn').style.display='block';
+            document.getElementById('sendRejectBtn').style.display='block';
         }
+    }
 
-        rooms.forEach(room => {
-            const listItem = document.createElement('li');
-            listItem.className = 'room-item';
+    // 清除畫布
+    function clearSignature(ctx,signaturePad) {
+        ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+    }
 
-            const roomInfo = document.createElement('div');
-            roomInfo.className = 'room-info';
-            roomInfo.innerHTML = `
-                <strong>房間 ID:</strong> ${room.roomId}<br>
-                <strong>開播時間:</strong> ${new Date(room.startTime).toLocaleString()}<br>
-                <strong>觀看人數:</strong> ${room.viewerCount}
-            `;
+    function connectWebSocketForContract(chatRoomName) {
+        const socket = new SockJS('/contract'); // 確認 WebSocket 端點為 /contract
+        const contractStompClient = Stomp.over(socket);
 
-            const roomActions = document.createElement('div');
-            roomActions.className = 'room-actions';
-            const joinButton = document.createElement('button');
-            joinButton.textContent = '加入房間';
-            joinButton.onclick = () => {
-                // 加入房間後，進入 room.html
-                window.location.href = 'room.html?roomId=' + encodeURIComponent(room.roomId) + '&role=viewer';
-            };
-
-            roomActions.appendChild(joinButton);
-
-            listItem.appendChild(roomInfo);
-            listItem.appendChild(roomActions);
-
-            roomListElement.appendChild(listItem);
+        contractStompClient.connect({}, function(frame) {
+            console.log('已連接到合約端點: ' + frame);
+            const userId = getCurrentUserId(); // 確認是否有用戶 ID
+            if (userId) {
+                subscribeToNewContract(chatRoomName); // 訂閱合約頻道
+            } else {
+                alert("請先登入");
+            }
+        }, function(error) {
+            console.error('合約連接失敗:', error);
+            setTimeout(connectWebSocketForContract, 5000); // 5 秒後重試連接
         });
     }
+
+    function subscribeToNewContract(chatRoomName){
+            stompClient.subscribe(`/topic/contract/${chatRoomName}`,function(choose){
+            const result = JSON.parse(choose.body);
+            console.log(result);
+            if(result.senderId !== localStorage.getItem('userId')){
+                switch(result.requestType){
+                    case "accept":
+                        alert("代理者已簽署，該份合約已生效。");
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        break;
+                    case "reject":
+                        alert("代理者未簽署，請與其聯絡。");
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        break;
+                    case "request":
+                        document.querySelector('.contract-signature-container').style.display = 'block';
+                        // 得到請求，先清空合約填空處
+                        document.querySelector('.contract-input-container').innerHTML='';
+                        // 獲取合約內容
+                        const contract = `
+                <div class="contract-content-container">
+                <h3>委託銷售合約</h3>
+                <hr>
+                <p id="clientName"><strong>委託者</strong>：${result.clientName}</p>
+                <p id="sellerName"><strong>代理者</strong>：${result.sellerName}</p>
+                <p id="productName"><strong>商品名稱</strong>：${result.productName}</p>
+                <p id="salesPeriod"><strong>銷售期間</strong>：${result.salesPeriod}</p>
+                <p id="commissionRate"><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${result.commissionRate}% 的佣金。</p>
+                <p>此合約由雙方協議達成，並自簽署日起生效。</p>
+                <span id="clientId" style="visibility: hidden;">${result.clientId}</span>
+                <span id="productId" style="visibility: hidden;">${result.productId}</span>
+                <span id="signatureImage" style="visibility: hidden;">${result.signatureImage}</span>
+                <hr>
+                </div>
+                `;
+                        document.getElementById('generated-contract').innerHTML = contract;
+
+                        document.querySelector('.contract-signature-block').style.display="flex";
+                        document.querySelector('.signature-block-B').style.display="block";
+                        break;
+                }
+            }else{
+                switch (result.requestType){
+                    case "accept":
+                        alert("合約已保存。");
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        break;
+                    case "reject":
+                        alert("已通知委託者，發回處理。");
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        break;
+                }
+            }
+        });
+    }
+
+    // 發送訊息
+    document.getElementById("sendContractBtn").addEventListener("click", function() {
+
+        const productSelect = document.getElementById('productName');
+        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
+
+        if (document.getElementById('currentChatRoomName').textContent) {
+            const message = {
+                requestType:"request",
+                chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+                senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
+                clientId: localStorage.getItem("userId"),
+                clientName: document.getElementById('clientName').value,
+                sellerName: document.getElementById('sellerName').value,
+                productName: selectedProductName,
+                productId:document.getElementById('productId').value,
+                salesPeriod: document.getElementById('salesPeriod').value,
+                commissionRate: document.getElementById('commissionRate').value,
+                signatureImage:signatureImageA.getAttribute('src'),
+                timestamp: new Date().toISOString() // 當前時間
+            };
+            stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+            document.getElementById('generated-contract').innerHTML=`<h3>合約已送出，等待代理者簽署中...</h3>`;
+            document.getElementById('signature-preview').innerHTML=``;
+
+        } else {
+            alert("請選擇聊天室並輸入訊息");
+        }
+    });
+
+    document.getElementById("sendAcceptBtn").addEventListener("click", function() {
+        const message = {
+            requestType:"accept",
+            chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+            senderId: localStorage.getItem("userId"),                // 發送者 ID
+            clientId:document.getElementById('clientId').textContent,
+            agentId:localStorage.getItem('userId'),
+            clientName: document.getElementById('clientName').textContent,
+            sellerName: document.getElementById('sellerName').textContent,
+            productName: document.getElementById('productName').textContent,
+            productId: document.getElementById('productId').textContent,
+            salesPeriod: document.getElementById('salesPeriod').textContent,
+            commissionRate: document.getElementById('commissionRate').textContent,
+            signatureImage:document.getElementById('signatureImage').textContent,
+            agentSignatureImage:signatureImageB.getAttribute('src'),
+            timestamp: new Date().toISOString() // 當前時間
+        };
+        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+    });
+
+
+    document.getElementById("sendRejectBtn").addEventListener("click", function() {
+        const message = {
+            requestType:"reject",
+            chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+            senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
+            timestamp: new Date().toISOString() // 當前時間
+        };
+        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+    });
+
 </script>
 </body>
 </html>
+

@@ -2,15 +2,17 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>直播大廳</title>
     <style>
         /* 全局樣式 */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eaeaea;  /* 淺灰色背景 */
+        body, html {
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f0f0;
         }
 
         /* 標題樣式 */
@@ -21,56 +23,14 @@
             margin-bottom: 20px;
         }
 
-        /* 大廳容器 */
+        /* 大廳容器，寬度 100%，最大寬度 1200px */
         #lobby {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
-            background-color: #f5f5f5;  /* 柔和的白灰色背景 */
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 輕微陰影 */
-        }
-
-        /* 房間清單 */
-        #roomList {
-            list-style: none;
-            padding: 0;
-            margin-top: 20px;
-        }
-
-        .room-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #d1d1d1;  /* 淡灰色分隔線 */
-            transition: background-color 0.3s ease;
-        }
-
-        .room-item:hover {
-            background-color: #f0f0f0;  /* 淺灰色 hover 效果 */
-        }
-
-        .room-info {
-            flex-grow: 1;
-            font-size: 1.1rem;
-            color: #555;  /* 中灰色文字 */
-        }
-
-        .room-actions button {
-            padding: 8px 16px;
-            background-color: #6c757d;  /* 灰色按鈕 */
-            border: none;
-            color: #fff;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .room-actions button:hover {
-            background-color: #5a6268;  /* 深灰色 hover */
-            transform: scale(1.05);
+            padding: 20px;
+            background-color: #fff;  /* 白色背景 */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
         /* 直播列表容器 */
@@ -78,12 +38,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
-            background-color: #f0f0f0;  /* 淺灰色背景 */
+            background-color: #ffffff;
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);  /* 更深的陰影 */
-            border: 1px solid #dcdcdc;  /* 更淺的灰色邊框 */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
         }
 
         /* 直播列表標題 */
@@ -96,37 +55,78 @@
         /* 我要帶貨按鈕 */
         #agentBtn {
             padding: 12px 24px;
-            background-color: #6c757d;  /* 灰色背景 */
+            background-color: #007bff;  /* 藍色背景 */
             border: none;
             color: #fff;
-            border-radius: 10px;
+            border-radius: 4px;
             font-size: 1.1rem;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
 
         #agentBtn:hover {
-            background-color: #5a6268;  /* 深灰色 hover */
-            transform: scale(1.05);
+            background-color: #0056b3;  /* 深藍色 hover */
+            transform: scale(1.03);
         }
 
-        /* 商品列表項目 */
-        .product-item {
+        /* 房間列表 */
+        #roomList {
+            list-style: none;
+            padding: 0;
             display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 10px;
-            border-bottom: 1px solid #dcdcdc;  /* 分隔線顏色 */
+            flex-wrap: wrap;  /* 使用 flex-wrap 讓項目換行 */
+            gap: 20px;  /* 增加房間項目間距 */
+            justify-content: space-between;
         }
 
-        /* 模態彈窗的樣式 */
+        /* 房間項目卡片樣式 */
+        .room-item {
+            flex: 1 1 calc(33.333% - 20px); /* 每列顯示 3 個房間卡片 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.2s ease;
+        }
+
+        .room-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .room-info {
+            flex-grow: 1;
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .room-actions button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .room-actions button:hover {
+            background-color: #0056b3;
+            transform: scale(1.03);
+        }
+
+        /* 模態彈窗樣式 */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);  /* 半透明黑色背景 */
+            background-color: rgba(0, 0, 0, 0.4);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -135,11 +135,12 @@
 
         .centered-block {
             position: relative;
-            padding: 40px;
-            background-color: #f5f5f5;  /* 柔和的灰白色背景 */
-            border-radius: 15px;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);  /* 深陰影 */
-            width: 450px;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
             text-align: center;
             transition: all 0.3s ease;
         }
@@ -149,7 +150,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: #d9534f;  /* 紅色關閉按鈕 */
+            background-color: #dc3545;
             color: white;
             border: none;
             border-radius: 50%;
@@ -157,34 +158,86 @@
             height: 35px;
             font-size: 18px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
+            transition: background-color 0.2s ease;
         }
 
         .close-btn:hover {
-            background-color: #c9302c;
+            background-color: #c82333;
         }
 
-        .noProductMessage {
-            display: block;
-            margin: 10px 0;
-            font-size: 1rem;
+        /* 內部內容區域樣式 */
+        .live-product {
+            display: flex;
+            justify-content: space-between;
             text-align: left;
-            color: #777;  /* 中灰色文字 */
+        }
+
+        .product-list {
+            flex-grow: 1;
+        }
+
+        .list1, .list2, .list3 {
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .list1 h3, .list2 h3, .list3 h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .list1 hr, .list2 hr, .list3 hr {
+            border: 1px solid #ddd;
+        }
+
+        .product-item {
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        /* 創建房間按鈕 */
+        #createRoomBtn {
+            padding: 12px 24px;
+            background-color: #28a745;
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        #createRoomBtn:hover {
+            background-color: #218838;
+            transform: scale(1.03);
         }
 
         /* 響應式設計 */
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .room-item {
+                flex: 1 1 calc(50% - 20px);  /* 改為每列顯示 2 個房間卡片 */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .room-item {
+                flex: 1 1 100%;  /* 改為每列顯示 1 個房間卡片 */
+            }
+
+            #liveList {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
-            .room-actions {
-                margin-left: 0;
+            #agentBtn {
                 margin-top: 10px;
+                align-self: center;
             }
         }
+
     </style>
 </head>
 <body>
@@ -395,14 +448,14 @@
             const productsParam = encodeURIComponent(selectedProductIds.join(','));
 
             // 創建房間並將參數傳遞到 room.html
-            window.location.href = `room-1.html?roomId=${encodeURIComponent(roomId)}&role=broadcaster&products=${productsParam}`;
+            window.location.href = `room.html?roomId=${encodeURIComponent(roomId)}&role=broadcaster&products=${productsParam}`;
         };
 
     });
     // 測試環境使用
-    let ws = new WebSocket('ws://localhost:8080/socket');
+    // let ws = new WebSocket('ws://localhost:8080/socket');
     // 正式環境使用
-    // let ws = new WebSocket('wss://techwavelab.com/socket');
+    let ws = new WebSocket('wss://techwavelab.com/socket');
 
     ws.onopen = () => {
         console.log('已連接到 WebSocket');
@@ -456,7 +509,7 @@
             joinButton.onclick = () => {
                 // 加入房間後，進入 room.html，並包含 products 參數
                 const productsParam = encodeURIComponent(room.products.join(','));
-                window.location.href = `room-1.html?roomId=${encodeURIComponent(room.roomId)}&role=viewer&products=${productsParam}`;
+                window.location.href = `room.html?roomId=${encodeURIComponent(room.roomId)}&role=viewer&products=${productsParam}`;
             };
 
             roomActions.appendChild(joinButton);

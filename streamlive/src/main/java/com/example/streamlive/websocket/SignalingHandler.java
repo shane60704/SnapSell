@@ -3,6 +3,7 @@ package com.example.streamlive.websocket;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
+@Component
 public class SignalingHandler extends TextWebSocketHandler {
     private Map<String, List<WebSocketSession>> rooms = new ConcurrentHashMap<>();
     private Map<String, WebSocketSession> broadcasters = new ConcurrentHashMap<>();

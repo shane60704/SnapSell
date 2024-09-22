@@ -114,7 +114,7 @@ function displayMessage(message, shouldScroll) {
 
     const messageElement = document.createElement("div");
     messageElement.classList.add("message");
-    messageElement.textContent = `${message.senderId}: ${message.content}`;
+    messageElement.textContent = `${message.content}`;
 
     const timestampElement = document.createElement("div");
     timestampElement.classList.add("timestamp");
