@@ -99,6 +99,10 @@ public class SignalingHandler extends TextWebSocketHandler {
         RoomInfo roomInfo = roomInfos.get(roomId);
         roomInfo.incrementViewerCount();
 
+        // 通知主播、觀眾 直播間的觀眾人數需要更動
+        broadcastViewerCount(roomId);
+
+
         // 發送 'joined' 消息，包含 viewerId
         sendToSession(session, new JSONObject().put("type", "joined").put("viewerId", viewerId).toString());
 
@@ -229,6 +233,10 @@ public class SignalingHandler extends TextWebSocketHandler {
                 RoomInfo roomInfo = roomInfos.get(roomId);
                 // 更新房間資訊中的觀眾人數
                 roomInfo.decrementViewerCount();
+
+                // 通知主播、觀眾 需要更新在線人數
+                onViewerLeft(roomId);
+
                 // 通知主播有觀眾離開
                 WebSocketSession broadcaster = broadcasters.get(roomId);
                 if (broadcaster != null && broadcaster.isOpen()) {
@@ -254,6 +262,35 @@ public class SignalingHandler extends TextWebSocketHandler {
         roomViewerCount.put(roomId, roomViewerCount.get(roomId) + 1);
 
         System.out.println("房間 " + roomId + " 的累積觀眾人數: " + roomViewerCount.get(roomId));
+    }
+
+    private void onViewerLeft(String roomId) {
+        // 減少房間累積的觀眾人數
+        if (roomViewerCount.containsKey(roomId)) {
+            roomViewerCount.put(roomId, roomViewerCount.get(roomId) - 1);
+        }
+
+        // 更新房間內所有成員的在線人數
+        broadcastViewerCount(roomId);
+    }
+
+    // 廣播當前房間的觀眾人數
+    private void broadcastViewerCount(String roomId) {
+        int viewerCount = roomViewerCount.get(roomId);
+        JSONObject viewerCountMessage = new JSONObject()
+                .put("type", "viewerCountUpdate")
+                .put("viewerCount", viewerCount);
+
+        log.info(viewerCountMessage.toString());
+
+        // 發送給房間內所有觀眾和主播
+        for (WebSocketSession viewer : rooms.get(roomId)) {
+            sendToSession(viewer, viewerCountMessage.toString());
+        }
+        WebSocketSession broadcaster = broadcasters.get(roomId);
+        if (broadcaster != null) {
+            sendToSession(broadcaster, viewerCountMessage.toString());
+        }
     }
 
     // 房間資訊內部類別

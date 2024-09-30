@@ -395,6 +395,155 @@
                 left: 30px;
                 right: 30px;
             }
+
+
+
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.7);
+                animation: fadeIn 0.3s;
+            }
+
+            .modal-content {
+                background-color: #0f3460;
+                margin: 10% auto;
+                padding: 30px;
+                border: 1px solid #888;
+                width: 90%;
+                max-width: 500px;
+                border-radius: 15px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                position: relative;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: #fff;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .emoji-rating {
+                display: flex;
+                justify-content: space-around;
+                font-size: 2em;
+                margin: 20px 0;
+            }
+
+            .emoji {
+                cursor: pointer;
+                transition: all 0.3s ease;
+                opacity: 0.5;
+            }
+
+            .emoji:hover, .emoji.active {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            #commentBox {
+                width: 100%;
+                height: 80px;
+                padding: 10px;
+                margin-top: 10px;
+                border: 2px solid #e94560;
+                border-radius: 8px;
+                background-color: rgba(255,255,255,0.1);
+                color: #fff;
+            }
+
+            .button-group {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+            }
+
+            .action-btn {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: all 0.3s ease;
+            }
+
+            #submitRating {
+                background-color: #e94560;
+                color: white;
+            }
+
+            #skipRating {
+                background-color: transparent;
+                border: 2px solid #e94560;
+                color: #e94560;
+            }
+
+            .gift {
+                position: absolute;
+                font-size: 40px;
+                animation: flyGift 3s ease-out;
+                opacity: 0;
+            }
+
+            @keyframes flyGift {
+                0% {
+                    transform: translateY(-250%) translateX(-50%);
+                    opacity: 1;
+                }
+                80% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-350%) translateX(-50%);
+                    opacity: 0;
+                }
+            }
+
+            #giftModal .modal-content {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+
+            .gift-item {
+                width: 80px;
+                height: 80px;
+                margin: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .gift-item:hover {
+                transform: scale(1.1);
+            }
+
+            .gift-icon {
+                font-size: 40px;
+            }
+
+            .gift-name {
+                font-size: 12px;
+                margin-top: 5px;
+            }
         }
 
         /* TapPay 表單樣式 */
@@ -664,14 +813,14 @@
 
         @keyframes flyGift {
             0% {
-                transform: translateY(100%) translateX(-50%);
+                transform: translateY(-150%) translateX(-50%);
                 opacity: 1;
             }
             80% {
                 opacity: 1;
             }
             100% {
-                transform: translateY(-100%) translateX(50%);
+                transform: translateY(-350%) translateX(50%);
                 opacity: 0;
             }
         }
@@ -715,7 +864,7 @@
         <div class="video-container">
             <video id="videoStream" autoplay></video>
             <div class="video-label" id="videoLabel">直播中</div>
-            <div class="viewers"></div>
+            <div class="viewers">在線觀眾數: 0</div>
             <!-- 狀態顯示區域 -->
             <div id="status"></div>
         </div>
@@ -1335,27 +1484,6 @@
         window.location.href="live-stream-lobby.html";
     }
 
-    function sendGift(giftEmoji) {
-        const videoPlaceholder = document.querySelector('.video-placeholder');
-        const gift = document.createElement('div');
-        gift.className = 'gift';
-        gift.textContent = giftEmoji;
-        gift.style.left = `${Math.random() * 80 + 10}%`;
-        videoPlaceholder.appendChild(gift);
-
-        setTimeout(() => {
-            gift.remove();
-        }, 3000);
-
-        giftModal.style.display = "none";
-
-        const chatMessages = document.getElementById("chatMessages");
-        const messageElement = document.createElement("p");
-        messageElement.textContent = `你送出了一個 ${giftEmoji} 禮物！`;
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
 
     hangupButton.onclick = hangup;
     sendMessageBtn.onclick = sendChatMessage;
@@ -1507,6 +1635,9 @@
                 console.log(`觀眾 ${message.viewerId} 已離開房間`);
                 removePeerConnection(message.viewerId);
                 break;
+            case 'viewerCountUpdate':
+                updateViewerCount(message.viewerCount);
+                break;
             case 'chat':
                 displayChatMessage(message.content, message.sender);
                 break;
@@ -1569,6 +1700,11 @@
             delete peerConnections[viewerId];
             console.log(`已釋放觀眾 ${viewerId} 的連線資源`);
         }
+    }
+
+    function updateViewerCount(viewerCount) {
+        const viewersElement = document.querySelector('.viewers');
+        viewersElement.textContent = `在線觀眾數: ${viewerCount}`;
     }
 
     function handleOffer(offer) {
@@ -1718,22 +1854,47 @@
         }
     }
 
-    // 顯示排列
+
+    function sendGift(giftEmoji) {
+        const videoPlaceholder = document.querySelector('.video-container');
+        const gift = document.createElement('div');
+        gift.className = 'gift';
+        gift.textContent = giftEmoji;
+        gift.style.left = `${Math.random() * 80 + 10}%`;
+        videoPlaceholder.appendChild(gift);
+
+        setTimeout(() => {
+            gift.remove();
+        }, 5000);
+
+        giftModal.style.display = "none";
+
+        const message = `${localStorage.getItem('userName')}送出了一個 ${giftEmoji} 禮物！`;
+
+        if (message && ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({type: 'chat', content: message, roomId}));
+        }
+    }
+
     function displayChatMessage(message, sender) {
         const chatMessages = document.getElementById('chatMessages');
         const messageElement = document.createElement('div');
-        messageElement.textContent = `${sender}: ${message}`;
+        if (message.includes("送出了一個")) {
+            messageElement.textContent = `${message}`;
+        } else {
+            messageElement.textContent = `${sender}: ${message}`;
+        }
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // 顯示群聊
+
     function enableChat() {
         document.getElementById('messageInput').disabled = false;
         document.getElementById('sendMessage').disabled = false;
     }
 
-    // 隱藏群聊
+   
     function disableChat() {
         document.getElementById('messageInput').disabled = true;
         document.getElementById('sendMessage').disabled = true;
