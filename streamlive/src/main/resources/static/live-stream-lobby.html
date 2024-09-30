@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SnapSell 直播帶貨大廳</title>
-    <link rel="stylesheet" href="./assets/css/header.css"/>
+    <link rel="stylesheet" href="assets/css/header.css"/>
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
@@ -415,10 +415,8 @@
 </head>
 <body>
 <header>
-    <div class="container">
-        <div class="logo">
-            <h1>SnapSell</h1>
-        </div>
+    <div class="header-container">
+        <div class="header-logo">SnapSell</div>
         <nav>
             <ul>
                 <li><a href="client.html">找委託</a></li>
@@ -427,7 +425,7 @@
             </ul>
         </nav>
         <div class="user-info">
-            <div id="user-name">用戶名</div>
+            <div id="user-name"></div>
             <div class="user-actions">
                 <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
                 <div class="info-window">
@@ -436,23 +434,23 @@
                     </div>
                     <hr>
                     <div class = "log-out">
-                        <div class="log-out-content"><p>我的訂單</p></div>
+                        <div class="log-out-content">我的訂單</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id="my-livestream-btn">
+                        <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
                     <div class = "log-out">
-                        <div class="log-out-content"><p>我的直播</p></div>
-                    </div>
-                    <hr>
-                    <div class = "log-out">
-                        <div class="log-out-content"><p>我的商品</p></div>
+                        <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
                     <div class = "log-out" id = "my-contract-btn">
-                        <div class="log-out-content"><p>我的合約</p></div>
+                        <div class="log-out-content">我的合約</div>
                     </div>
                     <hr>
                     <div class = "log-out" id = "logout-btn">
-                        <div class="log-out-content"><p>登出</p></div>
+                        <div class="log-out-content">登出</div>
                     </div>
                 </div>
             </div>
@@ -478,7 +476,6 @@
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
-
 <div id="modal" class="modal-dialog">
     <div class="content-modal">
         <span class="btn-close" id="closeModalBtn">&times;</span>
@@ -516,7 +513,7 @@
         </div>
     </div>
 </div>
-
+<script src = "assets/js/header.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 

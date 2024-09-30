@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -22,6 +21,7 @@
             flex-direction: column;
             min-height: 100vh;
             background-color: #f0f0f0;
+            line-height: 1.6;
         }
         /* 整體頁面容器 */
         .page-container {
@@ -275,10 +275,8 @@
 </head>
 <body>
 <header>
-    <div class="container">
-        <div class="logo">
-            <h1>SnapSell</h1>
-        </div>
+    <div class="header-container">
+        <div class="header-logo">SnapSell</div>
         <nav>
             <ul>
                 <li><a href="client.html">找委託</a></li>
@@ -287,7 +285,7 @@
             </ul>
         </nav>
         <div class="user-info">
-            <div id="user-name">用戶名</div>
+            <div id="user-name"></div>
             <div class="user-actions">
                 <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
                 <div class="info-window">
@@ -296,23 +294,23 @@
                     </div>
                     <hr>
                     <div class = "log-out">
-                        <div class="log-out-content"><p>我的訂單</p></div>
+                        <div class="log-out-content">我的訂單</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id="my-livestream-btn">
+                        <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
                     <div class = "log-out">
-                        <div class="log-out-content"><p>我的直播</p></div>
-                    </div>
-                    <hr>
-                    <div class = "log-out">
-                        <div class="log-out-content"><p>我的商品</p></div>
+                        <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
                     <div class = "log-out" id = "my-contract-btn">
-                        <div class="log-out-content"><p>我的合約</p></div>
+                        <div class="log-out-content">我的合約</div>
                     </div>
                     <hr>
                     <div class = "log-out" id = "logout-btn">
-                        <div class="log-out-content"><p>登出</p></div>
+                        <div class="log-out-content">登出</div>
                     </div>
                 </div>
             </div>
@@ -471,36 +469,6 @@
         // 初始隱藏合約彈出視窗
         document.querySelector('.contract-signature-container').style.display = 'none';
 
-        // 登入顯示當前用戶名字
-        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
-
-        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
-        document.querySelector('.icon-user').addEventListener('click', function() {
-            var infoWindow = document.querySelector('header .user-info .info-window');
-            if (infoWindow.style.display === 'block') {
-                infoWindow.style.display = 'none';
-            } else {
-                infoWindow.style.display = 'block';
-            }
-        });
-
-        // 綁定導向我的合約按鈕
-        document.getElementById('my-contract-btn').addEventListener('click',function (){
-            window.location.href="my-contract.html";
-        });
-
-        // 綁定登出功能
-        document.getElementById('logout-btn').addEventListener('click',function (){
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            window.location.href="login.html";
-        });
-
-        document.querySelector('.logo').addEventListener('click',function (){
-            window.location.href="index.html";
-        });
-
         // 取得下拉選單和隱藏欄位的元素
         const productSelect = document.getElementById('productName');
         const productIdInput = document.getElementById('productId');
@@ -531,6 +499,7 @@
     })
 
     document.addEventListener('DOMContentLoaded', function() {
+
         fetchTopAgents();
         fetchUsers(localStorage.getItem('userId'));
         function fetchUsers(currentUserId) {
@@ -591,11 +560,29 @@
             </button>
         </div>
     `;
+            // 綁定私訊按鈕的事件
             const messageBtn = card.querySelector('.custom-message-btn[data-userid]');
             messageBtn.addEventListener('click', function() {
-                const userId = this.getAttribute('data-userid');
-                bindMessageButton(card, userId)
-                console.log('私訊用戶:', userId);
+                const user1Id = getCurrentUserId();// 假設這是一個獲取當前用戶ID的函式
+                const user2Id = this.getAttribute('data-userid');
+                console.log('私訊用戶:', user2Id);
+                console.log('自己:',user1Id);
+
+                if (user1Id && user2Id) {
+                    fetch(`/api/1.0/chatroom?user1Id=${user1Id}&user2Id=${user2Id}`, {
+                        method: 'POST'
+                    })
+                        .then(response => response.json())
+                        .then(chatRoom => {
+                            console.log(chatRoom);
+                            loadUserChatRooms(localStorage.getItem('userId'));
+                            document.querySelector('.floating-circle').style.display = "none";
+                            document.querySelector('.chat-container').style.display = "flex";
+                        })
+                        .catch(error => console.error('創建聊天室失敗:', error));
+                } else {
+                    console.log("請輸入有效的用戶 ID");
+                }
             });
 
             return card;
@@ -656,33 +643,33 @@
         //         .catch(error => console.error('Error fetching users:', error));
         // }
 
-        function bindMessageButton(userCard, user2Id) {
-            const messageButton = userCard.querySelector('.message-btn');
-            const userNameElement = userCard.querySelector('.custom-user-name');
-            const userName = userNameElement.textContent;
-            messageButton.addEventListener('click', function() {
-                const user1Id = getCurrentUserId();
-                console.log('自己:'+user1Id);
-                console.log('對方:'+user2Id);
-                console.log(`/api/1.0/chatroom?currentUserId=${user1Id}&otherUserId=${user2Id}`);
-                if (user2Id && user1Id) {
-                    fetch(`/api/1.0/new-chatroom?currentUserId=${user1Id}&otherUserId=${user2Id}`, {
-                        method: 'POST'
-                    })
-                        .then(response => response.json())
-                        .then(chatRoom => {
-                            console.log(chatRoom)
-                            addChatRoomToList(chatRoom.data);
-                            joinChatRoom(chatRoom.data.id,chatRoom.data.id.receiverInfo.id);
-                            document.querySelector('.floating-circle').style.display = "none";
-                            document.querySelector('.chat-container').style.display = "flex";
-                        })
-                        .catch(error => console.error('創建聊天室失敗:', error));
-                } else {
-                    console.log("請輸入有效的用戶 ID");
-                }
-            });
-        }
+        // function bindMessageButton(userCard, user2Id) {
+        //     const messageButton = userCard.querySelector('.custom-message-btn[data-userid]');
+        //     const userNameElement = userCard.querySelector('.custom-user-name');
+        //     const userName = userNameElement.textContent;
+        //     messageButton.addEventListener('click', function() {
+        //         const user1Id = getCurrentUserId();
+        //         console.log('自己:'+user1Id);
+        //         console.log('對方:'+user2Id);
+        //         console.log(`/api/1.0/chatroom?user1Id=${user1Id}&user2Id=${user2Id}`);
+        //         if (user2Id && user1Id) {
+        //             fetch(`/api/1.0/chatroom?user1Id=${user1Id}&user2Id=${user2Id}`, {
+        //                 method: 'POST'
+        //             })
+        //                 .then(response => response.json())
+        //                 .then(chatRoom => {
+        //                     console.log(chatRoom)
+        //                     addChatRoomToList(chatRoom);
+        //                     // joinChatRoom(chatRoom.data.id,chatRoom.data.id.receiverInfo.id);
+        //                     document.querySelector('.floating-circle').style.display = "none";
+        //                     document.querySelector('.chat-container').style.display = "flex";
+        //                 })
+        //                 .catch(error => console.error('創建聊天室失敗:', error));
+        //         } else {
+        //             console.log("請輸入有效的用戶 ID");
+        //         }
+        //     });
+        // }
 
         function fetchTopAgents() {
             fetch('/api/1.0/user/top-agent')
@@ -733,7 +720,6 @@
             return card;
         }
     });
-
 
     document.addEventListener('DOMContentLoaded', function () {
 

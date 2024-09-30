@@ -6,34 +6,29 @@ header {
     z-index: 1000;
 }
 
-header .container {
+.header-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1600px;
+    max-width: 1640px;
+    padding: 0 20px;
     margin: auto;
 }
 
-/* Logo 在最左側 */
-header .logo {
-    flex-shrink: 0; /* 防止 logo 壓縮 */
+.header-logo {
     cursor: pointer;
-}
-
-header .logo h1 {
     font-size: 24px;
     letter-spacing: 2px;
 }
 
-/* nav 放在中間，ul 使用 flex 居中 */
 header nav {
-    flex-grow: 1; /* 讓 nav 擴展佔據中間空間 */
-    text-align: center; /* 讓 ul 在中間對齊 */
+    flex-grow: 1;
+    text-align: center;
 }
 
 header nav ul {
     list-style: none;
-    display: inline-flex; /* 用 inline-flex 讓 ul 元素居中 */
+    display: inline-flex;
     gap: 20px;
 }
 
@@ -50,19 +45,19 @@ header nav ul li a:hover {
     border-radius: 4px;
 }
 
-/* 使用者信息區域置於最右側 */
 .user-info {
     display: flex;
     align-items: center;
-    margin-left: auto; /* 將 user-info 推到最右側 */
+    margin-left: auto;
 }
 
 #user-name {
-    margin-right: 15px; /* 使用者名字和頭像之間的間距 */
+    margin-right: 20px;
 }
 
 /* 使用者頭像 */
 .user-actions img {
+    margin-top: 3px;
     width: 35px;
     height: 35px;
     border-radius: 50%;
@@ -72,7 +67,7 @@ header nav ul li a:hover {
 header .user-info .info-window {
     display: none;
     position: absolute;
-    top: 50px;
+    top: 53px;
     right: 5px;
     background-color: #333;
     color: white;

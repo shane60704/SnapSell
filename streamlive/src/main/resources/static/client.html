@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SnapSell - 您的商品代理夥伴</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="./assets/css/header.css"/>
+    <link rel="stylesheet" href="assets/css/header.css"/>
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
@@ -27,11 +27,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             color: var(--text-color);
-            line-height: 1.4;
-            font-size: 14px;
+            line-height: 1.6;
         }
 
         .display-container {
@@ -360,10 +359,8 @@
 </head>
 <body>
 <header>
-    <div class="container">
-        <div class="logo">
-            <h1>SnapSell</h1>
-        </div>
+    <div class="header-container">
+        <div class="header-logo">SnapSell</div>
         <nav>
             <ul>
                 <li><a href="client.html">找委託</a></li>
@@ -372,7 +369,7 @@
             </ul>
         </nav>
         <div class="user-info">
-            <div id="user-name">用戶名</div>
+            <div id="user-name"></div>
             <div class="user-actions">
                 <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
                 <div class="info-window">
@@ -381,23 +378,23 @@
                     </div>
                     <hr>
                     <div class = "log-out">
-                        <div class="log-out-content"><p>我的訂單</p></div>
+                        <div class="log-out-content">我的訂單</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id="my-livestream-btn">
+                        <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
                     <div class = "log-out">
-                        <div class="log-out-content"><p>我的直播</p></div>
-                    </div>
-                    <hr>
-                    <div class = "log-out">
-                        <div class="log-out-content"><p>我的商品</p></div>
+                        <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
                     <div class = "log-out" id = "my-contract-btn">
-                        <div class="log-out-content"><p>我的合約</p></div>
+                        <div class="log-out-content">我的合約</div>
                     </div>
                     <hr>
                     <div class = "log-out" id = "logout-btn">
-                        <div class="log-out-content"><p>登出</p></div>
+                        <div class="log-out-content">登出</div>
                     </div>
                 </div>
             </div>
@@ -433,38 +430,16 @@
     </div>
 </div>
 
+<!-- 引入js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="assets/js/header.js"></script>
 <script>
-
     document.addEventListener('DOMContentLoaded', function () {
 
-        // // 初始隱藏合約彈出視窗
+        // 初始隱藏合約彈出視窗
         // document.querySelector('.contract-signature-container').style.display = 'none';
-
-        // 登入顯示當前用戶名字
-        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
-
-        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
-        document.querySelector('.icon-user').addEventListener('click', function() {
-            var infoWindow = document.querySelector('header .user-info .info-window');
-            if (infoWindow.style.display === 'block') {
-                infoWindow.style.display = 'none';
-            } else {
-                infoWindow.style.display = 'block';
-            }
-        });
-
-        // 綁定導向我的合約按鈕
-        document.getElementById('my-contract-btn').addEventListener('click',function (){
-            window.location.href="my-contract.html";
-        });
-
-        // 綁定登出功能
-        document.getElementById('logout-btn').addEventListener('click',function (){
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            window.location.href="login.html";
-        });
 
         // 取得下拉選單和隱藏欄位的元素
         const productSelect = document.getElementById('productName');

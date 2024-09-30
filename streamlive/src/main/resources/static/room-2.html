@@ -1445,7 +1445,7 @@
                     userId: localStorage.getItem("userId"),
                     title: title,
                     description: description,
-                    products: productArray  // send product list
+                    products: productArray
                 }));
                 hangupButton.disabled = false;
                 enableChat();
@@ -1476,13 +1476,7 @@
                     console.log('新觀眾加入，創建對等連接');
                     document.getElementById('status').style.display = "none";
                     const newViewerId = message.viewerId;
-                    viewer += 1;
-                    document.querySelector(".viewers").textContent=`在線人數：${viewer}`;
                     createPeerConnection(newViewerId);
-                }else{
-                    document.getElementById('status').style.display = "none";
-                    viewer += 1;
-                    document.querySelector(".viewers").textContent=`在線人數：${viewer}`;
                 }
                 break;
             case 'offer':
@@ -1512,8 +1506,6 @@
             case 'viewerLeft':
                 console.log(`觀眾 ${message.viewerId} 已離開房間`);
                 removePeerConnection(message.viewerId);
-                viewer -= 1;
-                document.querySelector(".viewers").textContent = `在線人數：${viewer}`;
                 break;
             case 'chat':
                 displayChatMessage(message.content, message.sender);
@@ -1601,7 +1593,7 @@
             console.log('ICE 連接狀態變更:', peerConnection.iceConnectionState);
             if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'disconnected') {
                 console.log('ICE 連接失敗或已斷開');
-                hangup();  // 呼叫 hangup 函數釋放資源
+                hangup();
             }
         };
 
