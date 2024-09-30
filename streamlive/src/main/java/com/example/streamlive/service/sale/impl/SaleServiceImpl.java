@@ -3,6 +3,8 @@ package com.example.streamlive.service.sale.impl;
 import com.example.streamlive.dao.product.ProductDao;
 import com.example.streamlive.dao.sale.SaleDao;
 import com.example.streamlive.dto.product.CheckOutDto;
+import com.example.streamlive.model.order.Order;
+import com.example.streamlive.model.order.OrderDetail;
 import com.example.streamlive.service.sale.SaleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -32,29 +35,24 @@ public class SaleServiceImpl implements SaleService {
     private final SaleDao saleDao;
 
     public Boolean checkout(CheckOutDto checkOutDto){
-
         try {
             // 檢查庫存
             if(productDao.findProductStockById(checkOutDto.getProductId()) < checkOutDto.getQuantity()){
                 log.error("檢查庫存 error");
                 return false;
             }
-
             // 更新庫存
             Integer updateResult = productDao.updateProductStockById(checkOutDto.getProductId(), checkOutDto.getQuantity());
             if (updateResult == null || updateResult == 0) {
                 log.error("updateResult error");
                 return false;
             }
-
             // 產生訂單
             int orderId = saleDao.createOrder(checkOutDto);
-
             // 寄件資訊
             int recipentId = saleDao.createRecipent(checkOutDto, orderId);
-
             //付款狀態
-            if (tapPay(checkOutDto) == 0){
+            if (tapPay(checkOutDto) != 0){
                 log.error("pay failed");
                 return false;
             }
@@ -66,6 +64,16 @@ public class SaleServiceImpl implements SaleService {
             log.error(e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public List<Order> getUserOrders(Long userId){
+        return saleDao.getOrdersByUserId(userId);
+    }
+
+    @Override
+    public OrderDetail getOrderDetail(Long orderId){
+        return saleDao.getOrderDetailByOrderId(orderId);
     }
 
     public int tapPay(CheckOutDto checkOutDto) {
@@ -87,6 +95,7 @@ public class SaleServiceImpl implements SaleService {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, request, Map.class);
+        log.error(response.getBody().toString());
         return (Integer) response.getBody().get("status");
     }
 }

@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>E-Commerce & Live Streaming Platform</title>
-    <link rel="stylesheet" href="assets/css/chat.css">
+    <title>SnapSell | 首頁</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/header.css"/>
+    <link rel="stylesheet" href="assets/css/chat.css"/>
+    <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/footer.css"/>
     <style>
         * {
             margin: 0;
@@ -18,102 +22,70 @@
             color: #333;
             line-height: 1.6;
         }
-
-        header {
-            background: #222;
-            color: #fff;
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: auto;
-        }
-
-        header .logo h1 {
-            font-size: 24px;
-            letter-spacing: 2px;
-        }
-
-        header nav ul {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-
-        header nav ul li {
-            display: inline;
-        }
-
-        header nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 10px 20px;
-            transition: background 0.3s;
-        }
-
-        header nav ul li a:hover {
-            background: #444;
-            border-radius: 4px;
-        }
-
-        .user-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-actions img {
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
-        }
-
         #hero {
-            background: url('https://via.placeholder.com/1920x800') no-repeat center center/cover;
+            background: url('assets/image/main.jpg') no-repeat center center/cover;
             height: 100vh;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
             text-align: center;
-            position: relative;
         }
 
-        .hero-text h2 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 4px;
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-content {
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
             animation: fadeInDown 1.5s ease-out;
         }
 
-        .hero-text p {
-            font-size: 18px;
-            margin-bottom: 30px;
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
             animation: fadeInUp 2s ease-out;
         }
 
         .hero-btn {
-            background-color: #007BFF;
-            color: #fff;
-            padding: 12px 24px;
-            text-transform: uppercase;
+            display: inline-block;
+            background-color: #6C63FF;
+            color: white;
+            padding: 12px 30px;
             text-decoration: none;
-            border-radius: 50px;
-            transition: background-color 0.3s;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .hero-btn:hover {
-            background-color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 70px;
+            left: 49%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
         }
 
         @keyframes fadeInDown {
@@ -126,305 +98,116 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 商品區 */
-        #products {
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+        .ss-section {
             padding: 60px 0;
-            background-color: #f4f4f4;
         }
 
-        #products .container {
-            max-width: 1200px;
-            margin: auto;
+        #ss-features {
+            background-color: #f8f8f8;
+        }
+
+        .ss-container {
+            max-width:  1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .ss-section-title {
+            font-size: 2.5em;
             text-align: center;
+            margin-bottom: 40px;
         }
 
-        #products h2 {
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .product-card {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-card img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .product-card h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            color: #007BFF;
-        }
-
-        .product-card p {
-            font-size: 14px;
-            margin-bottom: 15px;
-            color: #555;
-        }
-
-        .product-card .price {
-            font-size: 18px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        /* 直播專區 */
-        #live-streams {
-            padding: 60px 0;
-            background-color: #fff;
-        }
-
-        #live-streams .container {
-            max-width: 1200px;
-            margin: auto;
-            text-align: center;
-        }
-
-        #live-streams h2 {
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .live-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .live-card {
-            background-color: #222;
-            color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .live-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .live-card img {
-            width: 100%;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .live-card h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .live-card .live-label {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: red;
-            padding: 5px 10px;
-            color: #fff;
-            font-size: 12px;
-            text-transform: uppercase;
-            border-radius: 4px;
-        }
-
-        footer {
-            background: #333;
-            color: #fff;
-            padding: 20px 0;
-            text-align: center;
-        }
-
-        /* 圓形區塊 */
-        .floating-circle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: #007BFF;
-            border-radius: 50%;
+        .ss-feature-grid {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            z-index: 1000; /* 保證在其他元素上方 */
+            justify-content: space-between;
+            flex-wrap: wrap;
         }
 
-        .floating-circle img {
+        .ss-feature-card {
+            flex-basis: calc(33.333% - 20px);
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 250px;
+        }
+
+        .ss-feature-icon {
+            font-size: 48px;
+            color: #6C63FF;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .ss-feature-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .ss-feature-description {
+            font-size: 1em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .ss-feature-card {
+                flex-basis: 100%;
+            }
+        }
+
+        .ss-steps-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .ss-step {
+            flex-basis: calc(25% - 20px);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .ss-step-number {
             width: 50px;
             height: 50px;
-        }
-
-        /* 合約容器樣式 */
-        .contract-signature-container {
-            position: fixed; /* 使元素浮動在螢幕上 */
-            top: 50%; /* 垂直置中 */
-            left: 50%; /* 水平置中 */
-            transform: translate(-50%, -50%); /* 使元素居中對齊 */
-            background-color: #ffffff;
-            padding: 30px;
-            width:25%;
-            max-width: 800px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            z-index: 9999; /* 保證元素在其他元素之上 */
-            animation: fadeInContract 1s ease-in-out;
-        }
-
-        /* 合約標題樣式 */
-        .contract-signature-container h2 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-            font-size: 24px;
-            letter-spacing: 1px;
-        }
-
-        /* 合約段落樣式 */
-        .contract-signature-container p {
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 12px;
-            text-align: left;
-        }
-
-        /* 合約中的強調文字 */
-        .contract-signature-container strong {
-            font-weight: bold;
-            color: #007BFF;
-        }
-
-        /* 簽署按鈕樣式 */
-        .contract-signature-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #6C63FF;
             color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .contract-signature-button:hover {
-            background-color: #3e8e41;
-        }
-
-        /* 簽名區塊樣式 */
-        .contract-signature-block {
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .contract-signature-pad {
-            border: 2px dashed #ccc;
-            width: 300px;
-            height: 150px;
-            background-color: #fff;
-            cursor: crosshair;
-        }
-
-        /* 圖像預覽區塊 */
-        .contract-signature-preview img {
-            max-width: 100%;
-            margin-top: 20px;
-        }
-
-        /* 獨立的合約內容顯示區塊 */
-        .contract-content-container {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            text-align: left;
-        }
-        .contract-close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #d9534f;
-            color: white;
-            border: none;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 13px;
-            cursor: pointer;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            margin: 0 auto 20px;
         }
 
-        .contract-close-btn:hover {
-            background-color: #c9302c;
-        }
-        .contract-content-container h3 {
-            color: #4CAF50;
-            font-size: 22px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .contract-content-container hr {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin: 10px 0;
-        }
-
-        .contract-content-container p {
-            color: #333;
-            font-size: 16px;
+        .ss-step-title {
+            font-size: 1.2em;
             margin-bottom: 10px;
         }
 
-        .contract-content-container strong {
-            color: #007BFF;
-            font-weight: bold;
-        }
-
-        .contract-content-container p:last-child {
-            font-size: 14px;
-            font-style: italic;
-        }
-
-        .contract-signature-send-button-container {
-            display: flex;
-            justify-content: center; /* 水平置中 */
-            margin-top: 10px; /* 根據需求調整間距 */
-        }
-
-        /* 合約出現的動畫效果 */
-        @keyframes fadeInContract {
-            from { opacity: 0; transform: translate(-50%, -60%); } /* 從稍微上方開始 */
-            to { opacity: 1; transform: translate(-50%, -50%); }   /* 最終停留在正中間 */
+        @media (max-width: 768px) {
+            .ss-feature-card, .ss-step {
+                flex-basis: 100%;
+            }
         }
 
     </style>
@@ -433,76 +216,105 @@
 <header>
     <div class="container">
         <div class="logo">
-            <h1>ShopLive</h1>
+            <h1>SnapSell</h1>
         </div>
         <nav>
             <ul>
-                <li><a href="#home">想委託</a></li>
-                <li><a href="#products">想代理</a></li>
-                <li><a href="live-stream-lobby.html">帶貨區</a></li>
-                <li><a href="#contact">更多商品</a></li>
+                <li><a href="client.html">找委託</a></li>
+                <li><a href="agent.html">找代理</a></li>
+                <li><a href="live-stream-lobby.html">找直播</a></li>
             </ul>
         </nav>
-        <div class="user-actions">
-            <!-- 使用者頭像 -->
-                <img src="assets/image/user.png" alt="User Avatar">
+        <div class="user-info">
+            <div id="user-name">用戶名</div>
+            <div class="user-actions">
+                <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
+                <div class="info-window">
+                    <div class = "log-out">
+                        <div class="log-out-content">個人檔案</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的訂單</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的直播</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的商品</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "my-contract-btn">
+                        <div class="log-out-content"><p>我的合約</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "logout-btn">
+                        <div class="log-out-content"><p>登出</p></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </header>
 
 <section id="hero">
-    <div class="hero-text">
-        <h2>Welcome to ShopLive</h2>
-        <p>Where products meet live streaming.</p>
-        <a href="#products" class="hero-btn">Shop Now</a>
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1>重新定義<br>商品與行銷的未來</h1>
+            <p>SnapSell 讓優質商品與頂尖行銷專家完美結合，創造無限可能</p>
+            <a href="#" class="hero-btn">探索 SnapSell</a>
+        </div>
     </div>
 </section>
-
-<!-- 商品區 -->
-<section id="products">
-    <div class="container">
-        <h2>Our Products</h2>
-        <div class="product-grid">
-            <!-- 商品卡片 -->
-            <div class="product-card">
-                <img src="https://via.placeholder.com/250" alt="Product Image">
-                <h3>Product 1</h3>
-                <p>High quality product for your needs.</p>
-                <p class="price">$50.00</p>
+<section id="ss-features" class="ss-section">
+    <div class="ss-container">
+        <h2 class="ss-section-title">為什麼選擇 SnapSell</h2>
+        <div class="ss-feature-grid">
+            <div class="ss-feature-card">
+                <i class="fas fa-handshake ss-feature-icon"></i>
+                <h3 class="ss-feature-title">靈活委託</h3>
+                <p class="ss-feature-description">自由設定商品委託條件，尋找最適合的銷售代理。</p>
             </div>
-            <div class="product-card">
-                <img src="https://via.placeholder.com/250" alt="Product Image">
-                <h3>Product 2</h3>
-                <p>Top selling product that fits your style.</p>
-                <p class="price">$75.00</p>
+            <div class="ss-feature-card">
+                <i class="fas fa-bullhorn ss-feature-icon"></i>
+                <h3 class="ss-feature-title">多元行銷</h3>
+                <p class="ss-feature-description">支持各種行銷方式，包括直播銷售，擴大銷售渠道。</p>
             </div>
-            <div class="product-card">
-                <img src="https://via.placeholder.com/250" alt="Product Image">
-                <h3>Product 3</h3>
-                <p>Durable and affordable.</p>
-                <p class="price">$30.00</p>
+            <div class="ss-feature-card">
+                <i class="fas fa-tasks ss-feature-icon"></i>
+                <h3 class="ss-feature-title">便捷管理</h3>
+                <p class="ss-feature-description">簡單直觀的界面，輕鬆管理您的商品和委託。</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 直播專區 -->
-<section id="live-streams">
-    <div class="container">
-        <h2>Live Streams</h2>
-        <div class="live-grid">
-            <!-- 直播卡片 -->
-            <div class="live-card">
-                <div class="live-label">Live</div>
-                <img src="https://via.placeholder.com/300x200" alt="Live Stream">
-                <h3>Stream 1</h3>
-                <p>Join us for an exciting product demo!</p>
+<!-- 如何使用 SnapSell 區塊 -->
+<section id="ss-how-it-works" class="ss-section">
+    <div class="ss-container">
+        <h2 class="ss-section-title">如何使用 SnapSell</h2>
+        <div class="ss-steps-container">
+            <div class="ss-step">
+                <div class="ss-step-number">1</div>
+                <h3 class="ss-step-title">註冊帳戶</h3>
+                <p class="ss-step-description">簡單快速地創建您的 SnapSell 帳戶</p>
             </div>
-            <div class="live-card">
-                <div class="live-label">Live</div>
-                <img src="https://via.placeholder.com/300x200" alt="Live Stream">
-                <h3>Stream 2</h3>
-                <p>Don't miss our exclusive offers.</p>
+            <div class="ss-step">
+                <div class="ss-step-number">2</div>
+                <h3 class="ss-step-title">上架商品或瀏覽委託</h3>
+                <p class="ss-step-description">上架商品或尋找感興趣的代理機會</p>
+            </div>
+            <div class="ss-step">
+                <div class="ss-step-number">3</div>
+                <h3 class="ss-step-title">選擇合作夥伴</h3>
+                <p class="ss-step-description">與心儀的商家或代理者進行溝通</p>
+            </div>
+            <div class="ss-step">
+                <div class="ss-step-number">4</div>
+                <h3 class="ss-step-title">開始合作</h3>
+                <p class="ss-step-description">簽訂合約，踏上您的合作之旅</p>
             </div>
         </div>
     </div>
@@ -510,26 +322,27 @@
 
 <footer>
     <div class="container">
-        <p>&copy; 2024 ShopLive. All Rights Reserved.</p>
+        <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
 
 
-<!-- 圓形區塊 -->
+<!-- 聊天室區塊 -->
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
 </div>
 
 <div class="chat-container">
+
     <div class="chat-sidebar">
         <ul id="chatRoomList" class="chat-room-list"></ul>
-        <button id="createChatRoomBtn" style="padding: 10px; background-color: #FF5A5F; border: none; border-radius: 30px; color: white; cursor: pointer;">新增聊天室</button>
+        <button id="createChatRoomBtn" style="padding: 10px; background-color: #FF5A5F; border: none; border-radius: 30px; color: white; cursor: pointer;display: none;">新增聊天室</button>
     </div>
 
     <div class="chat-main">
         <!-- 顯示當前聊天室名稱的區塊 -->
         <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
-        <div class = "chatRoomHidden">---</div>
+        <div class = "chatRoomHidden"><img src="assets/image/close.png"></div>
 
         <!-- 訊息區 -->
         <div id="chatWindow" class="chat-window">
@@ -537,7 +350,7 @@
         </div>
 
         <!-- 創建合約按鈕 -->
-        <button id="createContractBtn" style="padding: 5px; background-color: #4CAF50; border: none; color: white; border-radius: 30px; cursor: pointer;">創建合約</button>
+        <button id="createContractBtn">創建合約</button>
 
         <!-- 聊天輸入框 -->
         <div class="chat-input">
@@ -633,46 +446,76 @@
 <script src="assets/js/chat.js"></script>
 <script>
 
-
-        // Smooth Scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+    // Smooth Scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
             });
         });
+    });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // 取得下拉選單和隱藏欄位的元素
-            const productSelect = document.getElementById('productName');
-            const productIdInput = document.getElementById('productId');
+    document.addEventListener('DOMContentLoaded', function () {
 
-            // 使用 fetch API 來從後端取得商品數據
-            fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
-                .then(response => response.json())
-                .then(data => {
-                    const products = data.data;
+        // 初始隱藏合約彈出視窗
+        document.querySelector('.contract-signature-container').style.display = 'none';
 
-                    // 將每個商品加入到下拉選單中
-                    products.forEach(product => {
-                        const option = document.createElement('option');
-                        option.value = product.id; // 將商品的 id 作為選項的值
-                        option.textContent = product.name; // 將商品的名稱顯示出來
-                        productSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching product data:', error);
+        // 登入顯示當前用戶名字
+        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
+
+        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
+        document.querySelector('.icon-user').addEventListener('click', function() {
+            var infoWindow = document.querySelector('header .user-info .info-window');
+            if (infoWindow.style.display === 'block') {
+                infoWindow.style.display = 'none';
+            } else {
+                infoWindow.style.display = 'block';
+            }
+        });
+
+
+        // 綁定導向我的合約按鈕
+        document.getElementById('my-contract-btn').addEventListener('click',function (){
+            window.location.href="my-contract.html";
+        });
+
+        // 綁定登出功能
+        document.getElementById('logout-btn').addEventListener('click',function (){
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            window.location.href="login.html";
+        });
+
+        // 取得下拉選單和隱藏欄位的元素
+        const productSelect = document.getElementById('productName');
+        const productIdInput = document.getElementById('productId');
+
+        // 使用 fetch API 來從後端取得商品數據
+        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
+            .then(response => response.json())
+            .then(data => {
+                const products = data.data;
+
+                // 將每個商品加入到下拉選單中
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id; // 將商品的 id 作為選項的值
+                    option.textContent = product.name; // 將商品的名稱顯示出來
+                    productSelect.appendChild(option);
                 });
-
-
-            // 當使用者選擇商品時，更新隱藏欄位的值
-            productSelect.addEventListener('change', function () {
-                productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
+            })
+            .catch(error => {
+                console.error('Error fetching product data:', error);
             });
-        })
+
+
+        // 當使用者選擇商品時，更新隱藏欄位的值
+        productSelect.addEventListener('change', function () {
+            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
+        });
+    })
 
 
     document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
@@ -701,9 +544,6 @@
         document.querySelector('.contract-signature-container').style.display = 'block';
     });
 
-    document.querySelector('.user-actions').addEventListener('click',function (){
-       window.location.href="my-contract.html";
-    });
 
 
     // 生成合約
@@ -751,9 +591,10 @@
     const signatureImageA = document.getElementById('signatureImageA');
     // 2D繪製
     const ctxA = signaturePadA.getContext('2d');
+
+
     // A是否可畫
     let drawingA = false;
-
 
     // 開始簽名
     signaturePadA.addEventListener('mousedown', function(event) {
@@ -841,15 +682,18 @@
         ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
     }
 
-    function connectWebSocketForContract(chatRoomName) {
+    let contractRoomId = null;
+
+    function connectWebSocketForContract(chatRoomId) {
         const socket = new SockJS('/contract'); // 確認 WebSocket 端點為 /contract
         const contractStompClient = Stomp.over(socket);
-
         contractStompClient.connect({}, function(frame) {
+            console.log(chatRoomId);
+            contractRoomId = chatRoomId;
             console.log('已連接到合約端點: ' + frame);
             const userId = getCurrentUserId(); // 確認是否有用戶 ID
             if (userId) {
-                subscribeToNewContract(chatRoomName); // 訂閱合約頻道
+                subscribeToNewContract(contractRoomId); // 訂閱合約頻道
             } else {
                 alert("請先登入");
             }
@@ -859,19 +703,20 @@
         });
     }
 
-    function subscribeToNewContract(chatRoomName){
-            stompClient.subscribe(`/topic/contract/${chatRoomName}`,function(choose){
+    function subscribeToNewContract(contractRoomId){
+        stompClient.subscribe(`/topic/contract/${contractRoomId}`,function(choose){
+            console.log(`已經訂閱:/topic/contract/${contractRoomId}`)
             const result = JSON.parse(choose.body);
             console.log(result);
             if(result.senderId !== localStorage.getItem('userId')){
                 switch(result.requestType){
                     case "accept":
-                        alert("代理者已簽署，該份合約已生效。");
                         document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("代理者已簽署，該份合約已生效。");
                         break;
                     case "reject":
-                        alert("代理者未簽署，請與其聯絡。");
                         document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("代理者未簽署，請與其聯絡。");
                         break;
                     case "request":
                         document.querySelector('.contract-signature-container').style.display = 'block';
@@ -888,9 +733,9 @@
                 <p id="salesPeriod"><strong>銷售期間</strong>：${result.salesPeriod}</p>
                 <p id="commissionRate"><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${result.commissionRate}% 的佣金。</p>
                 <p>此合約由雙方協議達成，並自簽署日起生效。</p>
-                <span id="clientId" style="visibility: hidden;">${result.clientId}</span>
-                <span id="productId" style="visibility: hidden;">${result.productId}</span>
-                <span id="signatureImage" style="visibility: hidden;">${result.signatureImage}</span>
+                <span id="clientId" style="display: none;">${result.clientId}</span>
+                <span id="productId" style="display: none;">${result.productId}</span>
+                <span id="signatureImage" style="display: none;">${result.signatureImage}</span>
                 <hr>
                 </div>
                 `;
@@ -903,12 +748,12 @@
             }else{
                 switch (result.requestType){
                     case "accept":
-                        alert("合約已保存。");
                         document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("合約已保存。");
                         break;
                     case "reject":
-                        alert("已通知委託者，發回處理。");
                         document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("已通知委託者，發回處理。");
                         break;
                 }
             }
@@ -924,7 +769,7 @@
         if (document.getElementById('currentChatRoomName').textContent) {
             const message = {
                 requestType:"request",
-                chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+                chatRoomId: contractRoomId,   // 當前聊天室 ID
                 senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
                 clientId: localStorage.getItem("userId"),
                 clientName: document.getElementById('clientName').value,
@@ -937,9 +782,18 @@
                 timestamp: new Date().toISOString() // 當前時間
             };
             stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
-            document.getElementById('generated-contract').innerHTML=`<h3>合約已送出，等待代理者簽署中...</h3>`;
             document.getElementById('signature-preview').innerHTML=``;
-
+            document.getElementById('generated-contract').innerHTML=`
+            <div class = "contract-loading">
+                <h3>合約已送出，等待代理者簽署中</h3>
+                <div class="dots-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            `;
+            document.getElementById('sendContractBtn').style.display="none";
+            document.getElementById('signature-preview').innerHTML=``;
         } else {
             alert("請選擇聊天室並輸入訊息");
         }
@@ -948,7 +802,7 @@
     document.getElementById("sendAcceptBtn").addEventListener("click", function() {
         const message = {
             requestType:"accept",
-            chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+            chatRoomId: contractRoomId,   // 當前聊天室 ID
             senderId: localStorage.getItem("userId"),                // 發送者 ID
             clientId:document.getElementById('clientId').textContent,
             agentId:localStorage.getItem('userId'),

@@ -1,10 +1,32 @@
-/* 調整聊天容器背景為灰色，符合圖片風格 */
-.chat-container {
+/* 訊息彈出圖示 */
+.floating-circle {
     position: fixed;
     bottom: 20px;
     right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #007BFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000; /* 保證在其他元素上方 */
+}
+
+.floating-circle img {
+    width: 50px;
+    height: 50px;
+}
+/* 調整聊天容器背景為灰色，符合圖片風格 */
+.chat-container {
+    position: fixed;
+    z-index: 1000;
+    bottom: 20px;
+    right: 20px;
     display: none;
-    width: 500px;
+    width: 600px;
     height: 500px;
     border-radius: 10px;
     background-color: #F3F3F3; /* 灰色背景，偏淡 */
@@ -13,7 +35,7 @@
 }
 
 .chat-sidebar {
-    width: 25%;
+    width: 40%;
     background-color: #F3F3F3; /* 調整背景色與主背景一致 */
     display: flex;
     flex-direction: column;
@@ -28,22 +50,63 @@
     overflow-y: auto;
 }
 
-.chat-room-list li {
-    padding: 15px;
-    cursor: pointer;
-    margin-bottom: 12px;
-    background-color: #E5E5E5; /* 調整顏色，使其更簡約 */
-    border-radius: 12px;
+/* 更新聊天室項目樣式 */
+.chat-room-item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    margin-bottom: 2px;
+    background-color: #F3F3F3;
+    border-radius: 5px;
+    border: 1px solid gray;
     transition: background-color 0.3s;
+    color: #333;
+    cursor: pointer;
+    justify-content: space-between; /* 使時間戳靠右 */
+}
+
+.chat-room-item:hover {
+    background-color: #EEEEEE;
+}
+
+.chat-room-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* 圓形頭像 */
+    margin-right: 5px;
+}
+
+.chat-info-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1; /* 使名稱與訊息在中間對齊 */
+}
+
+.chat-room-name {
+    font-weight: bold;
+    font-size: 14px;
     color: #333;
 }
 
-.chat-room-list li:hover {
-    background-color: #CCCCCC; /* 調整hover顏色 */
+.chat-room-last-message {
+    font-size: 12px;
+    color: #777;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-room-timestamp {
+    font-size: 12px;
+    color: #999;
+    text-align: right; /* 確保時間靠右對齊 */
+    margin-left: 10px;
+    white-space: nowrap; /* 時間保持在一行 */
 }
 
 .chat-main {
-    width: 75%;
+    width: 60%;
     display: flex;
     flex-direction: column;
     background-color: #F3F3F3;
@@ -154,6 +217,71 @@
 .chat-input button:hover {
     background-color: #3a78bb; /* 深藍色hover效果 */
 }
+
+.chatRoomHidden img {
+    margin-top: 3px;
+    width: 23px;
+    height: 23px;
+}
+
+#createContractBtn {
+    padding: 5px;
+    background-color: #A9A9A9;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom:3px;
+    font-size:14px;
+    transition: background-color 0.3s;
+}
+
+#createContractBtn:hover{
+    background-color: #D3D3D3;
+    color:black;
+}
+
+/* RWD 支援 */
+@media (max-width: 768px) {
+    .chat-container {
+        width: 100%;
+        height: 100%;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+    }
+
+    .chat-sidebar {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .chat-main {
+        width: 100%;
+    }
+
+    .chat-room-item {
+        padding: 8px;
+    }
+
+    .chat-room-avatar {
+        width: 30px;
+        height: 30px;
+    }
+
+    .chat-room-name {
+        font-size: 14px;
+    }
+
+    .chat-room-last-message {
+        font-size: 12px;
+    }
+
+    .chat-room-timestamp {
+        font-size: 10px;
+    }
+}
+
 
 
 

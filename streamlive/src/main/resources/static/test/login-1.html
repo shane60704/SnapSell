@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamVibe 登入/註冊</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #1a1a1a 100%);
+            position: relative;
+        }
+        .auth-box {
+            background: rgba(44, 62, 80, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            width: 400px;
+            max-width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+        .auth-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            animation: shine 10s infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        h1 {
+            margin: 0 0 30px;
+            text-align: center;
+            font-size: 28px;
+            color: #ecf0f1;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-bottom: 2px solid #34495e;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: transparent;
+            color: #ecf0f1;
+        }
+        input:focus {
+            outline: none;
+            border-bottom-color: #3498db;
+        }
+        label {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            font-size: 16px;
+            color: #bdc3c7;
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: -10px;
+            font-size: 12px;
+            color: #3498db;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .primary-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .primary-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+        .primary-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        .primary-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        .third-party-login {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .third-party-btn {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .facebook-btn {
+            background: #1877f2;
+            color: white;
+        }
+        .google-btn {
+            background: #db4437;
+            color: white;
+        }
+        .third-party-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #e74c3c;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .logo svg {
+            width: 80px;
+            height: 80px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #bdc3c7;
+        }
+        .toggle-form a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .form-container {
+            transition: all 0.3s ease-in-out;
+        }
+        .hidden {
+            display: none;
+            opacity: 0;
+        }
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .shape {
+            position: absolute;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            left: 10%;
+            top: 20%;
+        }
+        .shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            right: 15%;
+            top: 60%;
+            animation-delay: 2s;
+        }
+        .shape:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            left: 20%;
+            bottom: 10%;
+            animation-delay: 4s;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        .emoji-rain {
+            position: absolute;
+            top: -20px;
+            font-size: 20px;
+            animation: emojiRain 3s linear infinite;
+            opacity: 0;
+        }
+        @keyframes emojiRain {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    <div class="auth-box">
+        <div class="logo">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect x="10" y="10" width="80" height="80" rx="20" fill="url(#gradient)"/>
+                <polygon points="40,30 70,50 40,70" fill="white"/>
+            </svg>
+        </div>
+        <h1><span class="live-indicator"></span>StreamVibe</h1>
+
+        <div id="loginForm" class="form-container">
+            <div class="input-group">
+                <input type="text" id="loginUsername" placeholder=" " required>
+                <label for="loginUsername">用戶名</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="loginPassword" placeholder=" " required>
+                <label for="loginPassword">密碼</label>
+            </div>
+            <button type="submit" class="primary-btn" onclick="handleLogin()">登入</button>
+            <div class="third-party-login">
+                <div class="third-party-btn facebook-btn" onclick="handleThirdPartyLogin('Facebook')">Facebook</div>
+                <div class="third-party-btn google-btn" onclick="handleThirdPartyLogin('Google')">Google</div>
+            </div>
+            <div class="toggle-form">
+                還沒有帳號？ <a onclick="toggleForm('register')">立即註冊</a>
+            </div>
+        </div>
+
+        <div id="registerForm" class="form-container hidden">
+            <div class="input-group">
+                <input type="text" id="registerUsername" placeholder=" " required>
+                <label for="registerUsername">用戶名</label>
+            </div>
+            <div class="input-group">
+                <input type="email" id="registerEmail" placeholder=" " required>
+                <label for="registerEmail">電子郵件</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="registerPassword" placeholder=" " required>
+                <label for="registerPassword">密碼</label>
+            </div>
+            <button type="submit" class="primary-btn" onclick="handleRegister()">註冊</button>
+            <div class="toggle-form">
+                已有帳號？ <a onclick="toggleForm('login')">立即登入</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleForm(formType) {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        if (formType === 'register') {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+        } else {
+            registerForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        }
+    }
+
+    function handleLogin() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+
+        if (username && password) {
+            alert('登入成功！歡迎使用 StreamVibe。');
+            createEmojiRain();
+        } else {
+            alert('請輸入用戶名和密碼');
+        }
+    }
+
+    function handleRegister() {
+        const username = document.getElementById('registerUsername').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+
+        if (username && email && password) {
+            alert('註冊成功！請登入您的新帳號。');
+            toggleForm('login');
+            createEmojiRain();
+        } else {
+            alert('請填寫所有註冊信息');
+        }
+    }
+
+    function handleThirdPartyLogin(provider) {
+        alert(`正在使用 ${provider} 登入...`);
+        createEmojiRain();
+    }
+
+    function createEmojiRain() {
+        const emojis = ['🎉', '🎈', '🎊', '🥳', '👏', '🔥', '💯', '⭐'];
+        for (let i = 0; i < 20; i++) {
+            const emoji = document.createElement('div');
+            emoji.classList.add('emoji-rain');
+            emoji.style.left = `${Math.random() * 100}%`;
+            emoji.style.animationDuration = `${Math.random() * 2 + 1}s`;
+            emoji.style.animationDelay = `${Math.random() * 2}s`;
+            emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            document.body.appendChild(emoji);
+
+            setTimeout(() => {
+                emoji.remove();
+            }, 3000);
+        }
+    }
+</script>
+</body>
+</html>

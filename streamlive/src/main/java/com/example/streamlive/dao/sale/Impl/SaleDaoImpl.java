@@ -2,7 +2,10 @@ package com.example.streamlive.dao.sale.Impl;
 
 import com.example.streamlive.dao.sale.SaleDao;
 import com.example.streamlive.dto.product.CheckOutDto;
+import com.example.streamlive.model.order.Order;
+import com.example.streamlive.model.order.OrderDetail;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -30,11 +34,9 @@ public class SaleDaoImpl implements SaleDao {
         map.put("freight",checkOutDto.getFreight());
         map.put("orderTime",checkOutDto.getOrderTime());
         map.put("status",0);
-        // 使用 KeyHolder 來保存自動生成的 ID
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        // 執行插入操作
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder, new String[]{"id"});
-        // 返回生成的訂單 ID
         return keyHolder.getKey().intValue();
     }
 
@@ -43,23 +45,18 @@ public class SaleDaoImpl implements SaleDao {
         String sql = "INSERT INTO `recipent` (name, phone, email, address, order_id) VALUES" +
                 "(:name, :phone, :email, :address, :order_id)";
 
-        // 創建參數映射表
         Map<String, Object> map = new HashMap<>();
         map.put("name", checkOutDto.getRecipentDto().getName());
         map.put("phone", checkOutDto.getRecipentDto().getPhone());
         map.put("email", checkOutDto.getRecipentDto().getEmail());
         map.put("address", checkOutDto.getRecipentDto().getAddress());
-        map.put("order_id", orderId);  // 來自方法參數的訂單ID
+        map.put("order_id", orderId);
 
-        // 使用 KeyHolder 來捕獲自動生成的鍵值（如有需要）
         KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        // 執行插入操作
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder, new String[]{"id"});
-
-        // 返回自動生成的 recipient ID（假設表有自動生成的主鍵）
         return keyHolder.getKey().intValue();
     }
+
     @Override
     public int updateOrderStatus(int orderId, int status) {
         String sql = "UPDATE `order` SET status=:status WHERE id=:orderId";
@@ -68,5 +65,41 @@ public class SaleDaoImpl implements SaleDao {
         map.put("orderId", orderId);
         return namedParameterJdbcTemplate.update(sql, map);
     }
+
+    @Override
+    public List<Order> getOrdersByUserId(Long userId) {
+        String sql = "SELECT id, order_time AS orderTime, total_price AS totalPrice, logistics_status AS logisticsStatus " +
+                     "FROM `order` " +
+                     "WHERE user_id=:userId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        return namedParameterJdbcTemplate.query(sql, map, new BeanPropertyRowMapper<>(Order.class));
+    }
+
+    @Override
+    public OrderDetail getOrderDetailByOrderId(Long orderId) {
+        String sql = "SELECT " +
+                "o.id AS orderId, " +
+                "u.name AS userName, " +
+                "p.name AS productName, " +
+                "p.price AS productPrice, " +
+                "o.quantity, " +
+                "o.total_price AS totalPrice, " +
+                "o.order_time AS orderTime, " +
+                "r.name AS recipientName, " +
+                "r.phone AS recipientPhone, " +
+                "r.email AS recipientEmail, " +
+                "r.address AS recipientAddress " +
+                "FROM `order` o " +
+                "JOIN `user` u ON o.user_id = u.id " +
+                "JOIN product p ON o.product_id = p.id " +
+                "JOIN recipent r ON o.id = r.order_id " +
+                "WHERE o.id = :orderId";
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("orderId", orderId);
+        return namedParameterJdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(OrderDetail.class));
+    }
+
 
 }

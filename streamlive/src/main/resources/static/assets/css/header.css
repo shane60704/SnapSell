@@ -1,0 +1,120 @@
+header {
+    background: #222;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1600px;
+    margin: auto;
+}
+
+/* Logo 在最左側 */
+header .logo {
+    flex-shrink: 0; /* 防止 logo 壓縮 */
+    cursor: pointer;
+}
+
+header .logo h1 {
+    font-size: 24px;
+    letter-spacing: 2px;
+}
+
+/* nav 放在中間，ul 使用 flex 居中 */
+header nav {
+    flex-grow: 1; /* 讓 nav 擴展佔據中間空間 */
+    text-align: center; /* 讓 ul 在中間對齊 */
+}
+
+header nav ul {
+    list-style: none;
+    display: inline-flex; /* 用 inline-flex 讓 ul 元素居中 */
+    gap: 20px;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    transition: background 0.3s;
+}
+
+header nav ul li a:hover {
+    background: #444;
+    border-radius: 4px;
+}
+
+/* 使用者信息區域置於最右側 */
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* 將 user-info 推到最右側 */
+}
+
+#user-name {
+    margin-right: 15px; /* 使用者名字和頭像之間的間距 */
+}
+
+/* 使用者頭像 */
+.user-actions img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+header .user-info .info-window {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 5px;
+    background-color: #333;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 10px 10px;
+    width: 270px;
+    box-sizing: border-box;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 14px;
+}
+
+header .user-info{
+    margin: 5px 0;
+    padding: 5px 0 5px 7px;
+}
+.log-out-content{
+    padding: 5px 0 5px 7px;
+    cursor: pointer;
+}
+
+header .user-info .info-window hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 5px 0;
+}
+
+.log-out{
+    padding: 2px 0;
+}
+
+.log-out-content{
+    display: flex;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.log-out-content:hover{
+    background-color: #4d4d4d;
+}
+
+.log-out img{
+    display: block;
+    margin-right: 10px;
+}

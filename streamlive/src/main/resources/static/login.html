@@ -96,7 +96,9 @@
                 console.log('登入成功:', data);
                 console.log(data);
                 localStorage.setItem("userId",data.user.id);
+                localStorage.setItem("userName",data.user.name);
                 localStorage.setItem("userEmail",data.user.email);
+                localStorage.setItem("UserImage",data.user.image);
                 window.location.href = 'index.html';
                 // 這裡可以添加登入成功後的處理邏輯，例如保存 token 或重定向
             })

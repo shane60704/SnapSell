@@ -32,4 +32,6 @@ public class UserDto {
     private String provider;
 
     private String role;
+
+    private String image;
 }

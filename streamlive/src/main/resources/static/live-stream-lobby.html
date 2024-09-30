@@ -3,523 +3,834 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>直播大廳</title>
+    <title>SnapSell 直播帶貨大廳</title>
+    <link rel="stylesheet" href="./assets/css/header.css"/>
+    <link rel="stylesheet" href="assets/css/chat.css"/>
+    <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/footer.css"/>
     <style>
-        /* 全局樣式 */
-        body, html {
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        /* 標題樣式 */
-        h1 {
-            text-align: center;
-            font-size: 2.5rem;
-            color: #2e2e2e;  /* 深灰色文字 */
-            margin-bottom: 20px;
+        .container-lobby {
+            width: 80%;
+            margin: 30px auto 0 auto;
+            flex-grow: 1;
         }
 
-        /* 大廳容器，寬度 100%，最大寬度 1200px */
-        #lobby {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;  /* 白色背景 */
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        /* 直播列表容器 */
-        #liveList {
+        .title-lobby {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-        }
-
-        /* 直播列表標題 */
-        .live-list-title {
-            font-size: 1.8rem;
-            margin: 0;
-            color: #333;  /* 深灰色標題 */
-        }
-
-        /* 我要帶貨按鈕 */
-        #agentBtn {
-            padding: 12px 24px;
-            background-color: #007bff;  /* 藍色背景 */
-            border: none;
-            color: #fff;
-            border-radius: 4px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-        }
-
-        #agentBtn:hover {
-            background-color: #0056b3;  /* 深藍色 hover */
-            transform: scale(1.03);
-        }
-
-        /* 房間列表 */
-        #roomList {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;  /* 使用 flex-wrap 讓項目換行 */
-            gap: 20px;  /* 增加房間項目間距 */
-            justify-content: space-between;
-        }
-
-        /* 房間項目卡片樣式 */
-        .room-item {
-            flex: 1 1 calc(33.333% - 20px); /* 每列顯示 3 個房間卡片 */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            background-color: #fff;
+            background: linear-gradient(45deg, #1a2a3a, #3a4a5a);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: background-color 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .room-item:hover {
-            background-color: #f9f9f9;
+        h1 {
+            font-size: 32px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            margin: 0;
         }
 
-        .room-info {
-            flex-grow: 1;
-            font-size: 1rem;
-            color: #555;
+        .btn-create-room {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-create-room:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-dialog {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(1px);
+        }
+
+        .content-modal {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: none;
+            width: 90%;
+            max-width: 600px;
+            height: 62%;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .btn-close:hover {
+            color: #2c3e50;
+        }
+
+        .bar-progress {
+            width: 100%;
+            height: 4px;
+            background-color: #ecf0f1;
+            margin-bottom: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-inner {
+            width: 50%;
+            height: 100%;
+            background-color: #3498db;
+            transition: width 0.3s ease;
+        }
+
+        .indicator-steps {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 20px;
         }
 
-        .room-actions button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            border: none;
-            color: #fff;
-            border-radius: 4px;
+        .step-item {
+            flex: 1;
+            text-align: center;
+            font-weight: bold;
+            color: #bdc3c7;
+        }
+
+        .step-item.active {
+            color: #3498db;
+        }
+
+        .content-step {
+            display: none;
+        }
+
+        .content-step.active {
+            display: block;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .list-product h4 {
+            display: block;
+            margin: 10px 0;
+        }
+
+        .list-product {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 0 10px 10px 10px;
+            margin-bottom: 20px;
+        }
+
+        .item-product {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .item-product input[type="checkbox"] {
+            display: none;
+        }
+
+        .item-product label {
+            display: flex;
+            align-items: center;
             cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+            padding-left: 30px;
+            position: relative;
         }
 
-        .room-actions button:hover {
-            background-color: #0056b3;
-            transform: scale(1.03);
+        .item-product label::before {
+            content: '';
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 2px solid gray;
+            border-radius: 4px;
+            position: absolute;
+            left: 0;
+            transition: all 0.3s ease;
         }
 
-        /* 模態彈窗樣式 */
-        .modal {
-            position: fixed;
+        .item-product input[type="checkbox"]:checked + label::before {
+            border-color: #3498db;
+        }
+
+        .item-product input[type="checkbox"]:checked + label::after {
+            content: '✓';
+            position: absolute;
+            left: 3px;
+            top: -3px;
+            color: black;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .btn-action {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn-action:hover {
+            background-color: #2980b9;
+        }
+
+        .group-btn {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        #btnPrev {
+            background-color: #95a5a6;
+        }
+
+        #btnPrev:hover {
+            background-color: #7f8c8d;
+        }
+
+        #btnCreateRoom {
+            margin-left: 15px;
+        }
+
+        .info-room input {
+            width: 96%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ecf0f1;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #roomDesc {
+            margin-bottom: 0;
+        }
+
+        .message-no-product {
+            color: #7f8c8d;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .empty-state .btn-create-room {
+            display: inline-block;
+        }
+
+        #listRooms {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .item-room {
+            background-color: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            max-width: 350px;
+        }
+
+        .item-room:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 預覽圖區域樣式 */
+        .preview-room {
+            width: 100%;
+            height: 200px;
+            background-color: #e0e8ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* 卡片信息區域樣式 */
+        .info-room {
+            padding: 15px;
+        }
+
+        /* 直播標題樣式 */
+        .title-room {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        /* 直播描述樣式 */
+        .desc-room {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 直播詳細信息區域樣式 */
+        .details-room {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .details-room > div {
+            margin-bottom: 4px;
+        }
+
+        .overlay-room {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(200, 200, 200, 0.7);
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 1000;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .centered-block {
-            position: relative;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            transition: all 0.3s ease;
+        .item-room:hover .overlay-room {
+            opacity: 1;
         }
 
-        /* 關閉按鈕 */
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #dc3545;
+        .btn-join-room {
+            background-color: #e74c3c;
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .close-btn:hover {
-            background-color: #c82333;
-        }
-
-        /* 內部內容區域樣式 */
-        .live-product {
-            display: flex;
-            justify-content: space-between;
-            text-align: left;
-        }
-
-        .product-list {
-            flex-grow: 1;
-        }
-
-        .list1, .list2, .list3 {
-            padding: 10px;
-            background-color: #f8f8f8;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-
-        .list1 h3, .list2 h3, .list3 h3 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .list1 hr, .list2 hr, .list3 hr {
-            border: 1px solid #ddd;
-        }
-
-        .product-item {
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        /* 創建房間按鈕 */
-        #createRoomBtn {
             padding: 12px 24px;
-            background-color: #28a745;
-            border: none;
-            color: #fff;
-            border-radius: 4px;
-            font-size: 1.1rem;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+            transform: scale(0.9);
         }
 
-        #createRoomBtn:hover {
-            background-color: #218838;
-            transform: scale(1.03);
+        .btn-join-room:hover {
+            background-color: #c0392b;
+            transform: scale(1);
         }
 
         /* 響應式設計 */
         @media (max-width: 768px) {
-            .room-item {
-                flex: 1 1 calc(50% - 20px);  /* 改為每列顯示 2 個房間卡片 */
+            .item-room {
+                max-width: 100%;
+            }
+
+            .preview-room {
+                height: 150px;
+            }
+
+            .title-room {
+                font-size: 16px;
+            }
+
+            .desc-room {
+                font-size: 13px;
+            }
+
+            .details-room {
+                font-size: 11px;
             }
         }
-
-        @media (max-width: 480px) {
-            .room-item {
-                flex: 1 1 100%;  /* 改為每列顯示 1 個房間卡片 */
-            }
-
-            #liveList {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            #agentBtn {
-                margin-top: 10px;
-                align-self: center;
-            }
-        }
-
     </style>
 </head>
 <body>
-<div id="lobby">
-    <!-- 直播列表區塊 -->
-    <div id="liveList">
-        <h2 class="live-list-title">直播列表</h2>
-        <button id="agentBtn">我要帶貨</button>
-    </div>
-    <ul id="roomList">
-        <!-- 房間清單將動態生成 -->
-    </ul>
-</div>
-
-<!-- 模態彈窗 -->
-<div id="modal" class="modal" style="display: none;">
-    <div class="centered-block">
-        <button class="close-btn" id="closeModalBtn">X</button>
-        <div class="live-product">
-            <div class="product-list">
-                <div class="list1">
-                    <h3>已上架未被代理</h3>
+<header>
+    <div class="container">
+        <div class="logo">
+            <h1>SnapSell</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="client.html">找委託</a></li>
+                <li><a href="agent.html">找代理</a></li>
+                <li><a href="live-stream-lobby.html">找直播</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <div id="user-name">用戶名</div>
+            <div class="user-actions">
+                <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
+                <div class="info-window">
+                    <div class = "log-out">
+                        <div class="log-out-content">個人檔案</div>
+                    </div>
                     <hr>
-                </div>
-                <div class="list2">
-                    <h3>已上架但被代理</h3>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的訂單</p></div>
+                    </div>
                     <hr>
-                </div>
-                <div class="list3">
-                    <h3>已代理</h3>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的直播</p></div>
+                    </div>
                     <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的商品</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "my-contract-btn">
+                        <div class="log-out-content"><p>我的合約</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "logout-btn">
+                        <div class="log-out-content"><p>登出</p></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <button id="createRoomBtn">創建房間</button>
+    </div>
+</header>
+<div class="container-lobby">
+    <div class="title-lobby">
+        <h1>直播帶貨大廳 </h1>
+        <button class="btn-create-room" id="agentBtn">創建房間</button>
+    </div>
+
+    <div id="listRooms"></div>
+
+    <div id="emptyState" class="empty-state" style="display: none;">
+        <h2>目前還沒有直播間</h2>
+        <p>成為第一個開始直播的人吧！</p>
+        <button class="btn-create-room" id="emptyStateBtn">創建你的第一個直播間</button>
     </div>
 </div>
+<footer>
+    <div class="container">
+        <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<div id="modal" class="modal-dialog">
+    <div class="content-modal">
+        <span class="btn-close" id="closeModalBtn">&times;</span>
+        <div class="bar-progress">
+            <div class="progress-inner"></div>
+        </div>
+        <div class="indicator-steps">
+            <div class="step-item active">步驟一：選擇商品</div>
+            <div class="step-item">步驟二：創建房間</div>
+        </div>
+        <div class="content-step active" id="step1">
+            <h3>選擇商品</h3>
+            <div class="list-product">
+                <div class="list1">
+                    <h4>已上架未被代理</h4>
+                </div>
+                <div class="list3">
+                    <h4>已代理</h4>
+                </div>
+            </div>
+            <div class="group-btn">
+                <button class="btn-action" id="nextBtn">下一步</button>
+            </div>
+        </div>
+        <div class="content-step" id="step2">
+            <h3>創建房間</h3>
+            <div class="info-room">
+                <input type="text" id="roomTitle" placeholder="請輸入房間標題">
+                <input type="text" id="roomDesc" placeholder="請輸入房間描述（選填）">
+            </div>
+            <div class="group-btn">
+                <button class="btn-action" id="btnPrev">上一步</button>
+                <button class="btn-action" id="btnCreateRoom">創建房間</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // 容器
-        const liveProduct = document.querySelector('.live-product');
-        // 可帶貨之商品
-        const productList = document.querySelector('.product-list');
+        // // 初始隱藏合約彈出視窗
+        // document.querySelector('.contract-signature-container').style.display = 'none';
+
+        // 登入顯示當前用戶名字
+        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
+
+        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
+        document.querySelector('.icon-user').addEventListener('click', function() {
+            var infoWindow = document.querySelector('header .user-info .info-window');
+            if (infoWindow.style.display === 'block') {
+                infoWindow.style.display = 'none';
+            } else {
+                infoWindow.style.display = 'block';
+            }
+        });
+
+        // 綁定導向我的合約按鈕
+        document.getElementById('my-contract-btn').addEventListener('click',function (){
+            window.location.href="my-contract.html";
+        });
+
+        // 綁定登出功能
+        document.getElementById('logout-btn').addEventListener('click',function (){
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            window.location.href="login.html";
+        });
+
+        document.querySelector('.logo').addEventListener('click',function (){
+            window.location.href="index.html";
+        });
+
+        document.getElementById('my-live-stream').addEventListener('click',function (){
+            window.location.href="live-stream-records.html";
+        });
+
+        // 取得下拉選單和隱藏欄位的元素
+        const productSelect = document.getElementById('productName');
+        const productIdInput = document.getElementById('productId');
+
+        // 使用 fetch API 來從後端取得商品數據
+        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
+            .then(response => response.json())
+            .then(data => {
+                const products = data.data;
+
+                // 將每個商品加入到下拉選單中
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id; // 將商品的 id 作為選項的值
+                    option.textContent = product.name; // 將商品的名稱顯示出來
+                    productSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching product data:', error);
+            });
+
+
+        // 當使用者選擇商品時，更新隱藏欄位的值
+        productSelect.addEventListener('change', function () {
+            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
+        });
+    })
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('modal');
+        const agentBtn = document.getElementById('agentBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('btnPrev');
+        const createRoomBtn = document.getElementById('btnCreateRoom');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const progress = document.querySelector('.progress-inner');
+        const steps = document.querySelectorAll('.step-item');
+        const emptyState = document.getElementById('emptyState');
+        const emptyStateBtn = document.getElementById('emptyStateBtn');
+
+        let currentStep = 1;
         const userId = localStorage.getItem("userId");
-        // 已上架未被代理
-        getUndelgated(userId);
-        // 已上架但被代理
-        getDelegated(userId);
-        // 已代理
-        getMyDelegations(userId);
-        liveProduct.appendChild(productList);
 
-        // 取得已上架但未被代理的商品
-        function getUndelgated(userId){
-            fetch(`/api/1.0/product/undelgated?userId=${userId}`)
-                .then(response =>{
-                    if (!response.ok) {
-                        throw new Error('failed');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.data.length === 0){
-                        console.log("目前無上架或未被代理的商品");
-                        const noProductMessage = document.createElement("p");
-                        noProductMessage.className="noProductMessage";
-                        noProductMessage.textContent = "目前無上架商品或未被代理的商品";
-                        document.querySelector('.list1').appendChild(noProductMessage);
-                    }else{
-                        data.data.forEach(product => {
-                            // 創建列表項目
-                            const listItem = document.createElement('li');
-                            listItem.className = 'product-item'; // 可以加個類名做樣式調整
-
-                            // 創建 checkbox
-                            const checkbox = document.createElement('input');
-                            checkbox.type = 'checkbox';
-                            checkbox.id = `product-${product.id}`; // 每個 checkbox 有唯一的 ID
-
-                            // 創建標籤 (label) 並顯示商品名稱和價格
-                            const label = document.createElement('label');
-                            label.setAttribute('for', `product-${product.id}`);
-                            label.textContent = ` 商品名稱: ${product.name} - 價格: ${product.price}`;
-
-                            // 將 checkbox 和 label 添加到列表項目中
-                            listItem.appendChild(checkbox);
-                            listItem.appendChild(label);
-
-                            // 將列表項目附加到 productList 元素中
-                            document.querySelector('.list1').appendChild(listItem);
-                        });
-                    }
-                })
+        function showModal() {
+            modal.style.display = 'flex';
         }
 
-        // 取得已上架但被代理的商品清單
-        function getDelegated(userId){
-            fetch(`/api/1.0/product/delegated?userId=${userId}`)
-                .then(response =>{
-                    if (!response.ok) {
-                        throw new Error('failed');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.data.length === 0){
-                        console.log("目前並無上架商品被代理");
-                        const noProductMessage = document.createElement("p");
-                        noProductMessage.className="noProductMessage";
-                        noProductMessage.textContent = "目前並無上架商品被代理";
-                        document.querySelector('.list2').appendChild(noProductMessage);
-                    }else{
-                        data.data.forEach(product => {
-                            // 創建列表項目
-                            const listItem = document.createElement('li');
-                            listItem.className = 'product-item'; // 可以加個類名做樣式調整
+        agentBtn.onclick = showModal;
+        emptyStateBtn.onclick = showModal;
 
-                            // 創建 checkbox
-                            const checkbox = document.createElement('input');
-                            checkbox.type = 'checkbox';
-                            checkbox.id = `product-${product.id}`; // 每個 checkbox 有唯一的 ID
-
-                            // 創建標籤 (label) 並顯示商品名稱和價格
-                            const label = document.createElement('label');
-                            label.setAttribute('for', `product-${product.id}`);
-                            label.textContent = ` 商品名稱: ${product.name} - 價格: ${product.price}`;
-
-                            // 將 checkbox 和 label 添加到列表項目中
-                            listItem.appendChild(checkbox);
-                            listItem.appendChild(label);
-
-                            // 將列表項目附加到 productList 元素中
-                            document.querySelector('.list2').appendChild(listItem);
-                        });
-                    }
-                })
-
-        }
-
-        // 取得已代理的商品清單
-        function getMyDelegations(userId){
-            fetch(`/api/1.0/product/my-delegations?userId=${userId}`)
-                .then(response =>{
-                    if (!response.ok) {
-                        throw new Error('failed');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.data.length === 0){
-                        console.log("無已代理的商品清單");
-                        const noProductMessage = document.createElement("p");
-                        noProductMessage.className="noProductMessage";
-                        noProductMessage.textContent = "目前無代理他人商品";
-                        document.querySelector('.list3').appendChild(noProductMessage);
-                    }else{
-                        data.data.forEach(product => {
-                            // 創建列表項目
-                            const listItem = document.createElement('li');
-                            listItem.className = 'product-item';
-
-                            // 創建 checkbox
-                            const checkbox = document.createElement('input');
-                            checkbox.type = 'checkbox';
-                            checkbox.id = `product-${product.id}`; // 每個 checkbox 有唯一的 ID
-
-                            // 創建標籤 (label) 並顯示商品名稱和價格
-                            const label = document.createElement('label');
-                            label.setAttribute('for', `product-${product.id}`);
-                            label.textContent = ` 商品名稱: ${product.name} - 價格: ${product.price}`;
-
-                            // 將 checkbox 和 label 添加到列表項目中
-                            listItem.appendChild(checkbox);
-                            listItem.appendChild(label);
-
-                            // 將列表項目附加到 productList 元素中
-                            document.querySelector('.list3').appendChild(listItem);
-                        });
-                    }
-                })
-        }
-
-        document.getElementById('agentBtn').onclick = function() {
-            document.getElementById('modal').style.display = 'flex'; // 顯示模態彈窗
+        closeModalBtn.onclick = function () {
+            modal.style.display = 'none';
         };
 
-        document.getElementById('closeModalBtn').onclick = function() {
-            document.getElementById('modal').style.display = 'none'; // 隱藏模態彈窗
+        nextBtn.onclick = function () {
+            if (currentStep < 2) {
+                currentStep++;
+                updateStep();
+            }
         };
 
-        document.getElementById('createRoomBtn').onclick = () => {
+        prevBtn.onclick = function () {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStep();
+            }
+        };
+
+        function updateStep() {
+            if (currentStep === 1) {
+                step1.classList.add('active');
+                step2.classList.remove('active');
+                progress.style.width = '50%';
+            } else {
+                step1.classList.remove('active');
+                step2.classList.add('active');
+                progress.style.width = '100%';
+            }
+
+            steps.forEach((step, index) => {
+                if (index < currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+
+        createRoomBtn.onclick = function () {
             const roomId = Math.random().toString(36).substr(2, 8);
+            const checkedProducts = Array.from(document.querySelectorAll('.item-product input[type="checkbox"]:checked'));
+            const selectedProductIds = checkedProducts.map(checkbox => checkbox.id.replace('product-', ''));
+            const roomTitle = document.getElementById('roomTitle').value;
+            const roomDescription = document.getElementById('roomDesc').value;
 
-            // 找到所有已勾選的複選框
-            const checkedProducts = Array.from(document.querySelectorAll('.product-item input[type="checkbox"]:checked'));
-
-            // 判斷是否有勾選的複選框
-            if (checkedProducts.length === 0) {
+            if (selectedProductIds.length === 0) {
                 alert('請至少選擇一個產品');
                 return;
             }
 
-            // 獲取所有選中的產品 ID
-            const selectedProductIds = checkedProducts.map(checkbox => checkbox.id.replace('product-', ''));
+            if (!roomTitle) {
+                alert('請輸入房間標題');
+                return;
+            }
 
-            // 將選中的產品 ID 轉換成 URL 參數
             const productsParam = encodeURIComponent(selectedProductIds.join(','));
-
-            // 創建房間並將參數傳遞到 room.html
-            window.location.href = `room.html?roomId=${encodeURIComponent(roomId)}&role=broadcaster&products=${productsParam}`;
+            window.location.href = `room-2.html?roomId=${encodeURIComponent(roomId)}&role=broadcaster&products=${productsParam}&title=${encodeURIComponent(roomTitle)}&description=${encodeURIComponent(roomDescription)}`;
         };
 
+        function getUndelgated(userId) {
+            fetch(`/api/1.0/product/undelgated?userId=${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const list1 = document.querySelector('.list1');
+                    if (data.data.length === 0) {
+                        const noProductMessage = document.createElement("p");
+                        noProductMessage.className = "message-no-product";
+                        noProductMessage.textContent = "目前無上架商品或未被代理的商品";
+                        list1.appendChild(noProductMessage);
+                    } else {
+                        data.data.forEach(product => {
+                            const listItem = document.createElement('div');
+                            listItem.className = 'item-product';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `product-${product.id}`;
+
+                            const label = document.createElement('label');
+                            label.setAttribute('for', `product-${product.id}`);
+                            label.textContent = ` 商品名稱: ${product.name} - 價格: ${product.price}`;
+
+                            listItem.appendChild(checkbox);
+                            listItem.appendChild(label);
+                            list1.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function getMyDelegations(userId) {
+            fetch(`/api/1.0/product/my-delegations?userId=${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const list3 = document.querySelector('.list3');
+                    if (data.data.length === 0) {
+                        const noProductMessage = document.createElement("p");
+                        noProductMessage.className = "message-no-product";
+                        noProductMessage.textContent = "目前無代理他人商品";
+                        list3.appendChild(noProductMessage);
+                    } else {
+                        data.data.forEach(product => {
+                            const listItem = document.createElement('div');
+                            listItem.className = 'item-product';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.id = `product-${product.id}`;
+
+                            const label = document.createElement('label');
+                            label.setAttribute('for', `product-${product.id}`);
+                            label.textContent = ` 商品名稱: ${product.name} | 價格: ${product.price} | 庫存：${product.stock}`;
+
+                            listItem.appendChild(checkbox);
+                            listItem.appendChild(label);
+                            list3.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+
+        // 更新直播間列表
+        function updateRoomList(rooms) {
+            const roomList = document.getElementById('listRooms');
+            roomList.innerHTML = '';
+            if (rooms.length === 0) {
+                roomList.style.display = "none";
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                roomList.style.display = "block";
+                rooms.forEach(room => {
+                    const roomElement = createRoomElement(room);
+                    roomList.appendChild(roomElement);
+                });
+            }
+        }
+
+        // 創建單個直播間元素
+        function createRoomElement(room) {
+            const startTime = new Date(room.startTime);
+            const formattedTime = `${startTime.getMonth() + 1}/${startTime.getDate()} ${String(startTime.getHours()).padStart(2, '0')}:${String(startTime.getMinutes()).padStart(2, '0')}`;
+
+            const roomElement = document.createElement('div');
+            roomElement.className = 'item-room';
+            roomElement.innerHTML = `
+                <div class="preview-room">直播預覽圖</div>
+                <div class="info-room">
+                    <div class="title-room">${room.title}</div>
+                    <div class="desc-room">${room.description || '暫無描述'}</div>
+                    <div class="details-room">
+                        <div>開播時間: ${formattedTime}</div>
+                        <div>觀看人數: ${room.viewerCount}</div>
+                    </div>
+                </div>
+                <div class="overlay-room">
+                    <button class="btn-join-room" data-room-id="${room.id}">加入直播</button>
+                </div>
+            `;
+            const joinBtn = roomElement.querySelector('.btn-join-room');
+            joinBtn.addEventListener('click', () => joinRoom(room));
+            return roomElement;
+        }
+
+        function joinRoom(room) {
+            const productsParam = encodeURIComponent(room.products.join(','));
+            window.location.href = `room-2.html?roomId=${encodeURIComponent(room.roomId)}&role=viewer&products=${productsParam}&title=${encodeURIComponent(room.title)}&description=${encodeURIComponent(room.description)}`;
+        }
+
+        // 初始化
+        function init() {
+            getUndelgated(userId);
+            getMyDelegations(userId);
+        }
+
+        init();
+
+        // --------- websocket ------------------------------------------------------------------ //
+        // 測試環境使用
+        let ws = new WebSocket('ws://localhost:8080/socket');
+        // 正式環境使用
+        // let ws = new WebSocket('wss://techwavelab.com/socket');
+
+        ws.onopen = () => {
+            console.log('已連接到 WebSocket');
+            ws.send(JSON.stringify({type: 'lobby'}));
+        };
+
+        ws.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'roomList') {
+                updateRoomList(message.rooms);
+            }
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket 連接已關閉');
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket 發生錯誤:', error);
+        };
+
+
     });
-    // 測試環境使用
-    // let ws = new WebSocket('ws://localhost:8080/socket');
-    // 正式環境使用
-    let ws = new WebSocket('wss://techwavelab.com/socket');
-
-    ws.onopen = () => {
-        console.log('已連接到 WebSocket');
-        ws.send(JSON.stringify({ type: 'lobby' }));
-    };
-
-    ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        if (message.type === 'roomList') {
-            updateRoomList(message.rooms);
-        }
-    };
-
-    ws.onclose = () => {
-        console.log('WebSocket 連接已關閉');
-    };
-
-    ws.onerror = (error) => {
-        console.error('WebSocket 發生錯誤:', error);
-    };
-
-    document.getElementById('closeBtn').onclick = function() {
-        document.getElementById('modal').style.display = 'none';
-    };
-
-    function updateRoomList(rooms) {
-        const roomListElement = document.getElementById('roomList');
-        roomListElement.innerHTML = '';
-
-        if (rooms.length === 0) {
-            roomListElement.innerHTML = '<li>目前沒有可加入的房間。</li>';
-            return;
-        }
-
-        rooms.forEach(room => {
-            const listItem = document.createElement('li');
-            listItem.className = 'room-item';
-
-            const roomInfo = document.createElement('div');
-            roomInfo.className = 'room-info';
-            roomInfo.innerHTML = `
-            <strong>房間 ID:</strong> ${room.roomId}<br>
-            <strong>開播時間:</strong> ${new Date(room.startTime).toLocaleString()}<br>
-            <strong>觀看人數:</strong> ${room.viewerCount}
-        `;
-
-            const roomActions = document.createElement('div');
-            roomActions.className = 'room-actions';
-            const joinButton = document.createElement('button');
-            joinButton.textContent = '加入房間';
-            joinButton.onclick = () => {
-                // 加入房間後，進入 room.html，並包含 products 參數
-                const productsParam = encodeURIComponent(room.products.join(','));
-                window.location.href = `room.html?roomId=${encodeURIComponent(room.roomId)}&role=viewer&products=${productsParam}`;
-            };
-
-            roomActions.appendChild(joinButton);
-            listItem.appendChild(roomInfo);
-            listItem.appendChild(roomActions);
-            roomListElement.appendChild(listItem);
-        });
-    }
-
-
 </script>
 </body>
 </html>

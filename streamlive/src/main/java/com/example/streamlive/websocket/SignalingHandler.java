@@ -1,5 +1,10 @@
 package com.example.streamlive.websocket;
 
+import com.example.streamlive.dao.livestream.LiveStreamDao;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,6 +15,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,30 +23,38 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class SignalingHandler extends TextWebSocketHandler {
+
+    private final LiveStreamDao liveStreamDao;
+
     private Map<String, List<WebSocketSession>> rooms = new ConcurrentHashMap<>();
     private Map<String, WebSocketSession> broadcasters = new ConcurrentHashMap<>();
-    private Map<String, RoomInfo> roomInfos = new ConcurrentHashMap<>(); // 用於保存房間資訊
-
-    private Set<WebSocketSession> lobbySessions = Collections.synchronizedSet(new HashSet<>()); // 大廳連線
+    private Map<String, RoomInfo> roomInfos = new ConcurrentHashMap<>(); // 保存房間資訊
+    private Map<String, Integer> roomViewerCount = new HashMap<>(); // 記錄每個房間的累積觀眾人數
+    private Set<WebSocketSession> lobbySessions = Collections.synchronizedSet(new HashSet<>()); //大廳連線
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
         JSONObject jsonMessage = new JSONObject(message.getPayload());
         String type = jsonMessage.getString("type");
-
         switch (type) {
             case "create":
                 String createRoomId = jsonMessage.getString("roomId");
+                String userId = jsonMessage.getString("userId");
+                String title = jsonMessage.getString("title");
+                String description = jsonMessage.getString("description");
+                liveStreamDao.createLiveStreamRecord(userId, createRoomId);
                 JSONArray productsArray = jsonMessage.getJSONArray("products");
                 List<String> productsList = new ArrayList<>();
                 for (int i = 0; i < productsArray.length(); i++) {
                     productsList.add(productsArray.getString(i));
                 }
-                createRoom(createRoomId, session, productsList);
+                createRoom(createRoomId, title, description, session, productsList);
                 break;
             case "join":
                 String joinRoomId = jsonMessage.getString("roomId");
+                onViewerJoined(joinRoomId);
                 joinRoom(joinRoomId, session);
                 break;
             case "offer":
@@ -63,10 +77,10 @@ public class SignalingHandler extends TextWebSocketHandler {
         }
     }
 
-    private void createRoom(String roomId, WebSocketSession session, List<String> products) {
+    private void createRoom(String roomId, String title , String description, WebSocketSession session, List<String> products) {
         rooms.put(roomId, new CopyOnWriteArrayList<>());
         broadcasters.put(roomId, session);
-        roomInfos.put(roomId, new RoomInfo(roomId, Instant.now(), 0, products)); // 添加 products
+        roomInfos.put(roomId, new RoomInfo(roomId,title,description,Instant.now(), 0, products));
         sendToSession(session, new JSONObject().put("type", "created").toString());
         broadcastRoomList(); // 更新大廳的房間清單
     }
@@ -145,6 +159,8 @@ public class SignalingHandler extends TextWebSocketHandler {
         for (RoomInfo roomInfo : roomInfos.values()) {
             JSONObject roomJson = new JSONObject()
                     .put("roomId", roomInfo.getRoomId())
+                    .put("title",roomInfo.getTitle())
+                    .put("description",roomInfo.getDescription())
                     .put("startTime", roomInfo.getStartTime().toString())
                     .put("viewerCount", roomInfo.getViewerCount())
                     .put("products", roomInfo.getProducts());
@@ -171,6 +187,18 @@ public class SignalingHandler extends TextWebSocketHandler {
         for (Map.Entry<String, WebSocketSession> entry : broadcasters.entrySet()) {
             if (entry.getValue() == session) {
                 String roomId = entry.getKey();
+                Integer viewerCount = roomViewerCount.get(roomId);
+                Map<String,Object> liveStatistics = liveStreamDao.getTotalPriceAndQuantity(roomId);
+                BigDecimal totalPriceDecimal = (BigDecimal) liveStatistics.get("totalPrice");
+                BigDecimal totalQuantityDecimal = (BigDecimal) liveStatistics.get("totalQuantity");
+
+                int totalPrice = totalPriceDecimal != null ? totalPriceDecimal.intValue() : 0;
+                int totalQuantity = totalQuantityDecimal != null ? totalQuantityDecimal.intValue() : 0;
+                if (viewerCount == null){
+                    liveStreamDao.updateLiveStreamRecord(roomId,0,totalQuantity,totalPrice);
+                }else{
+                    liveStreamDao.updateLiveStreamRecord(roomId,viewerCount,totalQuantity,totalPrice);
+                }
                 rooms.get(roomId).forEach(viewer -> {
                     try {
                         sendToSession(viewer, new JSONObject().put("type", "broadcasterLeft").toString());
@@ -179,6 +207,7 @@ public class SignalingHandler extends TextWebSocketHandler {
                         e.printStackTrace();
                     }
                 });
+
                 rooms.remove(roomId);
                 broadcasters.remove(roomId);
                 roomInfos.remove(roomId); // 移除房間資訊
@@ -195,40 +224,49 @@ public class SignalingHandler extends TextWebSocketHandler {
         for (Map.Entry<String, List<WebSocketSession>> entry : rooms.entrySet()) {
             List<WebSocketSession> viewers = entry.getValue();
             if (viewers.remove(session)) {
+                // 找到離開觀眾所在的房間
+                String roomId = entry.getKey();
+                RoomInfo roomInfo = roomInfos.get(roomId);
                 // 更新房間資訊中的觀眾人數
-                RoomInfo roomInfo = roomInfos.get(entry.getKey());
                 roomInfo.decrementViewerCount();
-                broadcastRoomList(); // 更新大廳的房間清單
+                // 通知主播有觀眾離開
+                WebSocketSession broadcaster = broadcasters.get(roomId);
+                if (broadcaster != null && broadcaster.isOpen()) {
+                    JSONObject message = new JSONObject()
+                            .put("type", "viewerLeft")
+                            .put("viewerId", session.getId());
+
+                    sendToSession(broadcaster, message.toString());
+                }
+                // 更新大廳的房間清單
+                broadcastRoomList();
                 break;
             }
         }
     }
 
-    // 房間資訊的內部類別
+    // 當有觀眾加入房間時調用此方法
+    public void onViewerJoined(String roomId) {
+        // 如果房間之前沒有累積人數，初始化為0
+        roomViewerCount.putIfAbsent(roomId, 0);
+
+        // 每次有新的觀眾連線，累積人數加1
+        roomViewerCount.put(roomId, roomViewerCount.get(roomId) + 1);
+
+        System.out.println("房間 " + roomId + " 的累積觀眾人數: " + roomViewerCount.get(roomId));
+    }
+
+    // 房間資訊內部類別
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     private static class RoomInfo {
         private String roomId;
+        private String title;
+        private String description;
         private Instant startTime;
         private int viewerCount;
         private List<String> products;
-
-        public RoomInfo(String roomId, Instant startTime, int viewerCount, List<String> products) {
-            this.roomId = roomId;
-            this.startTime = startTime;
-            this.viewerCount = viewerCount;
-            this.products = products;
-        }
-
-        public String getRoomId() {
-            return roomId;
-        }
-
-        public Instant getStartTime() {
-            return startTime;
-        }
-
-        public int getViewerCount() {
-            return viewerCount;
-        }
 
         public void incrementViewerCount() {
             viewerCount++;
@@ -238,12 +276,5 @@ public class SignalingHandler extends TextWebSocketHandler {
             viewerCount--;
         }
 
-        public List<String> getProducts() {
-            return products;
-        }
-
-        public void setProducts(List<String> products) {
-            this.products = products;
-        }
     }
 }

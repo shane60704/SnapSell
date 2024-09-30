@@ -3,6 +3,8 @@ package com.example.streamlive.dao.product.impl;
 import com.example.streamlive.dao.product.ProductDao;
 import com.example.streamlive.dto.product.ProductDto;
 import com.example.streamlive.model.Product;
+import com.example.streamlive.model.rowmapper.ClientProductRowMapper;
+import com.example.streamlive.model.user.ClientProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -58,16 +60,34 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<Product> findProductsForDelegation(int userId){
-        String sql = "SELECT product.*, delegation.client_id, delegation.agent_id, delegation.status\n" +
-                "FROM product\n" +
-                "INNER JOIN delegation ON product.id = delegation.product_id\n" +
-                "WHERE product.user_id != :userId \n" +
-                "AND delegation.status != 1";
-        Map<String, Object> map = new HashMap<>();
-        map.put("userId", userId);
-        SqlParameterSource paramSource = new MapSqlParameterSource(map);
-        return namedParameterJdbcTemplate.query(sql, paramSource, new BeanPropertyRowMapper<>(Product.class));
+    public List<ClientProduct> findProductsForDelegation(Long userId, int status, String sortBy, String sortOrder){
+        String sql = "SELECT \n" +
+                "    u.id AS user_id,              \n" +
+                "    u.name AS user_name,          \n" +
+                "    u.image AS user_image,        \n" +
+                "    p.id AS product_id,      \n" +
+                "    p.name AS product_name,  \n" +
+                "    p.description,           \n" +
+                "    p.stock,                 \n" +
+                "    p.price,                 \n" +
+                "    p.main_image,            \n" +
+                "    p.created_at            \n" +
+                "FROM \n" +
+                "    user u\n" +
+                "JOIN \n" +
+                "    product p ON u.id = p.user_id\n" +
+                "JOIN \n" +
+                "    delegation d ON p.id = d.product_id\n" +
+                "WHERE \n" +
+                "    u.id != :userId                \n" +
+                "    AND d.status != :status       \n" +
+                "ORDER BY " + sortBy + " " + sortOrder + "\n";
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("status", status);
+
+        SqlParameterSource paramSource = new MapSqlParameterSource(params);
+        return namedParameterJdbcTemplate.query(sql, paramSource, new ClientProductRowMapper());
     }
 
     @Override
@@ -136,5 +156,42 @@ public class ProductDaoImpl implements ProductDao {
         } catch (DataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public List<ClientProduct> searchProductsByKeyword(Long userId, String keyword,int status,int limit, int offset){
+        String sql = "SELECT \n" +
+                "    u.id AS user_id,              \n" +
+                "    u.name AS user_name,          \n" +
+                "    u.image AS user_image,        \n" +
+                "    p.id AS product_id,      \n" +
+                "    p.name AS product_name,  \n" +
+                "    p.description,           \n" +
+                "    p.stock,                 \n" +
+                "    p.price,                 \n" +
+                "    p.main_image,            \n" +
+                "    p.created_at             \n" +
+                "FROM                         \n" +
+                "    user u                   \n" +
+                "JOIN                         \n" +
+                "    product p ON u.id = p.user_id\n" +
+                "JOIN                         \n" +
+                "    delegation d ON p.id = d.product_id\n" +
+                "WHERE                              \n" +
+                "    u.id != :userId                \n" +
+                "    AND d.status != :status        \n" +
+                "    AND p.name LIKE CONCAT('%', :keyword, '%')    \n" +
+                "LIMIT :limit                       \n" +
+                "OFFSET :offset";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("status", status);
+        params.put("keyword", keyword);
+        params.put("limit", limit);
+        params.put("offset", offset);
+        SqlParameterSource paramSource = new MapSqlParameterSource(params);
+
+        return namedParameterJdbcTemplate.query(sql, paramSource, new ClientProductRowMapper());
     }
 }

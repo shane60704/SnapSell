@@ -208,6 +208,7 @@
                 loadUserChatRooms(userId); // 加載用戶的聊天室清單
             } else {
                 alert("請先登入");
+                window.location.href="../login.html"
             }
         }, function(error) {
             console.error('連接失敗:', error);

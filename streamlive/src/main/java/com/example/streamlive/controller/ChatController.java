@@ -22,5 +22,6 @@ public class ChatController {
         // 將訊息廣播到聊天室的所有訂閱者
         simpMessagingTemplate.convertAndSend("/topic/chat/" + chatMessage.getChatRoomId(), chatMessage);
     }
+
 }
 

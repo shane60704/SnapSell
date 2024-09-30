@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapSell - 您的商品代理夥伴</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/header.css"/>
+    <link rel="stylesheet" href="assets/css/chat.css"/>
+    <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/footer.css"/>
+    <style>
+        :root {
+            --primary-color: #4a4a4a;
+            --secondary-color: #6b6b6b;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --accent-color: #3498db;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            color: var(--text-color);
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        .display-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .slogan-container {
+            background: linear-gradient(45deg, #1a2a3a, #3a4a5a);
+            color: #333;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin: 0 auto 20px auto;
+            width:100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .slogan {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin-bottom: 1rem;
+        }
+
+        .sub-slogan {
+            font-size: 1.2em;
+            color: #FFFFFF;
+        }
+
+        /* 更新搜索和排序部分的樣式 */
+        .search-sort {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-container {
+            display: flex;
+            flex-grow: 1;
+            max-width: 600px;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--secondary-color);
+            border-radius: 4px 0 0 4px;
+            font-size: 1rem;
+        }
+
+        .status-select, .sort-select {
+            padding: 0.75rem;
+            border: 1px solid var(--secondary-color);
+            background-color: white;
+            font-size: 1rem;
+        }
+
+        .status-select {
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sort-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sort-select {
+            border-radius: 4px;
+        }
+
+        .sort-direction {
+            padding: 0.75rem 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-sort {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container, .sort-container {
+                width: 100%;
+            }
+        }
+
+        .product-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--card-background);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .product-info {
+            flex-grow: 1;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-details {
+            display: flex;
+            justify-content: space-between;
+            width: 60%;
+        }
+
+        /* 按鈕容器樣式 */
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 基本按鈕樣式 */
+        .action-button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-button i {
+            margin-right: 5px;
+        }
+
+        /* 查看委託人檔案按鈕 */
+        .view-profile {
+            background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
+        }
+
+        .view-profile:hover {
+            background: linear-gradient(135deg, #00A3FF 0%, #0056FF 100%);
+        }
+
+        /* 詳細資訊按鈕 */
+        .view-details {
+            background: linear-gradient(135deg, #4EA8DE 0%, #2D62ED 100%);
+        }
+
+        .view-details:hover {
+            background: linear-gradient(135deg, #3B8ED6 0%, #1A4FE5 100%);
+        }
+
+        /* 私訊按鈕 */
+        .send-message {
+            background: linear-gradient(135deg, #9F7AEA 0%, #6B46C1 100%);
+        }
+
+        .send-message:hover {
+            background: linear-gradient(135deg, #8B5CF6 0%, #5B21B6 100%);
+        }
+
+        /* 所有按鈕的懸停效果 */
+        .action-button:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* 按鈕點擊效果 */
+        .action-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 模態框樣式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #333;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .modal-image {
+            width: 40%;
+            max-width: 300px;
+            border-radius: 4px;
+            margin-right: 20px;
+        }
+
+        .modal-details {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .modal-info {
+            margin-bottom: 15px;
+        }
+
+        .modal-info-label {
+            font-weight: bold;
+            color: #555;
+            margin-right: 10px;
+        }
+
+        .modal-info-value {
+            color: #333;
+        }
+
+        .status-available {
+            color: #4CAF50;
+        }
+
+        .status-delegated {
+            color: #FFA000;
+        }
+
+        .modal-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .modal-button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .details-button {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .message-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .modal-button:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 600px) {
+            .modal-content {
+                width: 95%;
+            }
+
+            .modal-image {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo">
+            <h1>SnapSell</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="client.html">找委託</a></li>
+                <li><a href="agent.html">找代理</a></li>
+                <li><a href="live-stream-lobby.html">找直播</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <div id="user-name">用戶名</div>
+            <div class="user-actions">
+                <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
+                <div class="info-window">
+                    <div class = "log-out">
+                        <div class="log-out-content">個人檔案</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的訂單</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的直播</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的商品</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "my-contract-btn">
+                        <div class="log-out-content"><p>我的合約</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "logout-btn">
+                        <div class="log-out-content"><p>登出</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="display-container">
+    <div class="slogan-container">
+        <h2 class="slogan">尋找您的下一個代理商品</h2>
+        <p class="sub-slogan">探索豐富的商品列表，成為優秀的代理商</p>
+    </div>
+    <div class="search-sort">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="搜尋商品...">
+            <select id="statusSelect" class="status-select">
+                <option value="0">未代理</option>
+                <option value="1">已代理</option>
+            </select>
+        </div>
+        <div class="sort-container">
+            <select id="sortSelect" class="sort-select">
+                <option value="created_at">上架時間</option>
+                <option value="price">價格</option>
+                <option value="stock">庫存</option>
+            </select>
+            <button id="sortDirectionBtn" class="sort-direction">↓</button>
+        </div>
+    </div>
+
+    <div id="productList" class="product-list">
+        <!-- 動態插入產品項目 -->
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // // 初始隱藏合約彈出視窗
+        // document.querySelector('.contract-signature-container').style.display = 'none';
+
+        // 登入顯示當前用戶名字
+        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
+
+        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
+        document.querySelector('.icon-user').addEventListener('click', function() {
+            var infoWindow = document.querySelector('header .user-info .info-window');
+            if (infoWindow.style.display === 'block') {
+                infoWindow.style.display = 'none';
+            } else {
+                infoWindow.style.display = 'block';
+            }
+        });
+
+        // 綁定導向我的合約按鈕
+        document.getElementById('my-contract-btn').addEventListener('click',function (){
+            window.location.href="my-contract.html";
+        });
+
+        // 綁定登出功能
+        document.getElementById('logout-btn').addEventListener('click',function (){
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            window.location.href="login.html";
+        });
+
+        // 取得下拉選單和隱藏欄位的元素
+        const productSelect = document.getElementById('productName');
+        const productIdInput = document.getElementById('productId');
+
+        // 使用 fetch API 來從後端取得商品數據
+        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
+            .then(response => response.json())
+            .then(data => {
+                const products = data.data;
+
+                // 將每個商品加入到下拉選單中
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id; // 將商品的 id 作為選項的值
+                    option.textContent = product.name; // 將商品的名稱顯示出來
+                    productSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching product data:', error);
+            });
+
+
+        // 當使用者選擇商品時，更新隱藏欄位的值
+        productSelect.addEventListener('change', function () {
+            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
+        });
+    })
+
+
+    const userId = localStorage.getItem("userId");
+    let currentSortField = userId;
+    let currentSortDirection = 'desc';
+
+    // 初始化頁面
+    document.addEventListener("DOMContentLoaded", function() {
+        getForDelegation(userId, 0, currentSortField, currentSortDirection);
+        setupEventListeners();
+    });
+
+    // 設置事件監聽器
+    function setupEventListeners() {
+        document.getElementById('searchInput').addEventListener('input', handleSearch);
+        document.getElementById('statusSelect').addEventListener('change', handleStatusFilter);
+        document.getElementById('sortSelect').addEventListener('change', handleSortChange);
+        document.getElementById('sortDirectionBtn').addEventListener('click', toggleSortDirection);
+    }
+
+    // 渲染商品列表
+    function renderProductList(productsToRender) {
+        const container = document.getElementById('productList');
+        container.innerHTML = "";
+        productsToRender.forEach(product => {
+            const intValue = Number(product.productInfo.id);
+            const productItem = `
+                    <div class="product-item">
+                        <div class="product-info">
+                            <h3 class="product-name">${product.productInfo.name}</h3>
+                            <div class="product-details">
+                                <span>價格: $${product.productInfo.price}</span>
+                                <span>庫存: ${product.productInfo.stock}</span>
+                                <span>委託者: ${product.clientInfo.name}</span>
+                                <span>上架時間: ${new Date(product.productInfo.created_At).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="action-button view-profile" onclick="viewProfile('${product.clientId}')">
+                                <i class="fas fa-user"></i> 查看委託人檔案
+                            </button>
+                            <button class="action-button view-details" onclick="getProductDetail('${product.productInfo.id}')">
+                                <i class="fas fa-info-circle"></i> 詳細資訊
+                            </button>
+                            <button class="action-button send-message" onclick="sendMessage('${product.clientInfo.id}')">
+                                <i class="fas fa-envelope"></i> 私訊
+                            </button>
+                        </div>
+                    </div>
+                `;
+            container.innerHTML += productItem;
+        });
+    }
+
+    // 處理搜索
+    function handleSearch() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filteredProducts = products.filter(product =>
+            product.name.toLowerCase().includes(searchTerm) ||
+            product.clientName.toLowerCase().includes(searchTerm)
+        );
+        renderProductList(filteredProducts);
+    }
+
+    // 處理狀態篩選 [ 已代理、未代理 ]
+    function handleStatusFilter() {
+        const status = document.getElementById('statusSelect').value;
+        getForDelegation(userId, status, currentSortField, currentSortDirection);
+    }
+
+    // 處理排序目標 [建立時間、價格、庫存]
+    function handleSortChange() {
+        currentSortField = document.getElementById('sortSelect').value;
+        const status = document.getElementById('statusSelect').value;
+        getForDelegation(userId, status, currentSortField, currentSortDirection);
+    }
+
+    // 切換排序方向
+    function toggleSortDirection() {
+        const sortSelect = document.getElementById('sortSelect');
+        currentSortField = sortSelect.value;
+        const status = document.getElementById('statusSelect').value;
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+        document.getElementById('sortDirectionBtn').textContent = currentSortDirection === 'asc' ? '↑' : '↓';
+        getForDelegation(userId, status, currentSortField, currentSortDirection);
+    }
+
+    // 顯示商品詳細資訊
+    function showDetails(product) {
+        if (product) {
+            const modalContent = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">${product.name}</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="${product.mainImage}" alt="${product.name}" class="modal-image">
+                        <div class="modal-details">
+                            <div class="modal-info">
+                                <span class="modal-info-label">介紹:</span>
+                                <p>${product.description}</p>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">特色:</span>
+                                <p>${product.feature}</p>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">價格:</span>
+                                <span class="modal-info-value">$${product.price}</span>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">庫存:</span>
+                                <span class="modal-info-value">${product.stock}</span>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">上架時間:</span>
+                                <span class="modal-info-value">${new Date(product.create_at).toLocaleString()}</span>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">狀態:</span>
+                                <span class="modal-info-value ${product.status === '0' ? 'status-available' : 'status-delegated'}">
+                                    ${product.status === '0' ? '未代理' : '已代理'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+
+            // 添加關閉模態框的事件監聽器
+            document.querySelector('.modal-close').addEventListener('click', closeModal);
+            document.querySelector('.modal-overlay').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
+    }
+
+    // 關閉模態框
+    function closeModal() {
+        const modal = document.querySelector('.modal-overlay');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // 獲取商品詳情
+    function getProductDetail(productId) {
+        fetch(`/api/1.0/product/${productId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showDetails(data.data);
+            })
+            .catch(error => {
+                console.error('Error fetching product details:', error);
+                alert('無法獲取商品詳情，請稍後再試。');
+            });
+    }
+
+    // 查看委託人檔案
+    function viewProfile(clientId) {
+        // 這裡應該實現查看委託人檔案的邏輯
+        console.log('查看委託人檔案，客戶ID:', clientId);
+        // 可能需要打開新的頁面或模態框來顯示委託人資料
+    }
+
+    // 發送訊息給委託人
+    function sendMessage(clientId) {
+        // 這裡應該實現發送訊息的邏輯
+        console.log('發送訊息給委託人，客戶ID:', clientId);
+        // 可能需要打開聊天視窗或導航到聊天頁面
+    }
+
+    // 獲取代理商品列表
+    function getForDelegation(userId, status, sortBy, sortOrder) {
+        let url = `/api/1.0/product/for-delegation?userId=${userId}&status=${status}`;
+        if (sortBy && sortOrder) {
+            url += `&sortBy=${sortBy}&sortOrder=${sortOrder}`;
+        }
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.data);
+                renderProductList(data.data);
+            })
+            .catch(error => {
+                console.error('Error fetching products:', error);
+                alert('無法獲取商品列表，請稍後再試。');
+            });
+    }
+</script>
+</body>
+</html>

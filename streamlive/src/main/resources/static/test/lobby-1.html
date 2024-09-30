@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapSell 直播帶貨大廳</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .lobby-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #1a2a3a, #3a4a5a);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .create-room-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .create-room-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .room-card {
+            background-color: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .room-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .room-info {
+            padding: 20px;
+        }
+
+        .room-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .streamer-name {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .room-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        .room-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .room-card:hover .room-overlay {
+            opacity: 1;
+        }
+
+        .enter-room-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .enter-room-btn:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 30px;
+            border: none;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #2c3e50;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 24px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-content input:focus {
+            border-color: #34495e;
+            outline: none;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #34495e;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .modal-content button:hover {
+            background-color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+<div class="lobby-container">
+    <header>
+        <h1>直播帶貨大廳️</h1>
+        <button class="create-room-btn" id="createRoomBtn">創建房間</button>
+    </header>
+    <div class="room-grid" id="roomGrid">
+        <!-- 房間卡片將在這裡動態添加 -->
+    </div>
+</div>
+
+<div id="createRoomModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>創建新房間</h2>
+        <input type="text" id="roomTitle" placeholder="🏷️ 房間標題">
+        <input type="text" id="streamerName" placeholder="👤 主播名稱">
+        <button id="submitRoom">🎬 開始直播</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const createRoomBtn = document.getElementById('createRoomBtn');
+        const modal = document.getElementById('createRoomModal');
+        const closeBtn = document.getElementsByClassName('close')[0];
+        const submitRoomBtn = document.getElementById('submitRoom');
+        const roomGrid = document.getElementById('roomGrid');
+
+        createRoomBtn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        submitRoomBtn.onclick = function() {
+            const title = document.getElementById('roomTitle').value;
+            const streamer = document.getElementById('streamerName').value;
+            if (title && streamer) {
+                createRoomCard(title, streamer);
+                modal.style.display = "none";
+                document.getElementById('roomTitle').value = '';
+                document.getElementById('streamerName').value = '';
+            } else {
+                alert('請填寫房間標題和主播名稱');
+            }
+        }
+
+        function createRoomCard(title, streamer) {
+            const card = document.createElement('div');
+            card.className = 'room-card';
+            card.innerHTML = `
+                <div class="room-thumbnail">🎥 直播預覽圖</div>
+                <div class="room-info">
+                    <div class="room-title">${title}</div>
+                    <div class="streamer-name">🎙️ ${streamer}</div>
+                    <div class="room-stats">
+                        <span>👀 觀看人數: ${Math.floor(Math.random() * 1000)}</span>
+                        <span>🛍️ 商品數: ${Math.floor(Math.random() * 20)}</span>
+                    </div>
+                </div>
+            `;
+            roomGrid.appendChild(card);
+        }
+
+        // 初始添加一些房間
+        createRoomCard("🌞 夏季新品發布會", "王小明");
+        createRoomCard("🏷️ 限時折扣大特賣", "李大方");
+        createRoomCard("🏋️ 運動裝備推薦", "張健身");
+        createRoomCard("💄 美妝教學直播", "陳美麗");
+    });
+</script>
+</body>
+</html>

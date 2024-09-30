@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.streamlive.dao.product.ProductDao;
 import com.example.streamlive.dto.product.ProductDto;
 import com.example.streamlive.model.Product;
+import com.example.streamlive.model.user.ClientProduct;
 import com.example.streamlive.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -40,13 +41,14 @@ public class ProductServiceImpl implements ProductService {
             }
             return productDao.createDelegation(productId, productDto.getUserId()) != null;
         } catch (IOException e) {
+//        } catch (RuntimeException e) {
             log.error(e.getMessage());
             return false;
         }
     }
     @Override
-    public List<Product> getProductsForDelegation(int userId){
-        return productDao.findProductsForDelegation(userId);
+    public List<ClientProduct> getProductsForDelegation(Long userId, int status,String sortBy,String sortOrder){
+        return productDao.findProductsForDelegation(userId,status,sortBy,sortOrder);
     }
 
     @Override
@@ -67,6 +69,37 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProductInfo(int productId){
         return productDao.findProductById(productId);
+    }
+
+    @Override
+    public Map<String, Object> searchProduct(Long userId,String keyword, int status, int paging){
+        int pageSize = 6;
+        int limit = 7;
+        int offset = paging * pageSize;
+        List<ClientProduct> clientProducts = new ArrayList<>();
+        switch (status){
+            case 0:
+                clientProducts= productDao.searchProductsByKeyword(userId,keyword,0,limit,offset);
+                break;
+            case 1:
+                clientProducts= productDao.searchProductsByKeyword(userId,keyword,1,limit,offset);
+                break;
+        }
+//        if (clientProducts.isEmpty()) {
+//            throw new NoSuchElementException("No products found for the given paging");
+//        }
+        int productCount = clientProducts.size();
+        Integer nextPaging = null;
+        if (productCount > pageSize){
+            nextPaging = paging + 1;
+            productCount  = pageSize;
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("products", clientProducts);
+        if (nextPaging != null) {
+            result.put("next_paging", nextPaging);
+        }
+        return result;
     }
 
     public String uploadProductImage(MultipartFile file) throws IOException {

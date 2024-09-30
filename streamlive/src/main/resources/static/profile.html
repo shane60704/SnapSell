@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人檔案 - SnapSell</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #3b82f6;
+            --text-color: #1f2937;
+            --light-text: #f3f4f6;
+            --background: #f9fafb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .profile-header {
+            position: relative;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            margin-bottom: 10px;
+        }
+
+        .profile-name {
+            font-size: 2em;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .profile-info {
+            padding: 30px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex-basis: 25%;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+
+        @media (max-width: 600px) {
+            .profile-header {
+                height: 250px;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-name {
+                font-size: 1.6em;
+            }
+
+            .profile-info {
+                padding: 20px;
+            }
+
+            .stat-item {
+                flex-basis: 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="profile-container">
+    <div class="profile-header" id="profile-header">
+        <img src="https://source.unsplash.com/random/120x120" alt="用戶頭像" class="profile-avatar" id="profile-avatar">
+        <h1 class="profile-name" id="profile-name"></h1>
+    </div>
+    <div class="profile-info">
+        <div class="profile-stats" id="profile-stats">
+            <!-- Stats will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function getUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            userId: params.get('userId') || '1',
+            type: params.get('type') || 'all'
+        };
+    }
+
+    function fetchProfileData(userId, type) {
+        return fetch(`/api/1.0/user/${userId}/profile?type=${type}`)
+            .then(response => response.json())
+            .then(data => data.data);
+    }
+
+    function createStatItem(value, label) {
+        const statItem = document.createElement('div');
+        statItem.className = 'stat-item';
+        statItem.innerHTML = `
+                <div class="stat-value">${value}</div>
+                <div class="stat-label">${label}</div>
+            `;
+        return statItem;
+    }
+
+    function animateValue(element, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            element.textContent = value.toLocaleString();
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function updateProfile(data, type) {
+        const profileName = document.getElementById('profile-name');
+        const profileStats = document.getElementById('profile-stats');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileHeader = document.getElementById('profile-header');
+
+        profileName.textContent = data.name;
+        if (data.image) {
+            profileAvatar.src = data.image;
+        }
+        if (data.backgroundImage) {
+            profileHeader.style.backgroundImage = `url(${data.backgroundImage})`;
+        } else {
+            profileHeader.style.backgroundImage = 'url(https://source.unsplash.com/random/800x300)';
+        }
+
+        profileStats.innerHTML = '';
+
+        if (type === 'agent' || type === 'all') {
+            profileStats.appendChild(createStatItem(0, '累計觀看'));
+            profileStats.appendChild(createStatItem(0, '累積代理件數'));
+            profileStats.appendChild(createStatItem(0, '累積代理金額'));
+            if (type === 'all') {
+                profileStats.appendChild(createStatItem(0, '累積直播評價'));
+            }
+        }
+
+        if (type === 'client' || type === 'all') {
+            profileStats.appendChild(createStatItem(0, '累積商品數'));
+            if (type === 'all') {
+                profileStats.appendChild(createStatItem(0, '累積商品評價'));
+            }
+        }
+
+        // Animate the values
+        setTimeout(() => {
+            const statValues = profileStats.querySelectorAll('.stat-value');
+            if (type === 'agent' || type === 'all') {
+                animateValue(statValues[0], 0, data.totalViewers || 0, 1500);
+                animateValue(statValues[1], 0, data.totalQuantity || 0, 1500);
+                animateValue(statValues[2], 0, data.totalFigures || 0, 1500);
+                if (type === 'all') {
+                    animateValue(statValues[3], 0, data.averageScore || 0, 1500);
+                }
+            }
+            if (type === 'client' || type === 'all') {
+                const index = type === 'all' ? 4 : 0;
+                animateValue(statValues[index], 0, data.totalProducts || 0, 1500);
+                if (type === 'all') {
+                    animateValue(statValues[5], 0, data.averageProductScore || 0, 1500);
+                }
+            }
+        }, 100);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const { userId, type } = getUrlParams();
+        fetchProfileData(userId, type)
+            .then(data => updateProfile(data, type))
+            .catch(error => console.error('Error fetching profile data:', error));
+    });
+</script>
+</body>
+</html>

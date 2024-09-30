@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapSell | 找代理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/header.css"/>
+    <link rel="stylesheet" href="assets/css/chat.css"/>
+    <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/footer.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+        /* 整體頁面容器 */
+        .page-container {
+            flex-grow: 1;
+            padding: 20px;
+            width: 80%;
+            margin: 0 auto;
+        }
+        /* 說明文字區塊 */
+        .description {
+            background: linear-gradient(45deg, #1a2a3a, #3a4a5a);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .description h2 {
+            font-size: 32px;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        .description p {
+            font-size: 1.2em;
+            color: #fff;
+        }
+        /* 內容包裝器 */
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+        }
+        /* 熱門代理者區塊 */
+        .top-agents-section {
+            flex: 1;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .top-agents-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .agent-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .agent-rank {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .agent-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #007bff;
+        }
+        .agent-info {
+            flex-grow: 1;
+        }
+        .agent-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .agent-stats {
+            display: flex;
+            gap: 20px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-weight: bold;
+            color: #007bff;
+        }
+        /* 用戶列表區塊 */
+        #userList {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .user-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            height: 80px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .custom-user-image-container {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .custom-user-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .custom-user-info {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-user-name {
+            font-size: 1em;
+            font-weight: bold;
+            margin-right: 20px;
+            width: 100px; /* 固定寬度 */
+        }
+
+        .custom-user-stats {
+            display: flex;
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        .custom-stat-item {
+            text-align: center;
+        }
+
+        .custom-stat-value {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .custom-stat-label {
+            font-size: 0.7em;
+            color: #888;
+        }
+
+        .custom-user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .custom-message-btn {
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8em;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+
+        .custom-message-btn:hover {
+            background: linear-gradient(135deg, #00A3FF 0%, #0056FF 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .user-card {
+                flex-direction: column;
+                height: auto;
+                padding: 15px;
+            }
+
+            .custom-user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .custom-user-name {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: auto;
+            }
+
+            .custom-user-stats {
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+
+            .custom-user-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-around;
+            }
+        }
+        /* Footer 樣式 */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: auto;
+        }
+        /* 響應式設計 */
+        @media (max-width: 1200px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+
+            .top-agents-section, #userList {
+                width: 100%;
+            }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .agent-card {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo">
+            <h1>SnapSell</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="client.html">找委託</a></li>
+                <li><a href="agent.html">找代理</a></li>
+                <li><a href="live-stream-lobby.html">找直播</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <div id="user-name">用戶名</div>
+            <div class="user-actions">
+                <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
+                <div class="info-window">
+                    <div class = "log-out">
+                        <div class="log-out-content">個人檔案</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的訂單</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的直播</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的商品</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "my-contract-btn">
+                        <div class="log-out-content"><p>我的合約</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "logout-btn">
+                        <div class="log-out-content"><p>登出</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="page-container">
+    <div class="description">
+        <h2>想與專業的代理者合作，推動您的產品銷售嗎？</h2>
+        <p>立即瀏覽我們的代理者列表，發掘潛在商機！</p>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="top-agents-section">
+            <h2 class="section-title">熱門代理者排行榜</h2>
+            <div class="top-agents-container" id="topAgentsContainer">
+                <!-- 代理者卡片將在這裡動態插入 -->
+            </div>
+        </div>
+
+        <div id="userList">
+            <!-- 使用者卡片將在這裡動態插入 -->
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
+    </div>
+</footer>
+<!-- 聊天室區塊 -->
+<div class="floating-circle">
+    <img src="assets/image/messenger.png" alt="Chat Icon">
+</div>
+
+<div class="chat-container">
+
+    <div class="chat-sidebar">
+        <ul id="chatRoomList" class="chat-room-list"></ul>
+        <button id="createChatRoomBtn" style="padding: 10px; background-color: #FF5A5F; border: none; border-radius: 30px; color: white; cursor: pointer;display: none;">新增聊天室</button>
+    </div>
+
+    <div class="chat-main">
+        <!-- 顯示當前聊天室名稱的區塊 -->
+        <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
+        <div class = "chatRoomHidden"><img src="assets/image/close.png"></div>
+
+        <!-- 訊息區 -->
+        <div id="chatWindow" class="chat-window">
+            <div id="messageArea" class="message-area"></div>
+        </div>
+
+        <!-- 創建合約按鈕 -->
+        <button id="createContractBtn">創建合約</button>
+
+        <!-- 聊天輸入框 -->
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="輸入訊息...">
+            <button id="sendMessageBtn">發送</button>
+        </div>
+    </div>
+</div>
+
+<!-- 合約生成區塊 -->
+<div class="contract-signature-container">
+    <button class="contract-close-btn" id="contract-closeBtn">X</button>
+    <div class="contract-input-container">
+        <h2>產生合約</h2>
+
+        <div class="contract-input-field">
+            <label for="clientName">委託者名稱</label>
+            <input type="text" id="clientName" placeholder="輸入委託者名稱">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="sellerName">代理者名稱</label>
+            <input type="text" id="sellerName" placeholder="輸入代理者名稱">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="productName">商品名稱</label>
+            <select id="productName">
+                <option value="">請選擇商品</option>
+            </select>
+        </div>
+
+        <!-- 隱藏欄位，用來儲存選擇的商品 ID -->
+        <input type="hidden" id="productId" name="productId">
+
+        <div class="contract-input-field">
+            <label for="salesPeriod">銷售期間</label>
+            <input type="text" id="salesPeriod" placeholder="輸入銷售期間">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="commissionRate">佣金比例 (%)</label>
+            <input type="number" id="commissionRate" placeholder="輸入佣金比例">
+        </div>
+
+        <button id="generateContractBtn" class="contract-signature-button">生成合約</button>
+    </div>
+    <!-- 顯示生成的合約 -->
+    <div id="generated-contract" class="contract-signature-generated"></div>
+
+    <!-- 簽名區塊 -->
+    <div class="contract-signature-block">
+        <div class="signature-block-A">
+            <h4>委託者簽名區</h4>
+            <canvas id="signature-pad-a" class="contract-signature-pad"></canvas>
+            <div class="signature-button-group">
+                <button id="clearSignatureA" class="contract-signature-button">清除簽名</button>
+                <button id="saveSignatureA" class="contract-signature-button">保存簽名</button>
+            </div>
+        </div>
+        <div class="signature-block-B">
+            <h4>代理者簽名區</h4>
+            <canvas id="signature-pad-b" class="contract-signature-pad"></canvas>
+            <div class="signature-button-group">
+                <button id="clearSignatureB" class="contract-signature-button">清除簽名</button>
+                <button id="saveSignatureB" class="contract-signature-button">保存簽名</button>
+            </div>
+        </div>
+    </div>
+    <!-- 圖像預覽區 -->
+    <div id="signature-preview" class="contract-signature-preview">
+        <div class ="signature-A">
+            <h4>簽名圖片預覽</h4>
+            <img id="signatureImageA" src="" alt="簽名圖片預覽">
+        </div>
+        <div class ="signature-B">
+            <h4>簽名圖片預覽</h4>
+            <img id="signatureImageB" src="" alt="簽名圖片預覽">
+        </div>
+    </div>
+    <!-- 發送合約按鈕 -->
+    <div class="contract-signature-send-button-container">
+        <button id="sendContractBtn" class="contract-signature-send-button contract-signature-button">發送合約給代理者</button>
+        <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
+        <button id="sendRejectBtn" class=" contract-signature-button">拒絕合約</button>
+    </div>
+</div>
+
+<!-- 引入js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="assets/js/header.js"></script>
+<script src="assets/js/chat.js"></script>
+<!--<script src="assets/js/contract.js"></script>-->
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // 初始隱藏合約彈出視窗
+        document.querySelector('.contract-signature-container').style.display = 'none';
+
+        // 登入顯示當前用戶名字
+        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
+
+        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
+        document.querySelector('.icon-user').addEventListener('click', function() {
+            var infoWindow = document.querySelector('header .user-info .info-window');
+            if (infoWindow.style.display === 'block') {
+                infoWindow.style.display = 'none';
+            } else {
+                infoWindow.style.display = 'block';
+            }
+        });
+
+        // 綁定導向我的合約按鈕
+        document.getElementById('my-contract-btn').addEventListener('click',function (){
+            window.location.href="my-contract.html";
+        });
+
+        // 綁定登出功能
+        document.getElementById('logout-btn').addEventListener('click',function (){
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            window.location.href="login.html";
+        });
+
+        document.querySelector('.logo').addEventListener('click',function (){
+            window.location.href="index.html";
+        });
+
+        // 取得下拉選單和隱藏欄位的元素
+        const productSelect = document.getElementById('productName');
+        const productIdInput = document.getElementById('productId');
+
+        // 使用 fetch API 來從後端取得商品數據
+        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
+            .then(response => response.json())
+            .then(data => {
+                const products = data.data;
+
+                // 將每個商品加入到下拉選單中
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id; // 將商品的 id 作為選項的值
+                    option.textContent = product.name; // 將商品的名稱顯示出來
+                    productSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching product data:', error);
+            });
+
+
+        // 當使用者選擇商品時，更新隱藏欄位的值
+        productSelect.addEventListener('change', function () {
+            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
+        });
+    })
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchTopAgents();
+        fetchUsers(localStorage.getItem('userId'));
+        function fetchUsers(currentUserId) {
+            fetch(`/api/1.0/user/others?currentUserId=${currentUserId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const userList = document.getElementById('userList');
+                    userList.innerHTML = '';
+
+                    data.data.users.forEach(user => {
+                        const userCard = createUserCard(user);
+                        userList.appendChild(userCard);
+                    });
+                })
+                .catch(error => console.error('Error fetching users:', error));
+        }
+        function createUserCard(user) {
+            const card = document.createElement('div');
+            card.className = 'user-card';
+
+            const imageUrl = user.userInfo.image || '/api/placeholder/50/50';
+            const totalViewers = user.liveStatistics.totalViewers || 0;
+            const totalQuantity = user.liveStatistics.totalQuantity || 0;
+            const totalFigures = user.liveStatistics.totalFigures || 0;
+            const averageScore = user.liveStatistics.averageScore ? user.liveStatistics.averageScore.toFixed(1) : '0';
+
+            card.innerHTML = `
+        <div class="custom-user-image-container">
+            <img src="${imageUrl}" alt="${user.userInfo.name}" class="custom-user-image">
+        </div>
+        <div class="custom-user-info">
+            <div class="custom-user-name">${user.userInfo.name}</div>
+            <div class="custom-user-stats">
+                <div class="custom-stat-item">
+                    <div class="custom-stat-value">${totalViewers}</div>
+                    <div class="custom-stat-label">總觀看</div>
+                </div>
+                <div class="custom-stat-item">
+                    <div class="custom-stat-value">${totalQuantity}</div>
+                    <div class="custom-stat-label">總銷量</div>
+                </div>
+                <div class="custom-stat-item">
+                    <div class="custom-stat-value">${totalFigures.toLocaleString()}</div>
+                    <div class="custom-stat-label">銷售總額</div>
+                </div>
+                <div class="custom-stat-item">
+                    <div class="custom-stat-value">${averageScore}</div>
+                    <div class="custom-stat-label">平均分數</div>
+                </div>
+            </div>
+        </div>
+        <div class="custom-user-actions">
+            <button class="custom-message-btn">
+                <i class="fas fa-user"></i> 查看檔案
+            </button>
+            <button class="custom-message-btn" data-userid="${user.userInfo.id}">
+                <i class="fas fa-comment"></i> 私訊
+            </button>
+        </div>
+    `;
+            const messageBtn = card.querySelector('.custom-message-btn[data-userid]');
+            messageBtn.addEventListener('click', function() {
+                const userId = this.getAttribute('data-userid');
+                bindMessageButton(card, userId)
+                console.log('私訊用戶:', userId);
+            });
+
+            return card;
+        }
+
+
+        //     function fetchUsers(currentUserId) {
+        //     fetch(`/api/1.0/user/others?currentUserId=${currentUserId}`)
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             const userList = document.getElementById('userList');
+        //             userList.innerHTML = '';
+        //
+        //             data.data.users.forEach(user => {
+        //                 const userCard = document.createElement('div');
+        //                 userCard.className = 'user-card';
+        //                 userCard.innerHTML = `
+        //                 <div class="custom-user-image-container">
+        //                     <img src="${user.userInfo.image || '/api/placeholder/100/100'}" alt="${user.userInfo.name}" class="custom-user-image">
+        //                 </div>
+        //                 <div class="custom-user-info">
+        //                     <div class="custom-user-details">
+        //                         <div class="custom-user-name" data-userId="${user.userInfo.id}">${user.userInfo.name}</div>
+        //                         <div>
+        //                             <button class ="custom-message-btn">
+        //                             <i class="fas fa-user"></i> 個人檔案
+        //                             </button>
+        //                             <button class="custom-message-btn message-btn">
+        //                                 <i class="fa fa-comment"></i> 私訊
+        //                             </button>
+        //                         </div>
+        //                     </div>
+        //                     <hr>
+        //                     <div class="custom-user-stats">
+        //                         <div class="custom-stat-item">
+        //                             <div class="custom-stat-value">${user.liveStatistics.totalViewers}</div>
+        //                             <div class="custom-stat-label">總觀看人數</div>
+        //                         </div>
+        //                         <div class="custom-stat-item">
+        //                             <div class="custom-stat-value">${user.liveStatistics.totalQuantity}</div>
+        //                             <div class="custom-stat-label">總銷量</div>
+        //                         </div>
+        //                         <div class="custom-stat-item">
+        //                             <div class="custom-stat-value">${Math.round(user.liveStatistics.totalFigures)}</div>
+        //                             <div class="custom-stat-label">銷售總額</div>
+        //                         </div>
+        //                         <div class="custom-stat-item">
+        //                             <div class="custom-stat-value">${user.liveStatistics.averageScore.toFixed(2)}</div>
+        //                             <div class="custom-stat-label">觀眾平均分數</div>
+        //                         </div>
+        //                     </div>
+        //                 </div>
+        //             `;
+        //                 userList.appendChild(userCard);
+        //                 bindMessageButton(userCard, user.userInfo.id);
+        //             });
+        //         })
+        //         .catch(error => console.error('Error fetching users:', error));
+        // }
+
+        function bindMessageButton(userCard, user2Id) {
+            const messageButton = userCard.querySelector('.message-btn');
+            const userNameElement = userCard.querySelector('.custom-user-name');
+            const userName = userNameElement.textContent;
+            messageButton.addEventListener('click', function() {
+                const user1Id = getCurrentUserId();
+                console.log('自己:'+user1Id);
+                console.log('對方:'+user2Id);
+                console.log(`/api/1.0/chatroom?currentUserId=${user1Id}&otherUserId=${user2Id}`);
+                if (user2Id && user1Id) {
+                    fetch(`/api/1.0/new-chatroom?currentUserId=${user1Id}&otherUserId=${user2Id}`, {
+                        method: 'POST'
+                    })
+                        .then(response => response.json())
+                        .then(chatRoom => {
+                            console.log(chatRoom)
+                            addChatRoomToList(chatRoom.data);
+                            joinChatRoom(chatRoom.data.id,chatRoom.data.id.receiverInfo.id);
+                            document.querySelector('.floating-circle').style.display = "none";
+                            document.querySelector('.chat-container').style.display = "flex";
+                        })
+                        .catch(error => console.error('創建聊天室失敗:', error));
+                } else {
+                    console.log("請輸入有效的用戶 ID");
+                }
+            });
+        }
+
+        function fetchTopAgents() {
+            fetch('/api/1.0/user/top-agent')
+                .then(response => response.json())
+                .then(data => {
+                    const topAgentsContainer = document.getElementById('topAgentsContainer');
+                    topAgentsContainer.innerHTML = '';
+
+                    data.data.forEach((agent, index) => {
+                        const agentCard = createAgentCard(agent, index);
+                        topAgentsContainer.appendChild(agentCard);
+                    });
+                })
+                .catch(error => console.error('Error fetching top agents:', error));
+        }
+
+        function createAgentCard(agent, index) {
+            const card = document.createElement('div');
+            card.className = 'agent-card';
+            card.style.animationDelay = `${index * 0.1}s`;
+
+            const imageUrl = agent.image || '/api/placeholder/80/80';
+            const totalViewers = agent.totalViewers || 0;
+            const totalQuantity = agent.totalQuantity || 0;
+            const totalFigures = agent.totalFigures || 0;
+
+            card.innerHTML = `
+        <div class="agent-rank">#${index + 1}</div>
+        <img src="${imageUrl}" alt="${agent.name}" class="agent-image">
+        <div class="agent-info">
+            <div class="agent-name">${agent.name}</div>
+            <div class="agent-stats">
+                <div class="stat-item">
+                    <div class="stat-value">${totalViewers}</div>
+                    <div>累積觀看人數</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${totalQuantity}</div>
+                    <div>總銷量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${totalFigures.toLocaleString()}</div>
+                    <div>總銷售額</div>
+                </div>
+            </div>
+        </div>
+    `;
+            return card;
+        }
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // 初始隱藏合約彈出視窗
+        document.querySelector('.contract-signature-container').style.display = 'none';
+
+        // 登入顯示當前用戶名字
+        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
+
+        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
+        document.querySelector('.icon-user').addEventListener('click', function() {
+            var infoWindow = document.querySelector('header .user-info .info-window');
+            if (infoWindow.style.display === 'block') {
+                infoWindow.style.display = 'none';
+            } else {
+                infoWindow.style.display = 'block';
+            }
+        });
+
+        // 綁定導向我的合約按鈕
+        document.getElementById('my-contract-btn').addEventListener('click',function (){
+            window.location.href="my-contract.html";
+        });
+
+        // 綁定登出功能
+        document.getElementById('logout-btn').addEventListener('click',function (){
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            window.location.href="login.html";
+        });
+
+        // 取得下拉選單和隱藏欄位的元素
+        const productSelect = document.getElementById('productName');
+        const productIdInput = document.getElementById('productId');
+
+        // 使用 fetch API 來從後端取得商品數據
+        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
+            .then(response => response.json())
+            .then(data => {
+                const products = data.data;
+
+                // 將每個商品加入到下拉選單中
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id; // 將商品的 id 作為選項的值
+                    option.textContent = product.name; // 將商品的名稱顯示出來
+                    productSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching product data:', error);
+            });
+
+
+        // 當使用者選擇商品時，更新隱藏欄位的值
+        productSelect.addEventListener('change', function () {
+            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
+        });
+    })
+
+
+    document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
+        document.querySelector('.chat-container').style.display = "none";
+        document.querySelector('.floating-circle').style.display = "flex"
+    });
+    document.querySelector('.floating-circle').addEventListener('click',()=>{
+        document.querySelector('.floating-circle').style.display = "none"
+        document.querySelector('.chat-container').style.display = "flex";
+    });
+
+    document.querySelector('.contract-signature-container').style.display="none";
+    document.querySelector('.contract-signature-block').style.display="none";
+    document.querySelector('.signature-block-A').style.display="none";
+    document.querySelector('.signature-block-B').style.display="none";
+    document.querySelector('.signature-A').style.display="none";
+    document.querySelector('.signature-B').style.display="none";
+    document.querySelector('.contract-signature-send-button').style.display='none';
+    document.getElementById('sendAcceptBtn').style.display='none';
+    document.getElementById('sendRejectBtn').style.display='none';
+
+    document.getElementById('contract-closeBtn').addEventListener('click', function () {
+        document.querySelector('.contract-signature-container').style.display = 'none';
+    });
+    document.getElementById('createContractBtn').addEventListener('click',function () {
+        document.querySelector('.contract-signature-container').style.display = 'block';
+    });
+
+
+    // 生成合約
+    document.getElementById('generateContractBtn').addEventListener('click', function () {
+        const contractData = {
+            clientName: document.getElementById('clientName').value,
+            sellerName: document.getElementById('sellerName').value,
+            productName: document.getElementById('productName').value,
+            salesPeriod: document.getElementById('salesPeriod').value,
+            commissionRate: document.getElementById('commissionRate').value
+        };
+        const productSelect = document.getElementById('productName');
+        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
+        const contract_container = document.querySelector('.contract-content-container');
+        const signature_container = document.querySelector('.contract-signature-block');
+
+        const contract = `
+        <div class="contract-content-container">
+    <h3>委託銷售合約</h3>
+    <hr>
+    <p><strong>委託者</strong>：${contractData.clientName}</p>
+    <p><strong>代理者</strong>：${contractData.sellerName}</p>
+    <p><strong>商品名稱</strong>：${selectedProductName}</p>
+    <p><strong>銷售期間</strong>：${contractData.salesPeriod}</p>
+    <p><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${contractData.commissionRate}% 的佣金。</p>
+    <p>此合約由雙方協議達成，並自簽署日起生效。</p>
+    <hr>
+</div>
+    `;
+        document.getElementById('generated-contract').innerHTML = contract;
+        document.querySelector('.contract-input-container').style.display = "none";
+        document.getElementById('generated-contract').appendChild(signature_container);
+        document.querySelector('.contract-signature-block').style.display="flex";
+        document.querySelector('.signature-block-A').style.display="block";
+    });
+
+
+    // 初始化畫布
+    const signaturePadA = document.getElementById('signature-pad-a');
+    // 清除畫布按鈕
+    const clearSignatureA = document.getElementById('clearSignatureA');
+    // 將簽名保存變成圖片
+    const saveSignatureA = document.getElementById('saveSignatureA');
+    // 顯示照片的區域
+    const signatureImageA = document.getElementById('signatureImageA');
+    // 2D繪製
+    const ctxA = signaturePadA.getContext('2d');
+
+    // A是否可畫
+    let drawingA = false;
+
+    // 開始簽名
+    signaturePadA.addEventListener('mousedown', function(event) {
+        drawingA = true;
+        ctxA.beginPath();
+        ctxA.moveTo(event.offsetX, event.offsetY);
+    });
+
+    // 畫簽名的過程
+    signaturePadA.addEventListener('mousemove', function(event) {
+        if (drawingA) {
+            ctxA.lineTo(event.offsetX, event.offsetY);
+            ctxA.stroke();
+        }
+    });
+
+    // 停止畫簽名
+    signaturePadA.addEventListener('mouseup', function() {
+        drawingA = false;
+    });
+
+    saveSignatureA.addEventListener('click',function () {
+        saveSignature(signaturePadA,signatureImageA);
+        clearSignature(ctxA,signaturePadA);
+        document.querySelector('.signature-A').style.display = "block";
+    })
+
+    // 初始化畫布
+    const signaturePadB = document.getElementById('signature-pad-b');
+    // 清除畫布按鈕
+    const clearSignatureB = document.getElementById('clearSignatureB');
+    // 將簽名保存變成圖片
+    const saveSignatureB = document.getElementById('saveSignatureB');
+    // 顯示照片的區域
+    const signatureImageB = document.getElementById('signatureImageB');
+    // 2D繪製
+    const ctxB = signaturePadB.getContext('2d');
+    // A是否可畫
+    let drawingB = false;
+
+
+    // 開始簽名
+    signaturePadB.addEventListener('mousedown', function(event) {
+        drawingB = true;
+        ctxB.beginPath();
+        ctxB.moveTo(event.offsetX, event.offsetY);
+    });
+
+    // 畫簽名的過程
+    signaturePadB.addEventListener('mousemove', function(event) {
+        if (drawingB) {
+            ctxB.lineTo(event.offsetX, event.offsetY);
+            ctxB.stroke();
+        }
+    });
+
+    // 停止畫簽名
+    signaturePadB.addEventListener('mouseup', function() {
+        drawingB = false;
+    });
+
+    saveSignatureB.addEventListener('click',function () {
+        saveSignature(signaturePadB,signatureImageB);
+        clearSignature(ctxB,signaturePadB);
+        document.querySelector('.signature-B').style.display = "block";
+    })
+
+    // 保存簽名並清除畫布
+    function saveSignature(signaturePad,signatureImage) {
+        let dataURL = signaturePad.toDataURL();
+        signatureImage.src = dataURL; // 顯示簽名圖片
+        document.querySelector('.contract-signature-block').style.display="none";
+        if (signatureImage === signatureImageA){
+            document.querySelector('.signature-B').style.display="none";
+            document.querySelector('.contract-signature-send-button').style.display="block";
+        }else{
+            document.querySelector('.signature-A').style.display="none";
+            document.getElementById('sendAcceptBtn').style.display='block';
+            document.getElementById('sendRejectBtn').style.display='block';
+        }
+    }
+
+    // 清除畫布
+    function clearSignature(ctx,signaturePad) {
+        ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+    }
+
+    let contractRoomId = null;
+
+    function connectWebSocketForContract(chatRoomId) {
+        const socket = new SockJS('/contract'); // 確認 WebSocket 端點為 /contract
+        const contractStompClient = Stomp.over(socket);
+        contractStompClient.connect({}, function(frame) {
+            console.log(chatRoomId);
+            contractRoomId = chatRoomId;
+            console.log('已連接到合約端點: ' + frame);
+            const userId = getCurrentUserId(); // 確認是否有用戶 ID
+            if (userId) {
+                subscribeToNewContract(contractRoomId); // 訂閱合約頻道
+            } else {
+                alert("請先登入");
+            }
+        }, function(error) {
+            console.error('合約連接失敗:', error);
+            setTimeout(connectWebSocketForContract, 5000); // 5 秒後重試連接
+        });
+    }
+
+    function subscribeToNewContract(contractRoomId){
+        stompClient.subscribe(`/topic/contract/${contractRoomId}`,function(choose){
+            console.log(`已經訂閱:/topic/contract/${contractRoomId}`)
+            const result = JSON.parse(choose.body);
+            console.log(result);
+            if(result.senderId !== localStorage.getItem('userId')){
+                switch(result.requestType){
+                    case "accept":
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("代理者已簽署，該份合約已生效。");
+                        break;
+                    case "reject":
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("代理者未簽署，請與其聯絡。");
+                        break;
+                    case "request":
+                        document.querySelector('.contract-signature-container').style.display = 'block';
+                        // 得到請求，先清空合約填空處
+                        document.querySelector('.contract-input-container').innerHTML='';
+                        // 獲取合約內容
+                        const contract = `
+                <div class="contract-content-container">
+                <h3>委託銷售合約</h3>
+                <hr>
+                <p id="clientName"><strong>委託者</strong>：${result.clientName}</p>
+                <p id="sellerName"><strong>代理者</strong>：${result.sellerName}</p>
+                <p id="productName"><strong>商品名稱</strong>：${result.productName}</p>
+                <p id="salesPeriod"><strong>銷售期間</strong>：${result.salesPeriod}</p>
+                <p id="commissionRate"><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${result.commissionRate}% 的佣金。</p>
+                <p>此合約由雙方協議達成，並自簽署日起生效。</p>
+                <span id="clientId" style="display: none;">${result.clientId}</span>
+                <span id="productId" style="display: none;">${result.productId}</span>
+                <span id="signatureImage" style="display: none;">${result.signatureImage}</span>
+                <hr>
+                </div>
+                `;
+                        document.getElementById('generated-contract').innerHTML = contract;
+
+                        document.querySelector('.contract-signature-block').style.display="flex";
+                        document.querySelector('.signature-block-B').style.display="block";
+                        break;
+                }
+            }else{
+                switch (result.requestType){
+                    case "accept":
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("合約已保存。");
+                        break;
+                    case "reject":
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("已通知委託者，發回處理。");
+                        break;
+                }
+            }
+        });
+    }
+
+    // 發送訊息
+    document.getElementById("sendContractBtn").addEventListener("click", function() {
+
+        const productSelect = document.getElementById('productName');
+        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
+
+        if (document.getElementById('currentChatRoomName').textContent) {
+            const message = {
+                requestType:"request",
+                chatRoomId: contractRoomId,   // 當前聊天室 ID
+                senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
+                clientId: localStorage.getItem("userId"),
+                clientName: document.getElementById('clientName').value,
+                sellerName: document.getElementById('sellerName').value,
+                productName: selectedProductName,
+                productId:document.getElementById('productId').value,
+                salesPeriod: document.getElementById('salesPeriod').value,
+                commissionRate: document.getElementById('commissionRate').value,
+                signatureImage:signatureImageA.getAttribute('src'),
+                timestamp: new Date().toISOString() // 當前時間
+            };
+            stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+            document.getElementById('signature-preview').innerHTML=``;
+            document.getElementById('generated-contract').innerHTML=`
+            <div class = "contract-loading">
+                <h3>合約已送出，等待代理者簽署中</h3>
+                <div class="dots-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            `;
+            document.getElementById('sendContractBtn').style.display="none";
+            document.getElementById('signature-preview').innerHTML=``;
+        } else {
+            alert("請選擇聊天室並輸入訊息");
+        }
+    });
+
+    document.getElementById("sendAcceptBtn").addEventListener("click", function() {
+        const message = {
+            requestType:"accept",
+            chatRoomId: contractRoomId,   // 當前聊天室 ID
+            senderId: localStorage.getItem("userId"),                // 發送者 ID
+            clientId:document.getElementById('clientId').textContent,
+            agentId:localStorage.getItem('userId'),
+            clientName: document.getElementById('clientName').textContent,
+            sellerName: document.getElementById('sellerName').textContent,
+            productName: document.getElementById('productName').textContent,
+            productId: document.getElementById('productId').textContent,
+            salesPeriod: document.getElementById('salesPeriod').textContent,
+            commissionRate: document.getElementById('commissionRate').textContent,
+            signatureImage:document.getElementById('signatureImage').textContent,
+            agentSignatureImage:signatureImageB.getAttribute('src'),
+            timestamp: new Date().toISOString() // 當前時間
+        };
+        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+    });
+
+    document.getElementById("sendRejectBtn").addEventListener("click", function() {
+        const message = {
+            requestType:"reject",
+            chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+            senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
+            timestamp: new Date().toISOString() // 當前時間
+        };
+        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+    });
+</script>
+</body>
+</html>

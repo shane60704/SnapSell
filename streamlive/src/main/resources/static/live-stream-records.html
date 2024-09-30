@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapSell 直播紀錄</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/header.css"/>
+    <link rel="stylesheet" href="assets/css/chat.css"/>
+    <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/footer.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .record-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            flex: 1;
+        }
+
+        .record-container h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .livestream-record-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .livestream-record-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .livestream-record-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .livestream-record-header {
+            background: linear-gradient(45deg, #1a2a3a, #3a4a5a);
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .livestream-record-body {
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 20px;
+        }
+
+        .livestream-record-row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 150px;
+        }
+
+        .livestream-record-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .livestream-record-value {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .icon {
+            margin-right: 10px;
+            color: #3498db;
+        }
+
+        .white{
+            color: #FFFFFF;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .livestream-record-body {
+                flex-wrap: wrap;
+            }
+
+            .livestream-record-row {
+                min-width: calc(50% - 10px);
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .livestream-record-row {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo">
+            <h1>SnapSell</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="client.html">找委託</a></li>
+                <li><a href="agent.html">找代理</a></li>
+                <li><a href="live-stream-lobby.html">找直播</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <div id="user-name">用戶名</div>
+            <div class="user-actions">
+                <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
+                <div class="info-window">
+                    <div class = "log-out">
+                        <div class="log-out-content">個人檔案</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的訂單</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id="my-live-stream">
+                        <div class="log-out-content"><p>我的直播</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out">
+                        <div class="log-out-content"><p>我的商品</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "my-contract-btn">
+                        <div class="log-out-content"><p>我的合約</p></div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "logout-btn">
+                        <div class="log-out-content"><p>登出</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="record-container">
+    <div id="livestreamRecordList" class="livestream-record-list">
+    </div>
+</div>
+<footer>
+    <div class="container">
+        <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
+    </div>
+</footer>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // 初始隱藏合約彈出視窗
+        // document.querySelector('.contract-signature-container').style.display = 'none';
+
+        // 登入顯示當前用戶名字
+        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
+
+        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
+        document.querySelector('.icon-user').addEventListener('click', function() {
+            var infoWindow = document.querySelector('header .user-info .info-window');
+            if (infoWindow.style.display === 'block') {
+                infoWindow.style.display = 'none';
+            } else {
+                infoWindow.style.display = 'block';
+            }
+        });
+
+        // 綁定導向我的合約按鈕
+        document.getElementById('my-contract-btn').addEventListener('click',function (){
+            window.location.href="my-contract.html";
+        });
+
+        // 綁定導向我的直播按鈕
+        document.getElementById('my-live-stream').addEventListener('click',function (){
+            window.location.href="live-stream-records.html";
+        });
+
+        // 綁定登出功能
+        document.getElementById('logout-btn').addEventListener('click',function (){
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            window.location.href="login.html";
+        });
+
+        document.querySelector('.logo').addEventListener('click',function (){
+            window.location.href="index.html";
+        });
+
+        // 取得下拉選單和隱藏欄位的元素
+        const productSelect = document.getElementById('productName');
+        const productIdInput = document.getElementById('productId');
+
+        // 使用 fetch API 來從後端取得商品數據
+        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
+            .then(response => response.json())
+            .then(data => {
+                const products = data.data;
+
+                // 將每個商品加入到下拉選單中
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id; // 將商品的 id 作為選項的值
+                    option.textContent = product.name; // 將商品的名稱顯示出來
+                    productSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching product data:', error);
+            });
+
+
+        // 當使用者選擇商品時，更新隱藏欄位的值
+        productSelect.addEventListener('change', function () {
+            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
+        });
+    })
+    fetch(`/api/1.0/livestream/user/${localStorage.getItem("userId")}/records`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('獲取失敗');
+            }
+            return response.json();
+        })
+        .then(data => {
+            var livestreamRecordList = document.getElementById('livestreamRecordList');
+
+            if (Array.isArray(data.data)) {
+                data.data.forEach(function(record, index) {
+                    var recordElement = `
+                        <div class="livestream-record-container">
+                            <div class="livestream-record-header">
+                                <i class="fas fa-video icon white"></i>直播紀錄 #${index + 1}
+                            </div>
+                            <div class="livestream-record-body">
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-users icon"></i>觀眾人數</span>
+                                    <span class="livestream-record-value">${record.viewers}</span>
+                                </div>
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-shopping-cart icon"></i>銷售數量</span>
+                                    <span class="livestream-record-value">${record.salesQuantity}</span>
+                                </div>
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-dollar-sign icon"></i>銷售金額</span>
+                                    <span class="livestream-record-value">NT$ ${record.salesFigures}</span>
+                                </div>
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-play icon"></i>開始時間</span>
+                                    <span class="livestream-record-value">${new Date(record.startTime).toLocaleString()}</span>
+                                </div>
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-stop icon"></i>結束時間</span>
+                                    <span class="livestream-record-value">${new Date(record.endTime).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    livestreamRecordList.innerHTML += recordElement;
+                });
+            } else {
+                console.error(`數據格式不正確`, data);
+            }
+        })
+        .catch(error => {
+            alert('無法獲取直播紀錄，請稍後再試。');
+            console.error('錯誤:', error);
+        });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+

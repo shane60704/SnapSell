@@ -1,9 +1,11 @@
 package com.example.streamlive.controller;
 
-import com.example.streamlive.dao.chat.Impl.ChatDaoImpl;
+import com.example.streamlive.dao.chat.ChatDao;
+import com.example.streamlive.dao.user.UserDao;
 import com.example.streamlive.model.ChatRoom;
+import com.example.streamlive.model.chat.UserChatRoom;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,14 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/1.0")
 public class ChatRoomNotificationController {
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
-    @Autowired
-    private ChatDaoImpl chatDao;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final ChatDao chatDao;
+    private final UserDao userDao;
 
     // 創建聊天室，並通知 B
     @PostMapping("/chatroom")
@@ -35,5 +36,25 @@ public class ChatRoomNotificationController {
             simpMessagingTemplate.convertAndSend("/topic/newRoom/" + user2Id, chatRoom);
         }
         return chatRoom;
+    }
+
+    @PostMapping("/new-chatroom")
+    public UserChatRoom createChatRoom(@RequestParam Long currentUserId, @RequestParam Long otherUserId) {
+        ChatRoom chatRoom = chatDao.findChatRoomByUsersId(currentUserId, otherUserId);
+        if (chatRoom == null) {
+            UserChatRoom userChatRoom = new UserChatRoom();
+            String uniqueChatroom = "room_" + currentUserId + "_" + otherUserId; // 唯一標識符
+            Long chatRoomId = chatDao.createChatRoom(currentUserId, otherUserId, uniqueChatroom);// 取得 chatRoomId
+            chatRoom = chatDao.findChatRoomByUsersId(currentUserId, otherUserId);
+            userChatRoom.setId(chatRoom.getId());
+            userChatRoom.setUniqueChatroom(chatRoom.getUniqueChatroom());
+            userChatRoom.setSenderInfo(userDao.getUserInfoByUserId(currentUserId));
+            userChatRoom.setReceiverInfo(userDao.getUserInfoByUserId(otherUserId));
+            userChatRoom.setRecentMessage(chatDao.findRecentMessageByChatRoomId(chatRoom.getId()));
+            // 通知 聊天對象 有的新聊天室
+            simpMessagingTemplate.convertAndSend("/topic/newRoom/" + otherUserId, chatRoom);
+            return userChatRoom;
+        }
+        return null;
     }
 }
