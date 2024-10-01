@@ -216,7 +216,6 @@
             margin: 5px 0;
         }
 
-        /* 我要購買按鈕 */
         .buy-button {
             background-color: #5FB1F7;
             color: #fff;
@@ -616,6 +615,10 @@
             margin-bottom: 15px;
         }
 
+        .custom-modal-header h2 {
+            color:white;
+        }
+
         /* 內文區域樣式 */
         .custom-modal-body {
             text-align: center;
@@ -681,6 +684,7 @@
             margin-bottom: 4px;
             font-size: 24px;
         }
+
         .streamer-info p,h2{
             color:white;
         }
@@ -712,7 +716,6 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
@@ -720,6 +723,7 @@
             overflow: auto;
             background-color: rgba(0,0,0,0.7);
             animation: fadeIn 0.3s;
+            z-index: 1000;
         }
 
         .modal-content {
@@ -740,6 +744,9 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            position: absolute;
+            top:5px;
+            right: 10px;
         }
 
         .close:hover,
@@ -827,8 +834,17 @@
 
         #giftModal .modal-content {
             display: flex;
+            flex-direction: column;
             flex-wrap: wrap;
             justify-content: space-around;
+        }
+        .item-container{
+            display: flex;
+            margin: auto;
+        }
+        .item-header{
+            display: flex;
+            margin: auto auto 10px auto;
         }
 
         .gift-item {
@@ -852,8 +868,9 @@
         }
 
         .gift-name {
-            font-size: 12px;
+            font-size: 16px;
             margin-top: 5px;
+            color:white;
         }
     </style>
 </head>
@@ -864,7 +881,7 @@
         <div class="video-container">
             <video id="videoStream" autoplay></video>
             <div class="video-label" id="videoLabel">直播中</div>
-            <div class="viewers">在線觀眾數: 0</div>
+            <div class="viewers">在線人數: 0</div>
             <!-- 狀態顯示區域 -->
             <div id="status"></div>
         </div>
@@ -1035,22 +1052,26 @@
 <div id="giftModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <h2>選擇禮物</h2>
-        <div class="gift-item" onclick="sendGift('🌹')">
-            <div class="gift-icon">🌹</div>
-            <div class="gift-name">玫瑰</div>
+        <div class ="item-header">
+            <h2>選擇禮物</h2>
         </div>
-        <div class="gift-item" onclick="sendGift('🎁')">
-            <div class="gift-icon">🎁</div>
-            <div class="gift-name">禮物</div>
-        </div>
-        <div class="gift-item" onclick="sendGift('💎')">
-            <div class="gift-icon">💎</div>
-            <div class="gift-name">鑽石</div>
-        </div>
-        <div class="gift-item" onclick="sendGift('🚀')">
-            <div class="gift-icon">🚀</div>
-            <div class="gift-name">火箭</div>
+        <div class ="item-container">
+            <div class="gift-item" onclick="sendGift('🌹')">
+                <div class="gift-icon">🌹</div>
+                <div class="gift-name">玫瑰</div>
+            </div>
+            <div class="gift-item" onclick="sendGift('🎁')">
+                <div class="gift-icon">🎁</div>
+                <div class="gift-name">禮物</div>
+            </div>
+            <div class="gift-item" onclick="sendGift('💎')">
+                <div class="gift-icon">💎</div>
+                <div class="gift-name">鑽石</div>
+            </div>
+            <div class="gift-item" onclick="sendGift('🚀')">
+                <div class="gift-icon">🚀</div>
+                <div class="gift-name">火箭</div>
+            </div>
         </div>
     </div>
 </div>
@@ -1065,11 +1086,12 @@
         const products = urlParams.get('products');
         const title = urlParams.get('title');
         const productArray = products ? products.split(',') : [];
+        const  description = urlParams.get('description');
         console.log('Selected Products:', productArray);
         // 獲取產品資料並渲染
         getProductInfo(productArray);
 
-        document.querySelector('.streamer-details h2').textContent = `主播 : ${localStorage.getItem("userName")}`;
+        document.querySelector('.streamer-details h2').textContent = `主播 : ${description}`;
         document.querySelector('.streamer-details p').textContent = `正在直播：${title}`;
 
         function getProductInfo(productArray) {
@@ -1286,16 +1308,13 @@
             document.querySelector('#tpForm').addEventListener('submit', function (event) {
                 event.preventDefault();
 
-                // 取得 TapPay Fields 的 status
                 const tappayStatus = TPDirect.card.getTappayFieldsStatus();
 
-                // 確認是否可以 getPrime
                 if (tappayStatus.canGetPrime === false) {
                     alert('信用卡資訊填寫不完整');
                     return;
                 }
 
-                // Get prime
                 TPDirect.card.getPrime((result) => {
                     if (result.status !== 0) {
                         alert("付款失敗，請重新付款");
@@ -1380,7 +1399,6 @@
     let roomId;
     let isBroadcaster = false;
     let viewerId; // 新增：觀眾的唯一識別碼
-    let viewer = 0;
 
     const configuration = {
         iceServers: [
@@ -1516,9 +1534,9 @@
 
     function initializeWebSocket() {
         // 測試環境使用
-        ws = new WebSocket('ws://localhost:8080/socket');
+        // ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        // ws = new WebSocket('wss://techwavelab.com/socket');
+        ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {
@@ -1704,7 +1722,7 @@
 
     function updateViewerCount(viewerCount) {
         const viewersElement = document.querySelector('.viewers');
-        viewersElement.textContent = `在線觀眾數: ${viewerCount}`;
+        viewersElement.textContent = `在線人數: ${viewerCount}`;
     }
 
     function handleOffer(offer) {
@@ -1839,10 +1857,14 @@
         videoLabel.style.display='none';
         hangupButton.disabled = true;
         disableChat();
-        updateStatus('已離開房間');
+
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerHTML = '<p>直播已結束</p>';
+        statusDiv.style.display = 'flex';
+        statusDiv.style.color = 'white';
+
         document.getElementById("videoLabel").style.display= "none";
         document.querySelector(".viewers").style.display= "none";
-        document.getElementById('status').innerHTML = '<p>直播已結束，請返回大廳。</p>';
     }
 
     function sendChatMessage() {
@@ -1853,7 +1875,6 @@
             messageInput.value = '';
         }
     }
-
 
     function sendGift(giftEmoji) {
         const videoPlaceholder = document.querySelector('.video-container');
@@ -1888,13 +1909,11 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-
     function enableChat() {
         document.getElementById('messageInput').disabled = false;
         document.getElementById('sendMessage').disabled = false;
     }
 
-   
     function disableChat() {
         document.getElementById('messageInput').disabled = true;
         document.getElementById('sendMessage').disabled = true;

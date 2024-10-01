@@ -18,9 +18,9 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat").setAllowedOriginPatterns("*").withSockJS();
-        registry.addEndpoint("/contract").setAllowedOriginPatterns("*").withSockJS();
-//        registry.addEndpoint("/chat").setAllowedOrigins("https://techwavelab.com").withSockJS();
-//        registry.addEndpoint("/contract").setAllowedOrigins("https://techwavelab.com").withSockJS();
+//        registry.addEndpoint("/chat").setAllowedOriginPatterns("*").withSockJS();
+//        registry.addEndpoint("/contract").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/chat").setAllowedOrigins("https://techwavelab.com").withSockJS();
+        registry.addEndpoint("/contract").setAllowedOrigins("https://techwavelab.com").withSockJS();
     }
 }

@@ -302,4 +302,12 @@ public class UserDaoImpl implements UserDao {
                 "LIMIT 5";
         return namedParameterJdbcTemplate.query(sql, new BeanPropertyRowMapper<>(AgentProfile.class));
     }
+
+    @Override
+    public String getUserImageById(String userId) {
+        String sql = "SELECT image FROM user WHERE id = :userId";
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        return namedParameterJdbcTemplate.queryForObject(sql, params, String.class);
+    }
 }

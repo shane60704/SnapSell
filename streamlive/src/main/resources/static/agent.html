@@ -27,7 +27,8 @@
         .page-container {
             flex-grow: 1;
             padding: 20px;
-            width: 80%;
+            max-width: 1400px;
+            width: 100%;
             margin: 0 auto;
         }
         /* 說明文字區塊 */
@@ -75,24 +76,20 @@
         .agent-card {
             background-color: #f8f9fa;
             border-radius: 10px;
-            padding: 20px;
+            padding: 20px 30px;
             display: flex;
             align-items: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
         }
-        .agent-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
         .agent-rank {
             position: absolute;
-            top: 10px;
+            top: 0px;
             left: 10px;
             font-size: 2em;
-            font-weight: bold;
-            color: #007bff;
+            font-weight: 800;
+            color: #000080;
         }
         .agent-image {
             width: 80px;
@@ -112,6 +109,8 @@
         }
         .agent-stats {
             display: flex;
+            width: 100%;
+            justify-content: space-around;
             gap: 20px;
         }
         .stat-item {
@@ -139,11 +138,6 @@
             padding: 10px;
             height: 80px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .user-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
         .custom-user-image-container {
@@ -301,7 +295,7 @@
                         <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
-                    <div class = "log-out">
+                    <div class = "log-out" id="my-products-btn">
                         <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
@@ -339,7 +333,7 @@
 </div>
 
 <footer>
-    <div class="container">
+    <div class="products-container">
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
@@ -464,40 +458,6 @@
 <!--<script src="assets/js/contract.js"></script>-->
 <script>
 
-    document.addEventListener('DOMContentLoaded', function () {
-
-        // 初始隱藏合約彈出視窗
-        document.querySelector('.contract-signature-container').style.display = 'none';
-
-        // 取得下拉選單和隱藏欄位的元素
-        const productSelect = document.getElementById('productName');
-        const productIdInput = document.getElementById('productId');
-
-        // 使用 fetch API 來從後端取得商品數據
-        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
-            .then(response => response.json())
-            .then(data => {
-                const products = data.data;
-
-                // 將每個商品加入到下拉選單中
-                products.forEach(product => {
-                    const option = document.createElement('option');
-                    option.value = product.id; // 將商品的 id 作為選項的值
-                    option.textContent = product.name; // 將商品的名稱顯示出來
-                    productSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching product data:', error);
-            });
-
-
-        // 當使用者選擇商品時，更新隱藏欄位的值
-        productSelect.addEventListener('change', function () {
-            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
-        });
-    })
-
     document.addEventListener('DOMContentLoaded', function() {
 
         fetchTopAgents();
@@ -535,7 +495,7 @@
             <div class="custom-user-stats">
                 <div class="custom-stat-item">
                     <div class="custom-stat-value">${totalViewers}</div>
-                    <div class="custom-stat-label">總觀看</div>
+                    <div class="custom-stat-label">總觀看數</div>
                 </div>
                 <div class="custom-stat-item">
                     <div class="custom-stat-value">${totalQuantity}</div>
@@ -543,7 +503,7 @@
                 </div>
                 <div class="custom-stat-item">
                     <div class="custom-stat-value">${totalFigures.toLocaleString()}</div>
-                    <div class="custom-stat-label">銷售總額</div>
+                    <div class="custom-stat-label">總銷售額</div>
                 </div>
                 <div class="custom-stat-item">
                     <div class="custom-stat-value">${averageScore}</div>
@@ -704,7 +664,7 @@
             <div class="agent-stats">
                 <div class="stat-item">
                     <div class="stat-value">${totalViewers}</div>
-                    <div>累積觀看人數</div>
+                    <div>總觀看數</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value">${totalQuantity}</div>
@@ -726,31 +686,6 @@
         // 初始隱藏合約彈出視窗
         document.querySelector('.contract-signature-container').style.display = 'none';
 
-        // 登入顯示當前用戶名字
-        document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
-
-        // 使用者頭像綁定監聽事件(顯示隱藏視窗)
-        document.querySelector('.icon-user').addEventListener('click', function() {
-            var infoWindow = document.querySelector('header .user-info .info-window');
-            if (infoWindow.style.display === 'block') {
-                infoWindow.style.display = 'none';
-            } else {
-                infoWindow.style.display = 'block';
-            }
-        });
-
-        // 綁定導向我的合約按鈕
-        document.getElementById('my-contract-btn').addEventListener('click',function (){
-            window.location.href="my-contract.html";
-        });
-
-        // 綁定登出功能
-        document.getElementById('logout-btn').addEventListener('click',function (){
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            window.location.href="login.html";
-        });
 
         // 取得下拉選單和隱藏欄位的元素
         const productSelect = document.getElementById('productName');
@@ -780,8 +715,6 @@
             productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
         });
     })
-
-
     document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
         document.querySelector('.chat-container').style.display = "none";
         document.querySelector('.floating-circle').style.display = "flex"

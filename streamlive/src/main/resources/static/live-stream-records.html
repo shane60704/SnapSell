@@ -28,6 +28,7 @@
         .record-container {
             max-width: 1200px;
             margin: 30px auto;
+            padding: 0px 20px;
             flex: 1;
         }
 
@@ -146,7 +147,7 @@
                         <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
-                    <div class = "log-out">
+                    <div class = "log-out" id="my-products-btn">
                         <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
@@ -167,18 +168,201 @@
     </div>
 </div>
 <footer>
-    <div class="container">
+    <div class="products-container">
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
+<!-- 聊天室區塊 -->
+<div class="floating-circle">
+    <img src="assets/image/messenger.png" alt="Chat Icon">
+</div>
+
+<div class="chat-container">
+
+    <div class="chat-sidebar">
+        <ul id="chatRoomList" class="chat-room-list"></ul>
+        <button id="createChatRoomBtn" style="padding: 10px; background-color: #FF5A5F; border: none; border-radius: 30px; color: white; cursor: pointer;display: none;">新增聊天室</button>
+    </div>
+
+    <div class="chat-main">
+        <!-- 顯示當前聊天室名稱的區塊 -->
+        <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
+        <div class = "chatRoomHidden"><img src="assets/image/close.png"></div>
+
+        <!-- 訊息區 -->
+        <div id="chatWindow" class="chat-window">
+            <div id="messageArea" class="message-area"></div>
+        </div>
+
+        <!-- 創建合約按鈕 -->
+        <button id="createContractBtn">創建合約</button>
+
+        <!-- 聊天輸入框 -->
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="輸入訊息...">
+            <button id="sendMessageBtn">發送</button>
+        </div>
+    </div>
+</div>
+
+<!-- 合約生成區塊 -->
+<div class="contract-signature-container">
+    <button class="contract-close-btn" id="contract-closeBtn">X</button>
+    <div class="contract-input-container">
+        <h2>產生合約</h2>
+
+        <div class="contract-input-field">
+            <label for="clientName">委託者名稱</label>
+            <input type="text" id="clientName" placeholder="輸入委託者名稱">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="sellerName">代理者名稱</label>
+            <input type="text" id="sellerName" placeholder="輸入代理者名稱">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="productName">商品名稱</label>
+            <select id="productName">
+                <option value="">請選擇商品</option>
+            </select>
+        </div>
+
+        <!-- 隱藏欄位，用來儲存選擇的商品 ID -->
+        <input type="hidden" id="productId" name="productId">
+
+        <div class="contract-input-field">
+            <label for="salesPeriod">銷售期間</label>
+            <input type="text" id="salesPeriod" placeholder="輸入銷售期間">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="commissionRate">佣金比例 (%)</label>
+            <input type="number" id="commissionRate" placeholder="輸入佣金比例">
+        </div>
+
+        <button id="generateContractBtn" class="contract-signature-button">生成合約</button>
+    </div>
+    <!-- 顯示生成的合約 -->
+    <div id="generated-contract" class="contract-signature-generated"></div>
+
+    <!-- 簽名區塊 -->
+    <div class="contract-signature-block">
+        <div class="signature-block-A">
+            <h4>委託者簽名區</h4>
+            <canvas id="signature-pad-a" class="contract-signature-pad"></canvas>
+            <div class="signature-button-group">
+                <button id="clearSignatureA" class="contract-signature-button">清除簽名</button>
+                <button id="saveSignatureA" class="contract-signature-button">保存簽名</button>
+            </div>
+        </div>
+        <div class="signature-block-B">
+            <h4>代理者簽名區</h4>
+            <canvas id="signature-pad-b" class="contract-signature-pad"></canvas>
+            <div class="signature-button-group">
+                <button id="clearSignatureB" class="contract-signature-button">清除簽名</button>
+                <button id="saveSignatureB" class="contract-signature-button">保存簽名</button>
+            </div>
+        </div>
+    </div>
+    <!-- 圖像預覽區 -->
+    <div id="signature-preview" class="contract-signature-preview">
+        <div class ="signature-A">
+            <h4>簽名圖片預覽</h4>
+            <img id="signatureImageA" src="" alt="簽名圖片預覽">
+        </div>
+        <div class ="signature-B">
+            <h4>簽名圖片預覽</h4>
+            <img id="signatureImageB" src="" alt="簽名圖片預覽">
+        </div>
+    </div>
+    <!-- 發送合約按鈕 -->
+    <div class="contract-signature-send-button-container">
+        <button id="sendContractBtn" class="contract-signature-send-button contract-signature-button">發送合約給代理者</button>
+        <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
+        <button id="sendRejectBtn" class=" contract-signature-button">拒絕合約</button>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src = "assets/js/header.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="assets/js/header.js"></script>
+<script src="assets/js/chat.js"></script>
 <script>
+
+    fetch(`/api/1.0/livestream/user/${localStorage.getItem("userId")}/records`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('獲取失敗');
+            }
+            return response.json();
+        })
+        .then(data => {
+            var livestreamRecordList = document.getElementById('livestreamRecordList');
+
+            if (Array.isArray(data.data)) {
+                data.data.forEach(function(record, index) {
+
+                    var startTimeFormatted = formatDateTime(new Date(record.startTime));
+                    var endTimeFormatted = formatDateTime(new Date(record.endTime));
+
+                    var recordElement = `
+                        <div class="livestream-record-container">
+                            <div class="livestream-record-header">
+                                <i class="fas fa-video icon white"></i>直播紀錄 #${index + 1}
+                            </div>
+                            <div class="livestream-record-body">
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-users icon"></i>觀眾人數</span>
+                                    <span class="livestream-record-value">${record.viewers}</span>
+                                </div>
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-shopping-cart icon"></i>銷售數量</span>
+                                    <span class="livestream-record-value">${record.salesQuantity}</span>
+                                </div>
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-dollar-sign icon"></i>銷售金額</span>
+                                    <span class="livestream-record-value">NT$ ${record.salesFigures}</span>
+                                </div>
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-play icon"></i>開始時間</span>
+                                    <span class="livestream-record-value">${startTimeFormatted}</span>
+                                </div>
+                                <div class="livestream-record-row">
+                                    <span class="livestream-record-label"><i class="fas fa-stop icon"></i>結束時間</span>
+                                    <span class="livestream-record-value">${endTimeFormatted}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    livestreamRecordList.innerHTML += recordElement;
+                });
+            } else {
+                console.error(`數據格式不正確`, data);
+            }
+        })
+        .catch(error => {
+            alert('無法獲取直播紀錄，請稍後再試。');
+            console.error('錯誤:', error);
+        });
+
+    function formatDateTime(date) {
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 月份從 0 開始，所以要 +1
+        const day = date.getDate().toString().padStart(2, '0');
+        const hours = date.getHours().toString().padStart(2, '0'); // 確保 24 小時制
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+
+        return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
 
-        // // 初始隱藏合約彈出視窗
-        // document.querySelector('.contract-signature-container').style.display = 'none';
+        // 初始隱藏合約彈出視窗
+        document.querySelector('.contract-signature-container').style.display = 'none';
+
 
         // 取得下拉選單和隱藏欄位的元素
         const productSelect = document.getElementById('productName');
@@ -208,57 +392,315 @@
             productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
         });
     })
-    fetch(`/api/1.0/livestream/user/${localStorage.getItem("userId")}/records`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('獲取失敗');
-            }
-            return response.json();
-        })
-        .then(data => {
-            var livestreamRecordList = document.getElementById('livestreamRecordList');
+    document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
+        document.querySelector('.chat-container').style.display = "none";
+        document.querySelector('.floating-circle').style.display = "flex"
+    });
+    document.querySelector('.floating-circle').addEventListener('click',()=>{
+        document.querySelector('.floating-circle').style.display = "none"
+        document.querySelector('.chat-container').style.display = "flex";
+    });
 
-            if (Array.isArray(data.data)) {
-                data.data.forEach(function(record, index) {
-                    var recordElement = `
-                        <div class="livestream-record-container">
-                            <div class="livestream-record-header">
-                                <i class="fas fa-video icon white"></i>直播紀錄 #${index + 1}
-                            </div>
-                            <div class="livestream-record-body">
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-users icon"></i>觀眾人數</span>
-                                    <span class="livestream-record-value">${record.viewers}</span>
-                                </div>
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-shopping-cart icon"></i>銷售數量</span>
-                                    <span class="livestream-record-value">${record.salesQuantity}</span>
-                                </div>
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-dollar-sign icon"></i>銷售金額</span>
-                                    <span class="livestream-record-value">NT$ ${record.salesFigures}</span>
-                                </div>
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-play icon"></i>開始時間</span>
-                                    <span class="livestream-record-value">${new Date(record.startTime).toLocaleString()}</span>
-                                </div>
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-stop icon"></i>結束時間</span>
-                                    <span class="livestream-record-value">${new Date(record.endTime).toLocaleString()}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    livestreamRecordList.innerHTML += recordElement;
-                });
+    document.querySelector('.contract-signature-container').style.display="none";
+    document.querySelector('.contract-signature-block').style.display="none";
+    document.querySelector('.signature-block-A').style.display="none";
+    document.querySelector('.signature-block-B').style.display="none";
+    document.querySelector('.signature-A').style.display="none";
+    document.querySelector('.signature-B').style.display="none";
+    document.querySelector('.contract-signature-send-button').style.display='none';
+    document.getElementById('sendAcceptBtn').style.display='none';
+    document.getElementById('sendRejectBtn').style.display='none';
+
+    document.getElementById('contract-closeBtn').addEventListener('click', function () {
+        document.querySelector('.contract-signature-container').style.display = 'none';
+    });
+    document.getElementById('createContractBtn').addEventListener('click',function () {
+        document.querySelector('.contract-signature-container').style.display = 'block';
+    });
+
+
+    // 生成合約
+    document.getElementById('generateContractBtn').addEventListener('click', function () {
+        const contractData = {
+            clientName: document.getElementById('clientName').value,
+            sellerName: document.getElementById('sellerName').value,
+            productName: document.getElementById('productName').value,
+            salesPeriod: document.getElementById('salesPeriod').value,
+            commissionRate: document.getElementById('commissionRate').value
+        };
+        const productSelect = document.getElementById('productName');
+        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
+        const contract_container = document.querySelector('.contract-content-container');
+        const signature_container = document.querySelector('.contract-signature-block');
+
+        const contract = `
+        <div class="contract-content-container">
+    <h3>委託銷售合約</h3>
+    <hr>
+    <p><strong>委託者</strong>：${contractData.clientName}</p>
+    <p><strong>代理者</strong>：${contractData.sellerName}</p>
+    <p><strong>商品名稱</strong>：${selectedProductName}</p>
+    <p><strong>銷售期間</strong>：${contractData.salesPeriod}</p>
+    <p><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${contractData.commissionRate}% 的佣金。</p>
+    <p>此合約由雙方協議達成，並自簽署日起生效。</p>
+    <hr>
+</div>
+    `;
+        document.getElementById('generated-contract').innerHTML = contract;
+        document.querySelector('.contract-input-container').style.display = "none";
+        document.getElementById('generated-contract').appendChild(signature_container);
+        document.querySelector('.contract-signature-block').style.display="flex";
+        document.querySelector('.signature-block-A').style.display="block";
+    });
+
+
+    // 初始化畫布
+    const signaturePadA = document.getElementById('signature-pad-a');
+    // 清除畫布按鈕
+    const clearSignatureA = document.getElementById('clearSignatureA');
+    // 將簽名保存變成圖片
+    const saveSignatureA = document.getElementById('saveSignatureA');
+    // 顯示照片的區域
+    const signatureImageA = document.getElementById('signatureImageA');
+    // 2D繪製
+    const ctxA = signaturePadA.getContext('2d');
+
+    // A是否可畫
+    let drawingA = false;
+
+    // 開始簽名
+    signaturePadA.addEventListener('mousedown', function(event) {
+        drawingA = true;
+        ctxA.beginPath();
+        ctxA.moveTo(event.offsetX, event.offsetY);
+    });
+
+    // 畫簽名的過程
+    signaturePadA.addEventListener('mousemove', function(event) {
+        if (drawingA) {
+            ctxA.lineTo(event.offsetX, event.offsetY);
+            ctxA.stroke();
+        }
+    });
+
+    // 停止畫簽名
+    signaturePadA.addEventListener('mouseup', function() {
+        drawingA = false;
+    });
+
+    saveSignatureA.addEventListener('click',function () {
+        saveSignature(signaturePadA,signatureImageA);
+        clearSignature(ctxA,signaturePadA);
+        document.querySelector('.signature-A').style.display = "block";
+    })
+
+    // 初始化畫布
+    const signaturePadB = document.getElementById('signature-pad-b');
+    // 清除畫布按鈕
+    const clearSignatureB = document.getElementById('clearSignatureB');
+    // 將簽名保存變成圖片
+    const saveSignatureB = document.getElementById('saveSignatureB');
+    // 顯示照片的區域
+    const signatureImageB = document.getElementById('signatureImageB');
+    // 2D繪製
+    const ctxB = signaturePadB.getContext('2d');
+    // A是否可畫
+    let drawingB = false;
+
+
+    // 開始簽名
+    signaturePadB.addEventListener('mousedown', function(event) {
+        drawingB = true;
+        ctxB.beginPath();
+        ctxB.moveTo(event.offsetX, event.offsetY);
+    });
+
+    // 畫簽名的過程
+    signaturePadB.addEventListener('mousemove', function(event) {
+        if (drawingB) {
+            ctxB.lineTo(event.offsetX, event.offsetY);
+            ctxB.stroke();
+        }
+    });
+
+    // 停止畫簽名
+    signaturePadB.addEventListener('mouseup', function() {
+        drawingB = false;
+    });
+
+    saveSignatureB.addEventListener('click',function () {
+        saveSignature(signaturePadB,signatureImageB);
+        clearSignature(ctxB,signaturePadB);
+        document.querySelector('.signature-B').style.display = "block";
+    })
+
+    // 保存簽名並清除畫布
+    function saveSignature(signaturePad,signatureImage) {
+        let dataURL = signaturePad.toDataURL();
+        signatureImage.src = dataURL; // 顯示簽名圖片
+        document.querySelector('.contract-signature-block').style.display="none";
+        if (signatureImage === signatureImageA){
+            document.querySelector('.signature-B').style.display="none";
+            document.querySelector('.contract-signature-send-button').style.display="block";
+        }else{
+            document.querySelector('.signature-A').style.display="none";
+            document.getElementById('sendAcceptBtn').style.display='block';
+            document.getElementById('sendRejectBtn').style.display='block';
+        }
+    }
+
+    // 清除畫布
+    function clearSignature(ctx,signaturePad) {
+        ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
+    }
+
+    let contractRoomId = null;
+
+    function connectWebSocketForContract(chatRoomId) {
+        const socket = new SockJS('/contract'); // 確認 WebSocket 端點為 /contract
+        const contractStompClient = Stomp.over(socket);
+        contractStompClient.connect({}, function(frame) {
+            console.log(chatRoomId);
+            contractRoomId = chatRoomId;
+            console.log('已連接到合約端點: ' + frame);
+            const userId = getCurrentUserId(); // 確認是否有用戶 ID
+            if (userId) {
+                subscribeToNewContract(contractRoomId); // 訂閱合約頻道
             } else {
-                console.error(`數據格式不正確`, data);
+                alert("請先登入");
             }
-        })
-        .catch(error => {
-            alert('無法獲取直播紀錄，請稍後再試。');
-            console.error('錯誤:', error);
+        }, function(error) {
+            console.error('合約連接失敗:', error);
+            setTimeout(connectWebSocketForContract, 5000); // 5 秒後重試連接
         });
+    }
+
+    function subscribeToNewContract(contractRoomId){
+        stompClient.subscribe(`/topic/contract/${contractRoomId}`,function(choose){
+            console.log(`已經訂閱:/topic/contract/${contractRoomId}`)
+            const result = JSON.parse(choose.body);
+            console.log(result);
+            if(result.senderId !== localStorage.getItem('userId')){
+                switch(result.requestType){
+                    case "accept":
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("代理者已簽署，該份合約已生效。");
+                        break;
+                    case "reject":
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("代理者未簽署，請與其聯絡。");
+                        break;
+                    case "request":
+                        document.querySelector('.contract-signature-container').style.display = 'block';
+                        // 得到請求，先清空合約填空處
+                        document.querySelector('.contract-input-container').innerHTML='';
+                        // 獲取合約內容
+                        const contract = `
+                <div class="contract-content-container">
+                <h3>委託銷售合約</h3>
+                <hr>
+                <p id="clientName"><strong>委託者</strong>：${result.clientName}</p>
+                <p id="sellerName"><strong>代理者</strong>：${result.sellerName}</p>
+                <p id="productName"><strong>商品名稱</strong>：${result.productName}</p>
+                <p id="salesPeriod"><strong>銷售期間</strong>：${result.salesPeriod}</p>
+                <p id="commissionRate"><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${result.commissionRate}% 的佣金。</p>
+                <p>此合約由雙方協議達成，並自簽署日起生效。</p>
+                <span id="clientId" style="display: none;">${result.clientId}</span>
+                <span id="productId" style="display: none;">${result.productId}</span>
+                <span id="signatureImage" style="display: none;">${result.signatureImage}</span>
+                <hr>
+                </div>
+                `;
+                        document.getElementById('generated-contract').innerHTML = contract;
+
+                        document.querySelector('.contract-signature-block').style.display="flex";
+                        document.querySelector('.signature-block-B').style.display="block";
+                        break;
+                }
+            }else{
+                switch (result.requestType){
+                    case "accept":
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("合約已保存。");
+                        break;
+                    case "reject":
+                        document.querySelector('.contract-signature-container').style.display = 'none';
+                        alert("已通知委託者，發回處理。");
+                        break;
+                }
+            }
+        });
+    }
+
+    // 發送訊息
+    document.getElementById("sendContractBtn").addEventListener("click", function() {
+
+        const productSelect = document.getElementById('productName');
+        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
+
+        if (document.getElementById('currentChatRoomName').textContent) {
+            const message = {
+                requestType:"request",
+                chatRoomId: contractRoomId,   // 當前聊天室 ID
+                senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
+                clientId: localStorage.getItem("userId"),
+                clientName: document.getElementById('clientName').value,
+                sellerName: document.getElementById('sellerName').value,
+                productName: selectedProductName,
+                productId:document.getElementById('productId').value,
+                salesPeriod: document.getElementById('salesPeriod').value,
+                commissionRate: document.getElementById('commissionRate').value,
+                signatureImage:signatureImageA.getAttribute('src'),
+                timestamp: new Date().toISOString() // 當前時間
+            };
+            stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+            document.getElementById('signature-preview').innerHTML=``;
+            document.getElementById('generated-contract').innerHTML=`
+            <div class = "contract-loading">
+                <h3>合約已送出，等待代理者簽署中</h3>
+                <div class="dots-container">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            `;
+            document.getElementById('sendContractBtn').style.display="none";
+            document.getElementById('signature-preview').innerHTML=``;
+        } else {
+            alert("請選擇聊天室並輸入訊息");
+        }
+    });
+
+    document.getElementById("sendAcceptBtn").addEventListener("click", function() {
+        const message = {
+            requestType:"accept",
+            chatRoomId: contractRoomId,   // 當前聊天室 ID
+            senderId: localStorage.getItem("userId"),                // 發送者 ID
+            clientId:document.getElementById('clientId').textContent,
+            agentId:localStorage.getItem('userId'),
+            clientName: document.getElementById('clientName').textContent,
+            sellerName: document.getElementById('sellerName').textContent,
+            productName: document.getElementById('productName').textContent,
+            productId: document.getElementById('productId').textContent,
+            salesPeriod: document.getElementById('salesPeriod').textContent,
+            commissionRate: document.getElementById('commissionRate').textContent,
+            signatureImage:document.getElementById('signatureImage').textContent,
+            agentSignatureImage:signatureImageB.getAttribute('src'),
+            timestamp: new Date().toISOString() // 當前時間
+        };
+        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+    });
+
+    document.getElementById("sendRejectBtn").addEventListener("click", function() {
+        const message = {
+            requestType:"reject",
+            chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+            senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
+            timestamp: new Date().toISOString() // 當前時間
+        };
+        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
+    });
+
 </script>
 
 </body>

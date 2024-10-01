@@ -31,8 +31,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // 直播紀錄
     document.getElementById('my-livestream-btn').addEventListener('click',function (){
-        window.location.href = "live-stream-records";
+        window.location.href = "live-stream-records.html";
     });
+
+    // 我的商品
+    document.getElementById('my-products-btn').addEventListener('click',function (){
+        window.location.href = "my-products.html";
+    });
+
 
     // 綁定登出功能
     document.getElementById('logout-btn').addEventListener('click',function (){

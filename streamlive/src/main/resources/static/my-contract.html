@@ -38,7 +38,7 @@
         }
         .contract-section {
             margin-bottom: 20px;
-            padding: 5px 20px 5px 20px;
+            padding: 5px 20px 20px 20px;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -285,7 +285,7 @@
                         <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
-                    <div class = "log-out">
+                    <div class = "log-out" id="my-products-btn">
                         <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
@@ -328,7 +328,7 @@
 </div>
 
 <footer>
-    <div class="container">
+    <div class="products-container">
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
@@ -453,10 +453,131 @@
 
 <script>
 
+
+    // 使用 LocalStorage 獲取 userId
+    const userId = localStorage.getItem("userId");
+
+    // API 端點
+    const clientContractsUrl = `/api/1.0/contract/as-client?clientId=${userId}`;
+    const agentContractsUrl = `/api/1.0/contract/as-agent?agentId=${userId}`;
+
+    // 獲取 DOM 元素
+    const clientContractCardsDiv = document.getElementById('client-contract-cards');
+    const agentContractCardsDiv = document.getElementById('agent-contract-cards');
+    const clientNoContractsDiv = document.getElementById('client-no-contracts');
+    const agentNoContractsDiv = document.getElementById('agent-no-contracts');
+    const modal = document.getElementById('contract-modal');
+    const modalDetails = document.getElementById('modal-details');
+    const closeModal = document.getElementById('close-modal');
+
+    // 請求委託和代理合約
+    Promise.all([
+        fetch(clientContractsUrl).then(response => response.json()),
+        fetch(agentContractsUrl).then(response => response.json())
+    ]).then(([clientData, agentData]) => {
+        if (clientData.data.length > 0) {
+            clientData.data.forEach(contract => {
+                const contractElement = createContractCard(contract);
+                clientContractCardsDiv.appendChild(contractElement);
+            });
+        } else {
+            clientNoContractsDiv.style.display = "block";
+        }
+
+        if (agentData.data.length > 0) {
+            agentData.data.forEach(contract => {
+                const contractElement = createContractCard(contract);
+                agentContractCardsDiv.appendChild(contractElement);
+            });
+        } else {
+            agentNoContractsDiv.style.display = "block";
+        }
+    }).catch(error => console.error('Error fetching contracts:', error));
+
+    // 創建合約卡片的 HTML
+    function createContractCard(contract) {
+        const cardDiv = document.createElement('div');
+        cardDiv.classList.add('contract-card-item');
+
+        cardDiv.innerHTML = `
+                <img class="contract-product-image" src="${contract.product.mainImage}" alt="${contract.product.name}">
+                <div class="contract-card-details">
+                    <p class="contract-product-name">${contract.product.name}</p>
+                    <p class="contract-details"><span class="contract-label">委託者:</span> ${contract.client.client_name}</p>
+                    <p class="contract-details"><span class="contract-label">代理者:</span> ${contract.agent.agent_name}</p>
+                    <p class="contract-details"><span class="contract-label">價格:</span> ${contract.product.price} 元</p>
+                    <p class="contract-details"><span class="contract-label">庫存:</span> ${contract.product.stock}</p>
+                </div>
+            `;
+
+        // 點擊卡片時打開合約詳細視窗
+        cardDiv.addEventListener('click', () => {
+            openContractModal(contract.delegationId);
+        });
+
+        return cardDiv;
+    }
+
+    // 打開合約詳細視窗
+    function openContractModal(delegationId) {
+        const contractDetailsUrl = `/api/1.0/contract/${delegationId}`;
+        fetch(contractDetailsUrl)
+            .then(response => response.json())
+            .then(contract => {
+                // 移除不必要的字串，如 "商品名稱："、"委託者：" 等
+                const productName = contract.data.product.replace("商品名稱：", "");
+                const client = contract.data.client.replace("委託者：", "");
+                const agent = contract.data.agent.replace("代理者：", "");
+                const salesPeriod = contract.data.salesPeriod.replace("銷售期間：", "");
+                const commissionRate = contract.data.commissionRate.replace("佣金比例：", "");
+
+                // 更新模態框中的詳細資訊
+                modalDetails.innerHTML = `
+                    <div class="contract-info-details">
+                        <p><strong>商品名稱:</strong> ${productName}</p>
+                        <p><strong>委託者:</strong> ${client}</p>
+                        <p><strong>代理者:</strong> ${agent}</p>
+                        <p><strong>銷售期間:</strong> ${salesPeriod}</p>
+                        <p><strong>佣金比例:</strong> ${commissionRate}</p>
+                    </div>
+                    <div class="contract-signature-container-A">
+                        <div class="contract-signature-section-A">
+                            <p>委託者簽名：</p>
+                            <div class="contract-signature-image-container-A">
+                                <img class="contract-signature-image-A" src="${contract.data.clientSignature}" alt="委託者簽名">
+                            </div>
+                        </div>
+                        <div class="contract-signature-section-A">
+                            <p>代理者簽名：</p>
+                            <div class="contract-signature-image-container-A">
+                                <img class="contract-signature-image-A" src="${contract.data.agentSignature}" alt="代理者簽名">
+                            </div>
+                        </div>
+                    </div>
+                    <p class="contract-creation-date"><strong>建立日期:</strong> ${contract.data.createdAt}</p>
+                `;
+                modal.style.display = "flex";
+            })
+            .catch(error => console.error('Error fetching contract details:', error));
+    }
+
+    // 關閉合約詳細視窗
+    closeModal.addEventListener('click', () => {
+        modal.style.display = "none";
+    });
+
+    // 點擊視窗外部關閉
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
 
         // 初始隱藏合約彈出視窗
         document.querySelector('.contract-signature-container').style.display = 'none';
+
 
         // 取得下拉選單和隱藏欄位的元素
         const productSelect = document.getElementById('productName');
@@ -486,7 +607,6 @@
             productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
         });
     })
-
     document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
         document.querySelector('.chat-container').style.display = "none";
         document.querySelector('.floating-circle').style.display = "flex"
@@ -512,7 +632,6 @@
     document.getElementById('createContractBtn').addEventListener('click',function () {
         document.querySelector('.contract-signature-container').style.display = 'block';
     });
-
 
 
     // 生成合約
@@ -560,7 +679,6 @@
     const signatureImageA = document.getElementById('signatureImageA');
     // 2D繪製
     const ctxA = signaturePadA.getContext('2d');
-
 
     // A是否可畫
     let drawingA = false;
@@ -788,7 +906,6 @@
         stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
     });
 
-
     document.getElementById("sendRejectBtn").addEventListener("click", function() {
         const message = {
             requestType:"reject",
@@ -798,124 +915,7 @@
         };
         stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
     });
-    // 使用 LocalStorage 獲取 userId
-    const userId = localStorage.getItem("userId");
 
-    // API 端點
-    const clientContractsUrl = `/api/1.0/contract/as-client?clientId=${userId}`;
-    const agentContractsUrl = `/api/1.0/contract/as-agent?agentId=${userId}`;
-
-    // 獲取 DOM 元素
-    const clientContractCardsDiv = document.getElementById('client-contract-cards');
-    const agentContractCardsDiv = document.getElementById('agent-contract-cards');
-    const clientNoContractsDiv = document.getElementById('client-no-contracts');
-    const agentNoContractsDiv = document.getElementById('agent-no-contracts');
-    const modal = document.getElementById('contract-modal');
-    const modalDetails = document.getElementById('modal-details');
-    const closeModal = document.getElementById('close-modal');
-
-    // 請求委託和代理合約
-    Promise.all([
-        fetch(clientContractsUrl).then(response => response.json()),
-        fetch(agentContractsUrl).then(response => response.json())
-    ]).then(([clientData, agentData]) => {
-        if (clientData.data.length > 0) {
-            clientData.data.forEach(contract => {
-                const contractElement = createContractCard(contract);
-                clientContractCardsDiv.appendChild(contractElement);
-            });
-        } else {
-            clientNoContractsDiv.style.display = "block";
-        }
-
-        if (agentData.data.length > 0) {
-            agentData.data.forEach(contract => {
-                const contractElement = createContractCard(contract);
-                agentContractCardsDiv.appendChild(contractElement);
-            });
-        } else {
-            agentNoContractsDiv.style.display = "block";
-        }
-    }).catch(error => console.error('Error fetching contracts:', error));
-
-    // 創建合約卡片的 HTML
-    function createContractCard(contract) {
-        const cardDiv = document.createElement('div');
-        cardDiv.classList.add('contract-card-item');
-
-        cardDiv.innerHTML = `
-                <img class="contract-product-image" src="${contract.product.mainImage}" alt="${contract.product.name}">
-                <div class="contract-card-details">
-                    <p class="contract-product-name">${contract.product.name}</p>
-                    <p class="contract-details"><span class="contract-label">委託者:</span> ${contract.client.client_name}</p>
-                    <p class="contract-details"><span class="contract-label">代理者:</span> ${contract.agent.agent_name}</p>
-                    <p class="contract-details"><span class="contract-label">價格:</span> ${contract.product.price} 元</p>
-                    <p class="contract-details"><span class="contract-label">庫存:</span> ${contract.product.stock}</p>
-                </div>
-            `;
-
-        // 點擊卡片時打開合約詳細視窗
-        cardDiv.addEventListener('click', () => {
-            openContractModal(contract.delegationId);
-        });
-
-        return cardDiv;
-    }
-
-    // 打開合約詳細視窗
-    function openContractModal(delegationId) {
-        const contractDetailsUrl = `/api/1.0/contract/${delegationId}`;
-        fetch(contractDetailsUrl)
-            .then(response => response.json())
-            .then(contract => {
-                // 移除不必要的字串，如 "商品名稱："、"委託者：" 等
-                const productName = contract.data.product.replace("商品名稱：", "");
-                const client = contract.data.client.replace("委託者：", "");
-                const agent = contract.data.agent.replace("代理者：", "");
-                const salesPeriod = contract.data.salesPeriod.replace("銷售期間：", "");
-                const commissionRate = contract.data.commissionRate.replace("佣金比例：", "");
-
-                // 更新模態框中的詳細資訊
-                modalDetails.innerHTML = `
-                    <div class="contract-info-details">
-                        <p><strong>商品名稱:</strong> ${productName}</p>
-                        <p><strong>委託者:</strong> ${client}</p>
-                        <p><strong>代理者:</strong> ${agent}</p>
-                        <p><strong>銷售期間:</strong> ${salesPeriod}</p>
-                        <p><strong>佣金比例:</strong> ${commissionRate}</p>
-                    </div>
-                    <div class="contract-signature-container-A">
-                        <div class="contract-signature-section-A">
-                            <p>委託者簽名：</p>
-                            <div class="contract-signature-image-container-A">
-                                <img class="contract-signature-image-A" src="${contract.data.clientSignature}" alt="委託者簽名">
-                            </div>
-                        </div>
-                        <div class="contract-signature-section-A">
-                            <p>代理者簽名：</p>
-                            <div class="contract-signature-image-container-A">
-                                <img class="contract-signature-image-A" src="${contract.data.agentSignature}" alt="代理者簽名">
-                            </div>
-                        </div>
-                    </div>
-                    <p class="contract-creation-date"><strong>建立日期:</strong> ${contract.data.createdAt}</p>
-                `;
-                modal.style.display = "flex";
-            })
-            .catch(error => console.error('Error fetching contract details:', error));
-    }
-
-    // 關閉合約詳細視窗
-    closeModal.addEventListener('click', () => {
-        modal.style.display = "none";
-    });
-
-    // 點擊視窗外部關閉
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
 </script>
 </body>
 </html>

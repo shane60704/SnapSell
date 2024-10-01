@@ -3,171 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SnapSell | 商品上架</title>
-    <link rel="stylesheet" href="./assets/css/header.css"/>
+    <title>商品列表</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/header.css"/>
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
     <style>
-        * {
-            box-sizing: border-box;
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-        }
-
-        .product-listing {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
+            background-color: #f0f0f0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            box-sizing: border-box;
             min-height: 100vh;
-            margin: 0;
+        }
+        .product-list-container {
+            max-width: 1800px;
+            width: 80%;
             padding: 20px;
-        }
-
-        .product-listing__container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            max-width: 1200px;
-            width: 100%;
-            flex-grow: 1;
-        }
-
-        .product-listing__title {
-            width: 100%;
-            text-align: center;
-            color: #333333;
-            margin-bottom: 10px;
-        }
-
-        .product-listing__container hr {
-            margin-bottom: 10px;
-        }
-
-        .product-listing__content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-
-        .product-listing__form,
-        .product-listing__image-section {
+            margin: 0 auto;
             flex: 1;
-            min-width: 300px;
         }
-
-        .product-listing__form-group {
+        .product-list-container h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .products-header{
+            display: flex;
+            justify-content: space-between;
+        }
+        .tabs {
+            display: flex;
+            justify-content: left;
+            align-items: center;
             margin-bottom: 20px;
         }
-
-        .product-listing__label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555555;
-        }
-
-        .product-listing__input,
-        .product-listing__textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #dddddd;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .product-listing__input:focus,
-        .product-listing__textarea:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-
-        .product-listing__input[type="file"] {
-            padding: 8px;
-        }
-
-        .product-listing__button {
+        .tab {
+            padding: 10px 20px;
+            width: 100px;
+            height: 40px;
+            background-color: #3498db;
+            color: white;
             border: none;
-            border-radius: 25px;
-            font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            transition: background-color 0.3s;
         }
-
-        .product-listing__submit-btn {
-            background: linear-gradient(45deg, #28a745, #34d058);
-            color: white;
-            padding: 15px 40px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
-            display: block;
-            margin: 40px auto 0;
+        .tab:first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
         }
-
-        .product-listing__submit-btn:hover {
-            background: linear-gradient(45deg, #34d058, #28a745);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-            transform: translateY(-2px);
+        .tab:last-child {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
         }
-
-        .product-listing__submit-btn::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(45deg);
-            transition: all 0.3s ease;
+        .tab.active {
+            background-color: #2980b9;
         }
-
-        .product-listing__submit-btn:hover::after {
-            left: 100%;
-        }
-
-        .product-listing__add-feature-btn {
-            background-color: #007bff;
-            color: white;
-            padding: 8px 15px;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .product-listing__add-feature-btn:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        .product-listing__image-preview {
-            margin-top: 15px;
-            width: 100%;
-            height: 300px;
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            padding: 5px;
+        .product-list {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .product-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            overflow: hidden;
         }
-
-        .product-listing__preview-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-grow: 1;
         }
-
-        @media (max-width: 768px) {
-            .product-listing__content {
-                flex-direction: column;
-            }
+        .product-name {
+            font-weight: bold;
+            width: 200px;
+        }
+        .product-price, .product-stock {
+            width: 100px;
+        }
+        .detail-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .detail-button:hover {
+            background-color: #2980b9;
+        }
+        .no-products {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+        }
+        .loading {
+            text-align: center;
+            color: #3498db;
+            font-style: italic;
+            padding: 20px;
+        }
+        .error {
+            text-align: center;
+            color: #e74c3c;
+            font-style: italic;
+            padding: 20px;
+            background-color: #fadbd8;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -215,65 +170,22 @@
         </div>
     </div>
 </header>
-<div class = product-listing>
-<div class="product-listing__container">
-    <h1 class="product-listing__title">上架商品</h1>
-    <hr>
-    <div class="product-listing__content">
-        <form class="product-listing__form" action="api/1.0/product/listProduct" method="POST" enctype="multipart/form-data">
-            <input type="hidden" id="userId" name="userId">
-
-            <div class="product-listing__form-group">
-                <label class="product-listing__label" for="name">商品名稱:</label>
-                <input class="product-listing__input" type="text" id="name" name="name" required>
-            </div>
-
-            <div class="product-listing__form-group">
-                <label class="product-listing__label" for="description">商品描述:</label>
-                <textarea class="product-listing__textarea" id="description" name="description" rows="4" required></textarea>
-            </div>
-
-            <div class="product-listing__form-group">
-                <label class="product-listing__label" for="feature">商品特色:</label>
-                <div id="features">
-                    <input class="product-listing__input" type="text" name="feature[]" placeholder="特色1" required>
-                </div>
-                <button type="button" class="product-listing__button product-listing__add-feature-btn" onclick="addFeature()">+ 增加特色</button>
-            </div>
-
-            <div class="product-listing__form-group">
-                <label class="product-listing__label" for="price">價格:</label>
-                <input class="product-listing__input" type="number" id="price" name="price" required>
-            </div>
-
-            <div class="product-listing__form-group">
-                <label class="product-listing__label" for="stock">庫存:</label>
-                <input class="product-listing__input" type="number" id="stock" name="stock" required>
-            </div>
-        </form>
-
-        <div class="product-listing__image-section">
-            <div class="product-listing__form-group">
-                <label class="product-listing__label" for="mainImage">商品圖片上傳:</label>
-                <input class="product-listing__input" type="file" id="mainImage" name="mainImage" accept="image/*" onchange="previewImage(event)" required>
-                <div class="product-listing__image-preview" id="imagePreviewContainer">
-                    <img class="product-listing__preview-img" id="imagePreview" src="#" alt="圖片預覽" />
-                </div>
-            </div>
+<div class="product-list-container">
+    <div class = "products-header">
+        <h1>我的商品</h1>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('undelegated')">未被代理</button>
+            <button class="tab" onclick="switchTab('delegated')">已被代理</button>
         </div>
     </div>
-
-    <button type="button" onclick="submitProduct()" class="product-listing__button product-listing__submit-btn" >上傳商品</button>
-
-</div>
+    <div id="productList" class="product-list">
+    </div>
 </div>
 <footer>
     <div class="products-container">
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
-
-
 <!-- 聊天室區塊 -->
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
@@ -385,14 +297,83 @@
         <button id="sendRejectBtn" class=" contract-signature-button">拒絕合約</button>
     </div>
 </div>
-
 <!-- 引入js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-<script src="assets/js/header.js"></script>
-<script src="assets/js/chat.js"></script>
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src = "assets/js/header.js"></script>
+<script src ="assets/js/chat.js"></script>
 <script>
+    let currentTab = 'undelegated';
+
+    // 使用 fetch 獲取商品數據
+    async function fetchProducts(url) {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    }
+
+    // 創建商品卡片
+    function createProductCard(product) {
+        return `
+                <div class="product-card">
+                    <div class="product-info">
+                        <span class="product-name">${product.name}</span>
+                        <span class="product-price">價格: $${product.price}</span>
+                        <span class="product-stock">庫存: ${product.stock}</span>
+                    </div>
+                    <button class="detail-button" onclick="showDetails(${product.id})">詳細資訊</button>
+                </div>
+            `;
+    }
+
+    // 渲染商品列表
+    function renderProductList(products) {
+        const container = document.getElementById('productList');
+        if (products.length === 0) {
+            container.innerHTML = '<div class="no-products">暫無商品</div>';
+        } else {
+            container.innerHTML = products.map(createProductCard).join('');
+        }
+    }
+
+    // 顯示詳細資訊（這裡只是一個示例，您可能需要根據實際需求實現此功能）
+    function showDetails(productId) {
+        alert(`顯示商品 ID ${productId} 的詳細資訊`);
+        // 這裡可以實現彈出詳細信息的邏輯，例如打開一個模態框
+    }
+
+    // 切換頁籤
+    async function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.tab:nth-child(${tab === 'undelegated' ? 1 : 2})`).classList.add('active');
+        await loadProducts();
+    }
+
+    // 加載商品
+    async function loadProducts() {
+        const userId = localStorage.getItem("userId");
+        const url = currentTab === 'undelegated'
+            ? `/api/1.0/product/undelgated?userId=${userId}`
+            : `/api/1.0/product/delegated?userId=${userId}`;
+
+        const container = document.getElementById('productList');
+        container.innerHTML = '<div class="loading">正在加載商品...</div>';
+
+        try {
+            const response = await fetchProducts(url);
+            renderProductList(response.data);
+        } catch (error) {
+            console.error('獲取商品數據時出錯:', error);
+            container.innerHTML = '<div class="error">加載商品時發生錯誤，請稍後再試。</div>';
+        }
+    }
+
+    // 初始化頁面
+    window.addEventListener('load', () => switchTab('undelegated'));
 
     document.addEventListener('DOMContentLoaded', function () {
 
@@ -736,90 +717,6 @@
         };
         stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
     });
-
-
-
-    function submitProduct() {
-        const userId = document.getElementById('userId').value;
-        const name = document.getElementById('name').value;
-        const description = document.getElementById('description').value;
-        const price = document.getElementById('price').value;
-        const stock = document.getElementById('stock').value;
-        const mainImage = document.getElementById('mainImage').files[0];
-
-        // 收集特色數組
-        const features = Array.from(document.querySelectorAll('input[name="feature[]"]')).map(input => input.value);
-
-        // 構造 FormData
-        const formData = new FormData();
-        formData.append('userId', userId);
-        formData.append('name', name);
-        formData.append('description', description);
-        formData.append('price', price);
-        formData.append('stock', stock);
-        formData.append('mainImage', mainImage);
-        features.forEach((feature, index) => {
-            formData.append(`feature[${index}]`, feature);
-        });
-
-        // 發送 POST 請求
-        fetch('/api/1.0/product/listProduct', {
-            method: 'POST',
-            body: formData,
-        })
-            .then(response => {
-                // 檢查是否是成功狀態碼
-                if (response.ok) {
-                    return response.json();  // 或者 .text() 取決於你的返回內容類型
-                } else {
-                    throw new Error("HTTP error " + response.status);
-                }
-            })
-            .then(data => {
-                // 這裡處理回傳的數據
-                console.log('商品上傳成功:', data);
-                alert('商品上傳成功');
-            })
-            .catch(error => {
-                console.error('上傳失敗:', error);
-                alert('商品上傳成功');
-            });
-    }
-
-    function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function() {
-            const output = document.getElementById('imagePreview');
-            output.src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    let featureCount = 1;
-    function addFeature() {
-        const featuresDiv = document.getElementById('features');
-        if (featureCount < 7) {
-            featureCount++;
-            const newFeature = document.createElement('input');
-            newFeature.type = 'text';
-            newFeature.name = 'feature[]';
-            newFeature.placeholder = `特色${featureCount}`;
-            newFeature.required = true;
-            newFeature.className = 'product-listing__input';
-            featuresDiv.appendChild(newFeature);
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const userId = localStorage.getItem('userId');
-        if (userId) {
-            document.getElementById('userId').value = userId;
-        }
-    });
-
 </script>
 </body>
 </html>
-
-
-

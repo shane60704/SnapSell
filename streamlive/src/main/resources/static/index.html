@@ -66,18 +66,56 @@
 
         .hero-btn {
             display: inline-block;
-            background-color: #6C63FF;
-            color: white;
-            padding: 12px 30px;
+            padding: 8px 24px;
             text-decoration: none;
-            border-radius: 30px;
             font-weight: 600;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
 
-        .hero-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+        .hero-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(-100%);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .hero-btn:hover::before {
+            transform: translateX(0);
+        }
+
+        .hero-btn-commission {
+            background-color: #6C63FF;
+            color: #ffffff;
+            border: 2px solid #6C63FF;
+        }
+
+        .hero-btn-commission:hover {
+            background-color: transparent;
+            color: #6C63FF;
+        }
+
+        .hero-btn-agent {
+            background-color: transparent;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+        }
+
+        .hero-btn-agent:hover {
+            background-color: #ffffff;
+            color: #333333;
         }
 
         .scroll-indicator {
@@ -240,7 +278,7 @@
                         <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
-                    <div class = "log-out">
+                    <div class = "log-out" id="my-products-btn">
                         <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
@@ -262,7 +300,8 @@
         <div class="hero-content">
             <h1>重新定義<br>商品與行銷的未來</h1>
             <p>SnapSell 讓優質商品與頂尖行銷專家完美結合，創造無限可能</p>
-            <a href="#" class="hero-btn">探索 SnapSell</a>
+            <a href="my-products.html" class="hero-btn hero-btn-commission">開始委託</a>
+            <a href="agent.html" class="hero-btn hero-btn-agent">開始代理</a>
         </div>
     </div>
 </section>
@@ -319,7 +358,7 @@
 </section>
 
 <footer>
-    <div class="container">
+    <div class="products-container">
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>

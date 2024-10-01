@@ -1,6 +1,7 @@
 package com.example.streamlive.websocket;
 
 import com.example.streamlive.dao.livestream.LiveStreamDao;
+import com.example.streamlive.dao.user.UserDao;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SignalingHandler extends TextWebSocketHandler {
 
     private final LiveStreamDao liveStreamDao;
+    private final UserDao userDao;
 
     private Map<String, List<WebSocketSession>> rooms = new ConcurrentHashMap<>();
     private Map<String, WebSocketSession> broadcasters = new ConcurrentHashMap<>();
@@ -45,12 +47,14 @@ public class SignalingHandler extends TextWebSocketHandler {
                 String title = jsonMessage.getString("title");
                 String description = jsonMessage.getString("description");
                 liveStreamDao.createLiveStreamRecord(userId, createRoomId);
+                String userImage = userDao.getUserImageById(userId);
+                log.info("----------:"+userImage);
                 JSONArray productsArray = jsonMessage.getJSONArray("products");
                 List<String> productsList = new ArrayList<>();
                 for (int i = 0; i < productsArray.length(); i++) {
                     productsList.add(productsArray.getString(i));
                 }
-                createRoom(createRoomId, title, description, session, productsList);
+                createRoom(createRoomId,userImage,title, description, session, productsList);
                 break;
             case "join":
                 String joinRoomId = jsonMessage.getString("roomId");
@@ -77,10 +81,10 @@ public class SignalingHandler extends TextWebSocketHandler {
         }
     }
 
-    private void createRoom(String roomId, String title , String description, WebSocketSession session, List<String> products) {
+    private void createRoom(String roomId, String userImage, String title , String description, WebSocketSession session, List<String> products) {
         rooms.put(roomId, new CopyOnWriteArrayList<>());
         broadcasters.put(roomId, session);
-        roomInfos.put(roomId, new RoomInfo(roomId,title,description,Instant.now(), 0, products));
+        roomInfos.put(roomId, new RoomInfo(roomId,userImage,title,description,Instant.now(), 0, products));
         sendToSession(session, new JSONObject().put("type", "created").toString());
         broadcastRoomList(); // 更新大廳的房間清單
     }
@@ -164,6 +168,7 @@ public class SignalingHandler extends TextWebSocketHandler {
             JSONObject roomJson = new JSONObject()
                     .put("roomId", roomInfo.getRoomId())
                     .put("title",roomInfo.getTitle())
+                    .put("userImage", roomInfo.getUserImage())
                     .put("description",roomInfo.getDescription())
                     .put("startTime", roomInfo.getStartTime().toString())
                     .put("viewerCount", roomInfo.getViewerCount())
@@ -299,6 +304,7 @@ public class SignalingHandler extends TextWebSocketHandler {
     @NoArgsConstructor
     private static class RoomInfo {
         private String roomId;
+        private String userImage;
         private String title;
         private String description;
         private Instant startTime;

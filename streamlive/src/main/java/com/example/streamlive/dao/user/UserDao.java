@@ -25,4 +25,5 @@ public interface UserDao {
     ClientProfile getClientProfileById(Long userId);
     PersonalProfile getPersonalProfileById(Long userId);
     List<AgentProfile> getTop3AgentByTotalViewers();
+    String getUserImageById(String userId);
 }
