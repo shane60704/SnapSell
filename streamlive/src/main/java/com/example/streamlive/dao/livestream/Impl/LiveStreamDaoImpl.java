@@ -3,6 +3,7 @@ package com.example.streamlive.dao.livestream.Impl;
 import com.example.streamlive.dao.livestream.LiveStreamDao;
 import com.example.streamlive.dto.SatisfactionDto;
 import com.example.streamlive.model.livestream.LiveStreamRecord;
+import com.example.streamlive.model.livestream.Satisfaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -109,6 +110,26 @@ public class LiveStreamDaoImpl implements LiveStreamDao {
         } catch (DataAccessException e) {
             throw new RuntimeException("Failed to insert satisfaction record", e);
         }
+    }
+
+    @Override
+    public List<Satisfaction> findSatisfactionRecordByLiveId(Long liveId) {
+        String sql = "SELECT \n" +
+                "    s.id AS satisfactionId,\n" +
+                "    s.score,\n" +
+                "    s.comment,\n" +
+                "    u.name,\n" +
+                "    u.image\n" +
+                "FROM \n" +
+                "    satisfaction s\n" +
+                "JOIN \n" +
+                "    `user` u ON s.user_id = u.id\n" +
+                "WHERE \n" +
+                "    s.live_id = :liveId;";
+        Map<String, Object> params = new HashMap<>();
+        params.put("liveId", liveId);
+
+        return namedParameterJdbcTemplate.query(sql, params, new BeanPropertyRowMapper<>(Satisfaction.class));
     }
 
 }

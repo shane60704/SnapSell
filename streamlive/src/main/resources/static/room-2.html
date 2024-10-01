@@ -615,8 +615,10 @@
             margin-bottom: 15px;
         }
 
-        .custom-modal-header h2 {
-            color:white;
+        .order-title {
+            color:black;
+            font-size: 36px;
+            font-weight: bold;
         }
 
         /* 內文區域樣式 */
@@ -933,7 +935,7 @@
 
         <!-- 第一階段：填寫訂單資訊 -->
         <div id="orderForm">
-            <h2>填寫訂單資訊</h2>
+            <p class = "order-title">填寫訂單資訊</p>
             <form>
                 <div class="purchase-form-row">
                     <div class="purchase-form-col">
@@ -985,14 +987,14 @@
 
         <!-- 第二階段：確認訂單資訊 -->
         <div id="orderSummary" style="display:none;">
-            <h2>確認訂單資訊</h2>
+            <p class = "order-title">確認訂單資訊</p>
             <div id="summaryContent" class="purchase-summary-content"></div>
             <button type="button" id="payButton" class="purchase-button">付款</button>
         </div>
 
         <!-- 第三階段：付款 -->
         <div id="paymentForm" style="display:none;">
-            <h2>付款資訊</h2>
+            <p class = "order-title">付款資訊</p>
             <form id="tpForm">
                 <div class="form-group card-number-group">
                     <label for="card-number" class="control-label"><span id="cardtype"></span>卡號</label>
@@ -1017,7 +1019,7 @@
     <div class="custom-modal-content">
         <span class="custom-close-button">&times;</span>
         <div class="custom-modal-header">
-            <h2>付款成功</h2>
+            <p class = "order-title">付款成功</p>
         </div>
         <div class="custom-modal-body">
             <p>您的訂單已經完成，感謝您的購買！</p>
@@ -1659,6 +1661,12 @@
             case 'chat':
                 displayChatMessage(message.content, message.sender);
                 break;
+            case 'gift':
+                // 處理禮物消息，讓禮物動畫出現在主播和觀眾端
+                showGiftAnimation(message.sender, message.gift);
+                const giftMessage = `${message.sender} 送出了一個 ${message.gift} 禮物！`;
+                displayChatMessage(giftMessage, '系統');
+                break;
         }
     }
 
@@ -1877,31 +1885,40 @@
     }
 
     function sendGift(giftEmoji) {
-        const videoPlaceholder = document.querySelector('.video-container');
-        const gift = document.createElement('div');
-        gift.className = 'gift';
-        gift.textContent = giftEmoji;
-        gift.style.left = `${Math.random() * 80 + 10}%`;
-        videoPlaceholder.appendChild(gift);
-
-        setTimeout(() => {
-            gift.remove();
-        }, 5000);
-
+        const roomId = urlParams.get('roomId');
+        const sender = localStorage.getItem('userName');
         giftModal.style.display = "none";
 
         const message = `${localStorage.getItem('userName')}送出了一個 ${giftEmoji} 禮物！`;
 
         if (message && ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({type: 'chat', content: message, roomId}));
+            ws.send(JSON.stringify({
+                type: 'sendGift',
+                roomId: roomId,
+                sender: sender,
+                gift: giftEmoji
+            }));
         }
+    }
+
+    function showGiftAnimation(sender, giftEmoji) {
+        const videoPlaceholder = document.querySelector('.video-container');
+        const gift = document.createElement('div');
+        gift.className = 'gift';
+        gift.textContent = giftEmoji;
+        gift.style.left = `${Math.random() * 80 + 10}%`;  // 隨機水平位置
+        videoPlaceholder.appendChild(gift);
+
+        setTimeout(() => {
+            gift.remove();
+        }, 5000);
     }
 
     function displayChatMessage(message, sender) {
         const chatMessages = document.getElementById('chatMessages');
         const messageElement = document.createElement('div');
-        if (message.includes("送出了一個")) {
-            messageElement.textContent = `${message}`;
+        if (sender === '系統') {
+            messageElement.textContent = message;
         } else {
             messageElement.textContent = `${sender}: ${message}`;
         }

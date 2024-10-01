@@ -26,4 +26,9 @@ public class LiveStreamController {
         return ResponseEntity.ok(new ApiResponse<>("Success"));
     }
 
+    @GetMapping("/{liveId}/satisfaction")
+    public ResponseEntity<?> getSatisfaction(@PathVariable Long liveId){
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamDao.findSatisfactionRecordByLiveId(liveId)));
+    }
+
 }

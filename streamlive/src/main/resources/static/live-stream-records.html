@@ -99,6 +99,138 @@
         .white{
             color: #FFFFFF;
         }
+        .livestream-record-footer {
+            padding: 10px 20px;
+            text-align: right;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .view-reviews-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .view-reviews-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* 模態窗口樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 評價樣式 */
+        .review {
+            display: flex;
+            align-items: start;
+            margin: 20px 0 ;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .review:last-child {
+            border-bottom: none;
+        }
+
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .review-content {
+            flex-grow: 1;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .review-name {
+            font-weight: bold;
+        }
+
+        .review-stars {
+            color: #ffc107;
+            font-size: 18px;
+        }
+
+        .review-comment {
+            margin-top: 5px;
+            color: #555;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .review {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .review-avatar {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .review-header {
+                flex-direction: column;
+            }
+
+            .review-stars {
+                margin-top: 5px;
+            }
+        }
 
         /* 響應式設計 */
         @media (max-width: 768px) {
@@ -165,6 +297,16 @@
 </header>
 <div class="record-container">
     <div id="livestreamRecordList" class="livestream-record-list">
+    </div>
+</div>
+<!-- 評價模態窗口 -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>直播評價</h2>
+        <div id="reviewsContainer">
+            <!-- 動態生成的評價將被插入這裡 -->
+        </div>
     </div>
 </div>
 <footer>
@@ -303,39 +445,41 @@
 
             if (Array.isArray(data.data)) {
                 data.data.forEach(function(record, index) {
-
                     var startTimeFormatted = formatDateTime(new Date(record.startTime));
                     var endTimeFormatted = formatDateTime(new Date(record.endTime));
 
                     var recordElement = `
-                        <div class="livestream-record-container">
-                            <div class="livestream-record-header">
-                                <i class="fas fa-video icon white"></i>直播紀錄 #${index + 1}
+                            <div class="livestream-record-container">
+                                <div class="livestream-record-header">
+                                    <i class="fas fa-video icon white"></i>直播紀錄 #${index + 1}
+                                </div>
+                                <div class="livestream-record-body">
+                                        <div class="livestream-record-row">
+                                            <span class="livestream-record-label"><i class="fas fa-users icon"></i>觀眾人數</span>
+                                            <span class="livestream-record-value">${record.viewers}</span>
+                                        </div>
+                                        <div class="livestream-record-row">
+                                            <span class="livestream-record-label"><i class="fas fa-shopping-cart icon"></i>銷售數量</span>
+                                            <span class="livestream-record-value">${record.salesQuantity}</span>
+                                        </div>
+                                        <div class="livestream-record-row">
+                                            <span class="livestream-record-label"><i class="fas fa-dollar-sign icon"></i>銷售總額</span>
+                                            <span class="livestream-record-value">NT$ ${record.salesFigures}</span>
+                                        </div>
+                                        <div class="livestream-record-row">
+                                            <span class="livestream-record-label"><i class="fas fa-play icon"></i>開始時間</span>
+                                            <span class="livestream-record-value">${startTimeFormatted}</span>
+                                        </div>
+                                        <div class="livestream-record-row">
+                                            <span class="livestream-record-label"><i class="fas fa-stop icon"></i>結束時間</span>
+                                            <span class="livestream-record-value">${endTimeFormatted}</span>
+                                        </div>
+                                </div>
+                                <div class="livestream-record-footer">
+                                    <button class="view-reviews-btn" onclick="viewReviews(${record.id})">查看評價</button>
+                                </div>
                             </div>
-                            <div class="livestream-record-body">
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-users icon"></i>觀眾人數</span>
-                                    <span class="livestream-record-value">${record.viewers}</span>
-                                </div>
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-shopping-cart icon"></i>銷售數量</span>
-                                    <span class="livestream-record-value">${record.salesQuantity}</span>
-                                </div>
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-dollar-sign icon"></i>銷售金額</span>
-                                    <span class="livestream-record-value">NT$ ${record.salesFigures}</span>
-                                </div>
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-play icon"></i>開始時間</span>
-                                    <span class="livestream-record-value">${startTimeFormatted}</span>
-                                </div>
-                                <div class="livestream-record-row">
-                                    <span class="livestream-record-label"><i class="fas fa-stop icon"></i>結束時間</span>
-                                    <span class="livestream-record-value">${endTimeFormatted}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                        `;
                     livestreamRecordList.innerHTML += recordElement;
                 });
             } else {
@@ -346,6 +490,53 @@
             alert('無法獲取直播紀錄，請稍後再試。');
             console.error('錯誤:', error);
         });
+
+    function viewReviews(liveId) {
+        fetch(`/api/1.0/livestream/${liveId}/satisfaction`)
+            .then(response => response.json())
+            .then(data => {
+                const reviewsContainer = document.getElementById('reviewsContainer');
+                reviewsContainer.innerHTML = ''; // 清空現有評價
+
+                if (data.data.length === 0) {
+                    reviewsContainer.innerHTML = '<p>暫無評價</p>';
+                } else {
+                    data.data.forEach(review => {
+                        const stars = '★'.repeat(review.score) + '☆'.repeat(5 - review.score);
+                        const reviewElement = `
+                                <div class="review">
+                                    <img src="${review.image}" alt="${review.name}" class="review-avatar">
+                                    <div class="review-content">
+                                        <div class="review-header">
+                                            <span class="review-name">${review.name}</span>
+                                            <span class="review-stars">${stars}</span>
+                                        </div>
+                                        <p class="review-comment">${review.comment}</p>
+                                    </div>
+                                </div>
+                            `;
+                        reviewsContainer.innerHTML += reviewElement;
+                    });
+                }
+
+                document.getElementById('reviewModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching reviews:', error);
+                alert('無法獲取評價，請稍後再試。');
+            });
+    }
+
+    // 關閉模態窗口
+    document.querySelector('.close').onclick = function() {
+        document.getElementById('reviewModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('reviewModal')) {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+    }
 
     function formatDateTime(date) {
         const year = date.getFullYear();

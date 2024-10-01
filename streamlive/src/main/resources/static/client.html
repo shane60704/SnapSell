@@ -292,6 +292,7 @@
             max-width: 300px;
             border-radius: 4px;
             margin-right: 20px;
+            object-fit: cover;
         }
 
         .modal-details {
@@ -314,11 +315,13 @@
         }
 
         .status-available {
-            color: #4CAF50;
+            color: orangered;
+            font-weight: bold;
         }
 
         .status-delegated {
-            color: #FFA000;
+            color: #4CAF50;
+            font-weight: bold;
         }
 
         .modal-actions {
@@ -423,7 +426,7 @@
         </div>
         <div class="sort-container">
             <select id="sortSelect" class="sort-select">
-                <option value="created_at">上架時間</option>
+                <option value="product_id">上架時間</option>
                 <option value="price">價格</option>
                 <option value="stock">庫存</option>
             </select>
@@ -560,7 +563,7 @@
 <script src="assets/js/chat.js"></script>
 <script>
     const userId = localStorage.getItem("userId");
-    let currentSortField = userId;
+    let currentSortField = 'product_id';
     let currentSortDirection = 'desc';
 
     // 初始化頁面
@@ -591,7 +594,7 @@
                                 <span>價格: $${product.productInfo.price}</span>
                                 <span>庫存: ${product.productInfo.stock}</span>
                                 <span>委託者: ${product.clientInfo.name}</span>
-                                <span>上架時間: ${new Date(product.productInfo.created_At).toLocaleString()}</span>
+                                <span>上架時間: ${new Date(product.productInfo.created_at).toLocaleString()}</span>
                             </div>
                         </div>
                         <div class="product-actions">
@@ -647,6 +650,7 @@
     // 顯示商品詳細資訊
     function showDetails(product) {
         if (product) {
+            console.log(product);
             const modalContent = `
             <div class="modal-overlay">
                 <div class="modal-content">
@@ -675,12 +679,12 @@
                             </div>
                             <div class="modal-info">
                                 <span class="modal-info-label">上架時間:</span>
-                                <span class="modal-info-value">${new Date(product.create_at).toLocaleString()}</span>
+                                <span class="modal-info-value">${new Date(product.created_at).toLocaleString()}</span>
                             </div>
                             <div class="modal-info">
                                 <span class="modal-info-label">狀態:</span>
-                                <span class="modal-info-value ${product.status === '0' ? 'status-available' : 'status-delegated'}">
-                                    ${product.status === '0' ? '未代理' : '已代理'}
+                                <span class="modal-info-value ${product.status === 0 ? 'status-available' : 'status-delegated'}">
+                                    ${product.status === 0 ? '未代理' : '已代理'}
                                 </span>
                             </div>
                         </div>
@@ -727,7 +731,6 @@
 
     // 查看委託人檔案
     function viewProfile(clientId) {
-        // 這裡應該實現查看委託人檔案的邏輯
         console.log('查看委託人檔案，客戶ID:', clientId);
         // 可能需要打開新的頁面或模態框來顯示委託人資料
     }

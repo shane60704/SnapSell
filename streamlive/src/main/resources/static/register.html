@@ -100,13 +100,13 @@
             .then(data => {
                 console.log('註冊成功:', data);
                 localStorage.setItem("userId",data.user.id);
+                localStorage.setItem("userName",data.user.name);
                 localStorage.setItem("userEmail",data.user.email);
+                localStorage.setItem("userImage",data.user.image);
                 window.location.href = 'index.html';
-                // 這裡可以添加註冊成功後的處理邏輯，例如自動登入或重定向到登入頁面
             })
             .catch((error) => {
                 console.error('錯誤:', error);
-                // 這裡可以添加錯誤處理邏輯
             });
     });
 </script>

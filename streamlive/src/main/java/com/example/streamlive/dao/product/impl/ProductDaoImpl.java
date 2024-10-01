@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,8 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Integer createProduct(ProductDto productDto, String mainImagePath,String feature){
-        String sql = "INSERT INTO product (user_id,name,feature,description,stock,price,main_image,commission) VALUES " +
-                "(:user_id,:name,:feature,:description,:stock,:price,:main_image,:commission)";
+        String sql = "INSERT INTO product (user_id,name,feature,description,stock,price,main_image,commission,created_at) VALUES " +
+                "(:user_id,:name,:feature,:description,:stock,:price,:main_image,:commission,:createdAt)";
         Map<String, Object> map = new HashMap<>();
         map.put("user_id", productDto.getUserId());
         map.put("name", productDto.getName());
@@ -38,6 +39,7 @@ public class ProductDaoImpl implements ProductDao {
         map.put("price", productDto.getPrice());
         map.put("main_image", mainImagePath);
         map.put("commission",0);
+        map.put("createdAt", new Timestamp(System.currentTimeMillis()));
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource paramSource = new MapSqlParameterSource(map);
 
@@ -80,7 +82,7 @@ public class ProductDaoImpl implements ProductDao {
                 "    delegation d ON p.id = d.product_id\n" +
                 "WHERE \n" +
                 "    u.id != :userId                \n" +
-                "    AND d.status != :status       \n" +
+                "    AND d.status = :status       \n" +
                 "ORDER BY " + sortBy + " " + sortOrder + "\n";
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);

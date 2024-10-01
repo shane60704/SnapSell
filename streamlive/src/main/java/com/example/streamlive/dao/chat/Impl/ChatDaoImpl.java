@@ -52,11 +52,11 @@ public class ChatDaoImpl implements ChatDao {
         // SQL 查詢，無論 user1 和 user2 是 user_a_id 還是 user_b_id 都能匹配
         String sql = "SELECT * FROM chat_room WHERE (user_a_id = :user1Id AND user_b_id = :user2Id) "
                 + "OR (user_a_id = :user2Id AND user_b_id = :user1Id)";
-        // 創建參數映射
+
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("user1Id", user1Id);
         params.addValue("user2Id", user2Id);
-        // 查詢並返回結果
+
         try {
             return namedParameterJdbcTemplate.queryForObject(
                     sql,
@@ -64,7 +64,6 @@ public class ChatDaoImpl implements ChatDao {
                     new BeanPropertyRowMapper<>(ChatRoom.class)
             );
         } catch (EmptyResultDataAccessException e) {
-            // 如果沒有找到結果，返回 null
             return null;
         }
     }

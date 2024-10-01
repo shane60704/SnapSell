@@ -78,6 +78,12 @@ public class SignalingHandler extends TextWebSocketHandler {
                 lobbySessions.add(session);
                 sendRoomList(session);
                 break;
+            case "sendGift":
+                String giftRoomId = jsonMessage.getString("roomId");
+                String gift = jsonMessage.getString("gift");
+                String sender = jsonMessage.getString("sender");
+                broadcastGift(giftRoomId, sender, gift);
+                break;
         }
     }
 
@@ -319,5 +325,21 @@ public class SignalingHandler extends TextWebSocketHandler {
             viewerCount--;
         }
 
+    }
+
+    private void broadcastGift(String roomId, String sender, String gift) throws IOException {
+        JSONObject giftMessage = new JSONObject()
+                .put("type", "gift")
+                .put("sender", sender)
+                .put("gift", gift);
+
+        // 發送給房間內所有觀眾和主播
+        for (WebSocketSession viewer : rooms.get(roomId)) {
+            sendToSession(viewer, giftMessage.toString());
+        }
+        WebSocketSession broadcaster = broadcasters.get(roomId);
+        if (broadcaster != null) {
+            sendToSession(broadcaster, giftMessage.toString());
+        }
     }
 }

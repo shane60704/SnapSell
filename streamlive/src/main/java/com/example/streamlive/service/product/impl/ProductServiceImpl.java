@@ -46,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
             return false;
         }
     }
+
     @Override
     public List<ClientProduct> getProductsForDelegation(Long userId, int status,String sortBy,String sortOrder){
         return productDao.findProductsForDelegation(userId,status,sortBy,sortOrder);

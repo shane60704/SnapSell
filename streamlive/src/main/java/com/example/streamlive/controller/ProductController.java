@@ -37,10 +37,6 @@ public class ProductController {
             @RequestParam(value = "sortBy", defaultValue = "created_at") String sortBy, // 默認排序欄位為 created_at (上架時間)
             @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder // 默認排序順序為desc (降序)
     ) {
-        log.info("userId"+userId);
-        log.info("status"+status);
-        log.info("sortBy"+sortBy);
-        log.info("sortOrder"+sortOrder);
         return ResponseEntity.ok(new ApiResponse<>(productService.getProductsForDelegation(userId, status, sortBy, sortOrder)));
     }
 

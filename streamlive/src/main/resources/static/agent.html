@@ -536,6 +536,7 @@
                         .then(chatRoom => {
                             console.log(chatRoom);
                             loadUserChatRooms(localStorage.getItem('userId'));
+                            getChatRoomInfo(user1Id,user2Id);
                             document.querySelector('.floating-circle').style.display = "none";
                             document.querySelector('.chat-container').style.display = "flex";
                         })

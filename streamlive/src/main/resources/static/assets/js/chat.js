@@ -21,12 +21,25 @@ function connectWebSocket() {
     });
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const chatIcon = document.querySelector('.floating-circle');
+
+    // 點擊聊天室區塊時移除 new-message 類別
+    chatIcon.addEventListener('click', function () {
+        chatIcon.classList.remove('new-message');
+    });
+});
+
 // 訂閱新的聊天室通知
 function subscribeToNewChatRoomNotifications(userId) {
     stompClient.subscribe(`/topic/newRoom/${userId}`, function(chatRoomMessage) {
         const chatRoom = JSON.parse(chatRoomMessage.body);
         console.log("收到新聊天室通知:", chatRoom);
-        addChatRoomToList(chatRoom);
+        loadUserChatRooms(chatRoom.userBId);
+        getChatRoomInfo(chatRoom.userBId,chatRoom.userAId);
+        const chatIcon = document.querySelector('.floating-circle');
+        chatIcon.classList.add('new-message');
+        console.log("add new-message")
     });
 }
 
@@ -171,6 +184,7 @@ function addNewChatRoomToList(chatRoom) {
 
 // 加入聊天室並訂閱
 function joinChatRoom(chatRoomId, chatRoomName) {
+    // chat_room table id
     console.log("加入聊天室:", chatRoomId);
     document.getElementById('currentChatRoomName').textContent = chatRoomName; // 更新聊天室名稱
     subscribeToChatRoom(chatRoomId);
@@ -211,6 +225,17 @@ function loadChatHistory(chatRoomId) {
             }, 100); // 延遲100ms來確保DOM渲染完成
         })
         .catch(error => console.error('加載聊天歷史失敗:', error));
+}
+
+function getChatRoomInfo(currentUserId,otherUserId){
+    fetch(`/api/1.0/chatroom/info?currentUserId=${currentUserId}&otherUserId=${otherUserId}`)
+        .then(response => response.json())
+        .then(chatRoom => {
+            joinChatRoom(chatRoom.id, chatRoom.receiverInfo.name);
+        })
+        .catch(error => {
+            console.error('進入聊天室失敗',error);
+        })
 }
 
 // 顯示訊息

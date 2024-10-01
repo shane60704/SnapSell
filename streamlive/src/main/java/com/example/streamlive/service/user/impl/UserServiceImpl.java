@@ -100,8 +100,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Map<String,Object> getOtherUsersStatistics(Long currentUserId, String sortBy, String sortOrder,int paging) {
-        int pageSize = 6;
-        int limit = 7;
+        int pageSize = 100;
+        int limit = 101;
         int offset = paging * pageSize;
         List<User> users = userDao.findAllUserStatisticsExceptCurrentUser(currentUserId, sortBy, sortOrder, limit, offset);
         int userCount = users.size();
@@ -120,8 +120,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Map<String, Object> searchUserStatisticsExceptCurrentUserByKeyword(Long currentUserId, String keyword, String sortBy, String sortOrder, int paging) {
-        int pageSize = 6;
-        int limit = 7;
+        int pageSize = 100;
+        int limit = 101;
         int offset = paging * pageSize;
         List<User> users = userDao.findUserStatisticsExceptCurrentUserByKeyword(currentUserId, keyword, sortBy, sortOrder, limit, offset);
         int userCount = users.size();

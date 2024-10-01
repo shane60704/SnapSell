@@ -243,6 +243,25 @@
     color: #333;
 }
 
+.floating-circle.new-message {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+        filter: none;
+    }
+    50% {
+        opacity: 0.8;
+        filter: brightness(1.2) sepia(1) hue-rotate(-20deg) saturate(10) contrast(1.2);
+    }
+    100% {
+        opacity: 1;
+        filter: none;
+    }
+}
+
 /* RWD 支援 */
 @media (max-width: 768px) {
     .chat-container {
@@ -282,7 +301,9 @@
     .chat-room-timestamp {
         font-size: 10px;
     }
+
 }
+
 
 
 
