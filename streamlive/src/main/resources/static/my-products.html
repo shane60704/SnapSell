@@ -29,18 +29,35 @@
         }
         .product-list-container h1 {
             color: #2c3e50;
-            text-align: center;
+            text-align: left;
             margin-bottom: 24px;
+            padding-left: 10px;
         }
-        .products-header{
+        .products-header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .add-product-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            width: 100px;
+            height: 40px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        .add-product-btn:hover {
+            background-color: #2ecc71;
         }
         .tabs {
             display: flex;
             justify-content: left;
             align-items: center;
-            margin-bottom: 20px;
         }
         .tab {
             padding: 10px 20px;
@@ -171,14 +188,16 @@
     </div>
 </header>
 <div class="product-list-container">
-    <div class = "products-header">
-        <h1>我的商品</h1>
+    <h1>我的商品</h1>
+    <div class="products-header">
         <div class="tabs">
             <button class="tab active" onclick="switchTab('undelegated')">未被代理</button>
             <button class="tab" onclick="switchTab('delegated')">已被代理</button>
         </div>
+        <button class="add-product-btn" onclick="navigateToAddProduct()">上架商品</button>
     </div>
     <div id="productList" class="product-list">
+        <!-- 商品列表將在這裡動態插入 -->
     </div>
 </div>
 <footer>
@@ -306,6 +325,10 @@
 <script>
     let currentTab = 'undelegated';
 
+    function navigateToAddProduct() {
+        window.location.href = 'product-upload.html';
+    }
+
     // 使用 fetch 獲取商品數據
     async function fetchProducts(url) {
         const response = await fetch(url);
@@ -333,7 +356,7 @@
     function renderProductList(products) {
         const container = document.getElementById('productList');
         if (products.length === 0) {
-            container.innerHTML = '<div class="no-products">暫無商品</div>';
+            container.innerHTML = '<div class="no-products">還沒有商品嗎？請先上架</div>';
         } else {
             container.innerHTML = products.map(createProductCard).join('');
         }
