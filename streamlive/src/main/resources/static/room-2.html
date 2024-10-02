@@ -1536,9 +1536,9 @@
 
     function initializeWebSocket() {
         // 測試環境使用
-        // ws = new WebSocket('ws://localhost:8080/socket');
+        ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        ws = new WebSocket('wss://techwavelab.com/socket');
+        // ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {

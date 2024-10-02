@@ -16,6 +16,7 @@
     animation: fadeInContract 1s ease-in-out;
     overflow-y: auto;
     max-height: 90vh;
+    display: none;
 }
 
 /* 合約標題樣式 */

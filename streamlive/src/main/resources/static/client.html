@@ -34,7 +34,6 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-
         }
 
         .display-container {
@@ -47,11 +46,11 @@
 
         .slogan-container {
             background: linear-gradient(45deg, #1a2a3a, #3a4a5a);
-            color: #333;
+            color: #fff;
             text-align: center;
-            padding: 2rem 1rem;
+            padding: 1rem 0.5rem;
             margin: 0 auto 20px auto;
-            width:100%;
+            width: 100%;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -59,21 +58,18 @@
         .slogan {
             font-size: 32px;
             font-weight: bold;
-            color: #FFFFFF;
-            margin-bottom: 1rem;
         }
 
         .sub-slogan {
             font-size: 1.2em;
-            color: #FFFFFF;
         }
 
-        /* 更新搜索和排序部分的樣式 */
+        /* 搜索和排序部分的樣式 */
         .search-sort {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 1rem;
         }
@@ -82,14 +78,31 @@
             display: flex;
             flex-grow: 1;
             max-width: 600px;
+            position: relative;
         }
 
         .search-input {
             flex-grow: 1;
-            padding: 0.75rem;
+            padding: 0.75rem 2.5rem 0.75rem 0.75rem;
             border: 1px solid var(--secondary-color);
-            border-radius: 4px 0 0 4px;
+            border-radius: 4px;
             font-size: 1rem;
+        }
+
+        .search-button {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            padding: 0 0.75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--secondary-color);
+        }
+
+        .search-button:hover {
+            color: var(--accent-color);
         }
 
         .status-select, .sort-select {
@@ -97,21 +110,13 @@
             border: 1px solid var(--secondary-color);
             background-color: white;
             font-size: 1rem;
-        }
-
-        .status-select {
-            border-left: none;
-            border-radius: 0 4px 4px 0;
+            border-radius: 4px;
         }
 
         .sort-container {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .sort-select {
-            border-radius: 4px;
         }
 
         .sort-direction {
@@ -124,20 +129,11 @@
             font-size: 1rem;
         }
 
-        @media (max-width: 768px) {
-            .search-sort {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-container, .sort-container {
-                width: 100%;
-            }
-        }
-
+        /* 商品列表和卡片樣式 */
         .product-list {
             display: flex;
             flex-direction: column;
+            gap: 1rem;
         }
 
         .product-item {
@@ -146,7 +142,6 @@
             align-items: center;
             background-color: var(--card-background);
             padding: 1rem;
-            margin-bottom: 1rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px var(--shadow-color);
         }
@@ -167,14 +162,14 @@
             width: 60%;
         }
 
-        /* 按鈕容器樣式 */
         .product-actions {
             display: flex;
             gap: 10px;
         }
 
-        /* 基本按鈕樣式 */
+        /* 按鈕樣式 */
         .action-button {
+            flex: 1 1 auto;
             padding: 12px 18px;
             border: none;
             border-radius: 15px;
@@ -194,7 +189,6 @@
             margin-right: 5px;
         }
 
-        /* 查看委託人檔案按鈕 */
         .view-profile {
             background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
         }
@@ -203,7 +197,6 @@
             background: linear-gradient(135deg, #00A3FF 0%, #0056FF 100%);
         }
 
-        /* 詳細資訊按鈕 */
         .view-details {
             background: linear-gradient(135deg, #4EA8DE 0%, #2D62ED 100%);
         }
@@ -212,7 +205,6 @@
             background: linear-gradient(135deg, #3B8ED6 0%, #1A4FE5 100%);
         }
 
-        /* 私訊按鈕 */
         .send-message {
             background: linear-gradient(135deg, #9F7AEA 0%, #6B46C1 100%);
         }
@@ -221,13 +213,11 @@
             background: linear-gradient(135deg, #8B5CF6 0%, #5B21B6 100%);
         }
 
-        /* 所有按鈕的懸停效果 */
         .action-button:hover {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
             transform: translateY(-2px);
         }
 
-        /* 按鈕點擊效果 */
         .action-button:active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -353,15 +343,56 @@
             opacity: 0.9;
         }
 
-        @media (max-width: 600px) {
-            .modal-content {
-                width: 95%;
+        /* 響應式設計 */
+        @media (max-width: 1024px) {
+            .product-details {
+                width: 100%;
+                flex-wrap: wrap;
             }
 
-            .modal-image {
+            .product-details span {
+                width: 50%;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-sort {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container, .sort-container {
                 width: 100%;
-                margin-right: 0;
-                margin-bottom: 20px;
+            }
+
+            .product-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .product-actions {
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-details {
+                flex-direction: column;
+            }
+
+            .product-details span {
+                width: 100%;
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+
+            .action-button {
+                width: 100%;
             }
         }
     </style>
@@ -418,13 +449,16 @@
     </div>
     <div class="search-sort">
         <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="搜尋商品...">
+            <input type="text" id="searchInput" class="search-input" placeholder="輸入商品名稱...">
+            <button id="searchButton" class="search-button">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div class="sort-container">
             <select id="statusSelect" class="status-select">
                 <option value="0">未代理</option>
                 <option value="1">已代理</option>
             </select>
-        </div>
-        <div class="sort-container">
             <select id="sortSelect" class="sort-select">
                 <option value="product_id">上架時間</option>
                 <option value="price">價格</option>
@@ -575,6 +609,7 @@
     // 設置事件監聽器
     function setupEventListeners() {
         document.getElementById('searchInput').addEventListener('input', handleSearch);
+        document.getElementById('searchButton').addEventListener('click', handleSearch);
         document.getElementById('statusSelect').addEventListener('change', handleStatusFilter);
         document.getElementById('sortSelect').addEventListener('change', handleSortChange);
         document.getElementById('sortDirectionBtn').addEventListener('click', toggleSortDirection);
@@ -616,12 +651,30 @@
 
     // 處理搜索
     function handleSearch() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const filteredProducts = products.filter(product =>
-            product.name.toLowerCase().includes(searchTerm) ||
-            product.clientName.toLowerCase().includes(searchTerm)
-        );
-        renderProductList(filteredProducts);
+        const keyword = document.getElementById('searchInput').value;
+        const status = document.getElementById('statusSelect').value;
+        searchProducts(userId, keyword, status);
+    }
+
+    // 搜尋商品
+    function searchProducts(userId, keyword, status) {
+        const url = `/api/1.0/product/search?userId=${userId}&keyword=${encodeURIComponent(keyword)}&status=${status}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.data.products);
+                renderProductList(data.data.products);
+            })
+            .catch(error => {
+                console.error('Error fetching products:', error);
+                alert('無法獲取商品列表，請稍後再試。');
+            });
     }
 
     // 處理狀態篩選 [ 已代理、未代理 ]

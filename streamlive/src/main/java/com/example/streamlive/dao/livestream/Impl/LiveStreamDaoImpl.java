@@ -118,6 +118,7 @@ public class LiveStreamDaoImpl implements LiveStreamDao {
                 "    s.id AS satisfactionId,\n" +
                 "    s.score,\n" +
                 "    s.comment,\n" +
+                "    s.created_at AS createdTime,\n" +
                 "    u.name,\n" +
                 "    u.image\n" +
                 "FROM \n" +
@@ -125,7 +126,8 @@ public class LiveStreamDaoImpl implements LiveStreamDao {
                 "JOIN \n" +
                 "    `user` u ON s.user_id = u.id\n" +
                 "WHERE \n" +
-                "    s.live_id = :liveId;";
+                "    s.live_id = :liveId\n" +
+                "ORDER BY s.id DESC;";
         Map<String, Object> params = new HashMap<>();
         params.put("liveId", liveId);
 

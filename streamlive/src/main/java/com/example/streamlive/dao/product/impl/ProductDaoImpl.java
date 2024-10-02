@@ -181,7 +181,7 @@ public class ProductDaoImpl implements ProductDao {
                 "    delegation d ON p.id = d.product_id\n" +
                 "WHERE                              \n" +
                 "    u.id != :userId                \n" +
-                "    AND d.status != :status        \n" +
+                "    AND d.status = :status        \n" +
                 "    AND p.name LIKE CONCAT('%', :keyword, '%')    \n" +
                 "LIMIT :limit                       \n" +
                 "OFFSET :offset";

@@ -28,7 +28,7 @@
         .record-container {
             max-width: 1200px;
             margin: 30px auto;
-            padding: 0px 20px;
+            padding: 0 20px;
             flex: 1;
         }
 
@@ -67,17 +67,16 @@
         .livestream-record-body {
             padding: 20px;
             display: flex;
-            justify-content: space-around;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            gap: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .livestream-record-row {
+            flex: 1 1 calc(20% - 15px);
+            min-width: 150px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            min-width: 150px;
         }
 
         .livestream-record-label {
@@ -120,7 +119,34 @@
             background-color: #0056b3;
         }
 
-        /* 模態窗口樣式 */
+        /* RWD */
+        @media (max-width: 1024px) {
+            .livestream-record-row {
+                flex: 1 1 calc(33.33% - 15px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .livestream-record-row {
+                flex: 1 1 calc(50% - 15px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .livestream-record-body {
+                flex-direction: column;
+            }
+
+            .livestream-record-row {
+                flex: 1 1 100%;
+            }
+
+            .livestream-record-footer {
+                text-align: center;
+            }
+        }
+
+        /* 彈出視窗樣式 */
         .modal {
             display: none;
             position: fixed;
@@ -159,11 +185,11 @@
             cursor: pointer;
         }
 
-        /* 評價樣式 */
+        /* 評價區塊的樣式 */
         .review {
             display: flex;
             align-items: start;
-            margin: 20px 0 ;
+            margin: 20px 0;
             padding-bottom: 20px;
             border-bottom: 1px solid #e9ecef;
         }
@@ -201,11 +227,21 @@
         }
 
         .review-comment {
-            margin-top: 5px;
+            margin-bottom: 10px;
             color: #555;
         }
 
-        /* 響應式設計 */
+        .review-wrap{
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .review-time {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+        }
+
         @media (max-width: 768px) {
             .modal-content {
                 width: 95%;
@@ -230,23 +266,9 @@
             .review-stars {
                 margin-top: 5px;
             }
-        }
 
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-            .livestream-record-body {
-                flex-wrap: wrap;
-            }
-
-            .livestream-record-row {
-                min-width: calc(50% - 10px);
-                margin-bottom: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .livestream-record-row {
-                min-width: 100%;
+            .review-time {
+                text-align: center;
             }
         }
     </style>
@@ -496,7 +518,7 @@
             .then(response => response.json())
             .then(data => {
                 const reviewsContainer = document.getElementById('reviewsContainer');
-                reviewsContainer.innerHTML = ''; // 清空現有評價
+                reviewsContainer.innerHTML = '';
 
                 if (data.data.length === 0) {
                     reviewsContainer.innerHTML = '<p>暫無評價</p>';
@@ -504,17 +526,20 @@
                     data.data.forEach(review => {
                         const stars = '★'.repeat(review.score) + '☆'.repeat(5 - review.score);
                         const reviewElement = `
-                                <div class="review">
-                                    <img src="${review.image}" alt="${review.name}" class="review-avatar">
-                                    <div class="review-content">
-                                        <div class="review-header">
-                                            <span class="review-name">${review.name}</span>
-                                            <span class="review-stars">${stars}</span>
-                                        </div>
-                                        <p class="review-comment">${review.comment}</p>
-                                    </div>
+                        <div class="review">
+                            <img src="${review.image}" alt="${review.name}" class="review-avatar">
+                            <div class="review-content">
+                                <div class="review-header">
+                                    <span class="review-name">${review.name}</span>
+                                    <span class="review-stars">${stars}</span>
                                 </div>
-                            `;
+                                <div class = "review-wrap">
+                                    <p class="review-comment">${review.comment}</p>
+                                    <p class="review-time">${formatDateTime(new Date(review.createdTime))}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                         reviewsContainer.innerHTML += reviewElement;
                     });
                 }
@@ -540,13 +565,12 @@
 
     function formatDateTime(date) {
         const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 月份從 0 開始，所以要 +1
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
-        const hours = date.getHours().toString().padStart(2, '0'); // 確保 24 小時制
+        const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
-        const seconds = date.getSeconds().toString().padStart(2, '0');
 
-        return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+        return `${year}/${month}/${day} ${hours}:${minutes}`;
     }
 
     document.addEventListener('DOMContentLoaded', function () {

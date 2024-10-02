@@ -11,6 +11,7 @@ public class Satisfaction {
     private Long satisfactionId;
     private int score;
     private String comment;
+    private String createdTime;
     private String name;
     private String image;
 }
