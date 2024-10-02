@@ -22,6 +22,7 @@ public class UserRowMapper implements RowMapper<User> {
         liveStatistics.setTotalViewers(rs.getLong("totalViewers"));
         liveStatistics.setTotalQuantity(rs.getLong("totalQuantity"));
         liveStatistics.setTotalFigures(rs.getDouble("totalFigures"));
+        liveStatistics.setTotalDelegationCount(rs.getLong("totalDelegationCount"));
         liveStatistics.setAverageScore(rs.getDouble("averageScore"));
 
         return new User(userInfo, liveStatistics);

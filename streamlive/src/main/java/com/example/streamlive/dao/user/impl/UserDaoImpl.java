@@ -220,7 +220,8 @@ public class UserDaoImpl implements UserDao {
                 "SUM(lr.viewers) AS totalViewers, " +
                 "SUM(lr.sales_quantity) AS totalQuantity, " +
                 "SUM(lr.sales_figures) AS totalFigures, " +
-                "AVG(s.score) AS averageScore " +
+                "AVG(s.score) AS averageScore, " +
+                "(SELECT COUNT(*) FROM delegation d WHERE d.agent_id = u.id) AS totalDelegationCount " +
                 "FROM user u " +
                 "LEFT JOIN live_record lr ON u.id = lr.user_id " +
                 "LEFT JOIN satisfaction s ON lr.id = s.live_id " +
@@ -243,7 +244,8 @@ public class UserDaoImpl implements UserDao {
                 "SUM(lr.viewers) AS totalViewers, " +
                 "SUM(lr.sales_quantity) AS totalQuantity, " +
                 "SUM(lr.sales_figures) AS totalFigures, " +
-                "AVG(s.score) AS averageScore " +
+                "AVG(s.score) AS averageScore, " +
+                "(SELECT COUNT(*) FROM delegation d WHERE d.agent_id = u.id) AS totalDelegationCount " +
                 "FROM user u " +
                 "LEFT JOIN live_record lr ON u.id = lr.user_id " +
                 "LEFT JOIN satisfaction s ON lr.id = s.live_id " +

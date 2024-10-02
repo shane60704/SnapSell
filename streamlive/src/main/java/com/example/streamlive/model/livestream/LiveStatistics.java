@@ -11,5 +11,6 @@ public class LiveStatistics {
     private Long totalViewers;
     private Long totalQuantity;
     private Double totalFigures;
+    private Long totalDelegationCount;
     private Double averageScore;
 }
