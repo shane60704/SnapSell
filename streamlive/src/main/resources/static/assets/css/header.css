@@ -11,7 +11,7 @@ header {
     justify-content: space-between;
     align-items: center;
     max-width: 1640px;
-    padding: 0 20px;
+    padding: 5px 20px;
     margin: auto;
 }
 
@@ -19,6 +19,12 @@ header {
     cursor: pointer;
     font-size: 24px;
     letter-spacing: 2px;
+}
+
+.header-logo img{
+    width: 100px;
+    height: 50px;
+    cursor: pointer;
 }
 
 header nav {
@@ -68,7 +74,7 @@ header nav ul li a:hover {
 header .user-info .info-window {
     display: none;
     position: absolute;
-    top: 53px;
+    top: 60px;
     right: 5px;
     background-color: #333;
     color: white;

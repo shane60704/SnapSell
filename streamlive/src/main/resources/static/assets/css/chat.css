@@ -1,4 +1,3 @@
-/* 訊息彈出圖示 */
 .floating-circle {
     position: fixed;
     bottom: 20px;
@@ -12,7 +11,7 @@
     justify-content: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    z-index: 1000; /* 保證在其他元素上方 */
+    z-index: 1000;
 }
 
 .floating-circle img {
@@ -20,7 +19,6 @@
     height: 50px;
 }
 
-/* 調整聊天容器背景為灰色，符合圖片風格 */
 .chat-container {
     position: fixed;
     z-index: 1000;
@@ -51,7 +49,6 @@
     overflow-y: auto;
 }
 
-/* 更新聊天室項目樣式 */
 .chat-room-item {
     display: flex;
     align-items: center;
@@ -102,9 +99,9 @@
 .chat-room-timestamp {
     font-size: 12px;
     color: #999;
-    text-align: right; /* 確保時間靠右對齊 */
+    text-align: right;
     margin-left: 10px;
-    white-space: nowrap; /* 時間保持在一行 */
+    white-space: nowrap;
 }
 
 .chat-main {
@@ -114,13 +111,13 @@
     background-color: #F3F3F3;
 }
 
-/* 顯示當前聊天室名稱的區塊 */
+
 .current-chat-room {
     position: relative;
     padding: 5px;
-    background-color: #F3F3F3; /* 背景與整體風格一致 */
+    background-color: #F3F3F3;
     border-bottom: 2px solid #E0E0E0;
-    color: #333; /* 調整字體顏色為深灰色 */
+    color: #333;
     font-weight: bold;
     text-align: center;
     font-size: 18px;
@@ -132,14 +129,14 @@
     right: 10px;
     font-size: 15px;
     font-weight: bold;
-    color: #666; /* 調整字體顏色為灰色 */
+    color: #666;
 }
 
 .chat-window {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background-color: #F3F3F3; /* 與整體背景一致 */
+    background-color: #F3F3F3;
 }
 
 .message-area {
@@ -205,7 +202,7 @@
 }
 
 .chat-input button {
-    padding: 12px 25px;
+    padding: 12px 12px;
     background-color: #4A90E2;
     color: white;
     border: none;
@@ -249,20 +246,19 @@
 
 @keyframes blink {
     0% {
-        opacity: 1;
-        filter: none;
+        transform: scale(1);
+        filter: brightness(1.1) saturate(1.2) contrast(1);
     }
     50% {
-        opacity: 0.8;
-        filter: brightness(1.2) sepia(1) hue-rotate(-20deg) saturate(10) contrast(1.2);
+        transform: scale(1.1);
+        filter: brightness(1.2) saturate(1.5) contrast(1.05);
     }
     100% {
-        opacity: 1;
-        filter: none;
+        transform: scale(1);
+        filter: brightness(1.1) saturate(1.2) contrast(1);
     }
 }
 
-/* RWD 支援 */
 @media (max-width: 768px) {
     .chat-container {
         width: 100%;

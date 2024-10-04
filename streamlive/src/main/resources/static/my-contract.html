@@ -14,84 +14,145 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
             display: flex;
             flex-direction: column;
+            box-sizing: border-box;
             min-height: 100vh;
         }
+
         .contract-container {
-            width: 90%;
-            margin: 50px auto;
-            flex-grow: 1;
-        }
-        .contract-section-title {
-            font-size: 26px;
-            font-weight: bold;
-            margin: 10px 0 20px 0;
-            color: #333;
-            border-left: 6px solid #888;
-            padding-left: 15px;
-        }
-        .contract-section {
-            margin-bottom: 20px;
-            padding: 5px 20px 20px 20px;
+            flex: 1;
+            max-width: 1200px;
+            width: calc(100% - 40px);
+            box-sizing: border-box;
+            margin: 20px auto;
+            padding: 20px;
             background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .contract-container h1 {
+            color: #FFFFFF;
+            background: linear-gradient(45deg, #1a2a3a, #3a4a5a);
+            padding: 1rem 0.5rem;
             border-radius: 10px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-        .contract-card-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: flex-start;
-        }
-        .contract-card-item {
-            width: 280px;
-            background-color: #f9f9f9;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            border: 1px solid #e0e0e0;
-        }
-        .contract-card-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-        .contract-product-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-        .contract-card-details {
-            padding: 15px;
-        }
-        .contract-product-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .contract-details {
-            margin-bottom: 5px;
-            color: #666;
-            font-size: 14px;
-        }
-        .contract-label {
-            font-weight: bold;
-            color: #444;
-        }
-        /* 無合約時的訊息樣式 */
-        .contract-no-contracts {
-            font-size: 16px;
-            color: #999;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
             text-align: center;
-            padding: 20px 0;
+        }
+
+        .tabs {
+            display: flex;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .contract-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: fixed; /* 確保每列寬度均勻 */
+        }
+
+        .contract-container th,
+        .contract-container td {
+            padding: 12px;
+            text-align: center; /* 所有單元格內容置中 */
+            vertical-align: middle; /* 垂直居中 */
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .contract-container th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .view-contract-btn {
+            padding: 8px 16px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+        }
+
+        .view-contract-btn:hover {
+            background-color: #2980b9;
+        }
+
+
+        .no-contracts {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #7f8c8d;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        /* 響應式設計 */
+        @media screen and (max-width: 600px) {
+            .contract-container table,
+            .contract-container thead,
+            .contract-container tbody,
+            .contract-container th,
+            .contract-container td,
+            .contract-container tr {
+                display: block;
+            }
+
+            .contract-container thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .contract-container tr {
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+            }
+
+            .contract-container td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+
+            .contract-container td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+            }
         }
         /* 彈出視窗樣式 */
         .contract-modal {
@@ -260,7 +321,9 @@
 <body>
 <header>
     <div class="header-container">
-        <div class="header-logo">SnapSell</div>
+        <div class="header-logo">
+            SnapSell
+        </div>
         <nav>
             <ul>
                 <li><a href="client.html">找委託</a></li>
@@ -271,13 +334,13 @@
         <div class="user-info">
             <div id="user-name"></div>
             <div class="user-actions">
-                <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
+                <img class="icon-user" src='https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png' alt="User Avatar">
                 <div class="info-window">
-                    <div class = "log-out">
+                    <div class = "log-out" id = "my-profile-btn">
                         <div class="log-out-content">個人檔案</div>
                     </div>
                     <hr>
-                    <div class = "log-out">
+                    <div class = "log-out" id = "my-order-btn">
                         <div class="log-out-content">我的訂單</div>
                     </div>
                     <hr>
@@ -302,20 +365,26 @@
     </div>
 </header>
 <div class="contract-container">
-    <div class="contract-section">
-        <h2 class="contract-section-title">委託合約</h2>
-        <div class="contract-card-container" id="client-contract-cards">
-            <!-- 委託合約卡片將動態插入到這裡 -->
-        </div>
-        <div id="client-no-contracts" class="contract-no-contracts" style="display: none;">目前暫無委託合約</div>
+    <h1>我的合約</h1>
+    <div class="tabs">
+        <div class="tab active">委託合約</div>
+        <div class="tab">代理合約</div>
     </div>
-    <div class="contract-section">
-        <h2 class="contract-section-title">代理合約</h2>
-        <div class="contract-card-container" id="agent-contract-cards">
-            <!-- 代理合約卡片將動態插入到這裡 -->
-        </div>
-        <div id="agent-no-contracts" class="contract-no-contracts" style="display: none;">目前暫無代理合約</div>
-    </div>
+    <table id="contractTable">
+        <thead>
+        <tr>
+            <th>合約編號</th>
+            <th>商品名稱</th>
+            <th>商品價格</th>
+            <th>商品庫存</th>
+            <th>合作者</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="contractTableBody">
+        <!-- JavaScript will populate this -->
+        </tbody>
+    </table>
 </div>
 
 <!-- 彈出視窗 -->
@@ -360,14 +429,14 @@
         <!-- 聊天輸入框 -->
         <div class="chat-input">
             <input type="text" id="messageInput" placeholder="輸入訊息...">
-            <button id="sendMessageBtn">發送</button>
+            <button id="sendMessageBtn">送出</button>
         </div>
     </div>
 </div>
 
 <!-- 合約生成區塊 -->
 <div class="contract-signature-container">
-    <button class="contract-close-btn" id="contract-closeBtn">X</button>
+    <button class="contract-close-btn" id="contract-closeBtn">x</button>
     <div class="contract-input-container">
         <h2>產生合約</h2>
 
@@ -412,7 +481,7 @@
             <h4>委託者簽名區</h4>
             <canvas id="signature-pad-a" class="contract-signature-pad"></canvas>
             <div class="signature-button-group">
-                <button id="clearSignatureA" class="contract-signature-button">清除簽名</button>
+                <button id="clearSignatureA" class="contract-signature-button secondary-btn">清除簽名</button>
                 <button id="saveSignatureA" class="contract-signature-button">保存簽名</button>
             </div>
         </div>
@@ -420,7 +489,7 @@
             <h4>代理者簽名區</h4>
             <canvas id="signature-pad-b" class="contract-signature-pad"></canvas>
             <div class="signature-button-group">
-                <button id="clearSignatureB" class="contract-signature-button">清除簽名</button>
+                <button id="clearSignatureB" class="contract-signature-button secondary-btn">清除簽名</button>
                 <button id="saveSignatureB" class="contract-signature-button">保存簽名</button>
             </div>
         </div>
@@ -439,483 +508,150 @@
     <!-- 發送合約按鈕 -->
     <div class="contract-signature-send-button-container">
         <button id="sendContractBtn" class="contract-signature-send-button contract-signature-button">發送合約給代理者</button>
+        <button id="sendRejectBtn" class=" contract-signature-button secondary-btn">拒絕合約</button>
         <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
-        <button id="sendRejectBtn" class=" contract-signature-button">拒絕合約</button>
     </div>
 </div>
 
 <!-- 引入js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-<script src="assets/js/header.js"></script>
-<script src="assets/js/chat.js"></script>
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src = "assets/js/header.js"></script>
+<script src ="assets/js/chat.js"></script>
+<script src ="assets/js/contract.js"></script>
 
 <script>
-
-
-    // 使用 LocalStorage 獲取 userId
-    const userId = localStorage.getItem("userId");
-
-    // API 端點
-    const clientContractsUrl = `/api/1.0/contract/as-client?clientId=${userId}`;
-    const agentContractsUrl = `/api/1.0/contract/as-agent?agentId=${userId}`;
-
-    // 獲取 DOM 元素
-    const clientContractCardsDiv = document.getElementById('client-contract-cards');
-    const agentContractCardsDiv = document.getElementById('agent-contract-cards');
-    const clientNoContractsDiv = document.getElementById('client-no-contracts');
-    const agentNoContractsDiv = document.getElementById('agent-no-contracts');
+    // 全局變量
+    let currentTab = 'as-client';
     const modal = document.getElementById('contract-modal');
+    const closeModalBtn = document.getElementById('close-modal');
     const modalDetails = document.getElementById('modal-details');
-    const closeModal = document.getElementById('close-modal');
 
-    // 請求委託和代理合約
-    Promise.all([
-        fetch(clientContractsUrl).then(response => response.json()),
-        fetch(agentContractsUrl).then(response => response.json())
-    ]).then(([clientData, agentData]) => {
-        if (clientData.data.length > 0) {
-            clientData.data.forEach(contract => {
-                const contractElement = createContractCard(contract);
-                clientContractCardsDiv.appendChild(contractElement);
-            });
-        } else {
-            clientNoContractsDiv.style.display = "block";
-        }
-
-        if (agentData.data.length > 0) {
-            agentData.data.forEach(contract => {
-                const contractElement = createContractCard(contract);
-                agentContractCardsDiv.appendChild(contractElement);
-            });
-        } else {
-            agentNoContractsDiv.style.display = "block";
-        }
-    }).catch(error => console.error('Error fetching contracts:', error));
-
-    // 創建合約卡片的 HTML
-    function createContractCard(contract) {
-        const cardDiv = document.createElement('div');
-        cardDiv.classList.add('contract-card-item');
-
-        cardDiv.innerHTML = `
-                <img class="contract-product-image" src="${contract.product.mainImage}" alt="${contract.product.name}">
-                <div class="contract-card-details">
-                    <p class="contract-product-name">${contract.product.name}</p>
-                    <p class="contract-details"><span class="contract-label">委託者:</span> ${contract.client.client_name}</p>
-                    <p class="contract-details"><span class="contract-label">代理者:</span> ${contract.agent.agent_name}</p>
-                    <p class="contract-details"><span class="contract-label">價格:</span> ${contract.product.price} 元</p>
-                    <p class="contract-details"><span class="contract-label">庫存:</span> ${contract.product.stock}</p>
-                </div>
-            `;
-
-        // 點擊卡片時打開合約詳細視窗
-        cardDiv.addEventListener('click', () => {
-            openContractModal(contract.delegationId);
-        });
-
-        return cardDiv;
+    // 函數定義
+    function closeModal() {
+        modal.style.display = "none";
     }
 
-    // 打開合約詳細視窗
+    function showContracts(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        if (tab === 'as-client') {
+            document.querySelector('.tab:nth-child(1)').classList.add('active');
+        } else {
+            document.querySelector('.tab:nth-child(2)').classList.add('active');
+        }
+        fetchContracts(tab);
+    }
+
+    function fetchContracts(type) {
+        const userId = localStorage.getItem("userId");
+        const url = type === 'as-client'
+            ? `/api/1.0/contract/as-client?clientId=${userId}`
+            : `/api/1.0/contract/as-agent?agentId=${userId}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('獲取失敗');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const contractTableBody = document.getElementById('contractTableBody');
+                contractTableBody.innerHTML = '';
+
+                if (Array.isArray(data.data) && data.data.length > 0) {
+                    data.data.forEach((contract, index) => {
+                        const row = `
+                        <tr>
+                            <td data-label="合約編號">${contract.delegationId}</td>
+                            <td data-label="商品名稱">${contract.product.name}</td>
+                            <td data-label="商品價格">$${contract.product.price}</td>
+                            <td data-label="商品庫存">${contract.product.stock}</td>
+                            <td data-label="合作者">${type === 'as-client' ? contract.client.client_name : contract.agent.agent_name}</td>
+                            <td data-label="操作">
+                                <button class="view-contract-btn" onclick="viewContract(${contract.delegationId})">查看詳情</button>
+                            </td>
+                        </tr>
+                    `;
+                        contractTableBody.innerHTML += row;
+                    });
+                } else {
+                    contractTableBody.innerHTML = `<tr><td colspan="6" class="no-contracts">暫無${type === 'as-client' ? '委託' : '代理'}合約</td></tr>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching contracts:', error);
+                alert('無法獲取合約資料，請稍後再試。');
+            });
+    }
+
+    function viewContract(contractId) {
+        openContractModal(contractId);
+    }
+
     function openContractModal(delegationId) {
         const contractDetailsUrl = `/api/1.0/contract/${delegationId}`;
         fetch(contractDetailsUrl)
             .then(response => response.json())
             .then(contract => {
-                // 移除不必要的字串，如 "商品名稱："、"委託者：" 等
                 const productName = contract.data.product.replace("商品名稱：", "");
                 const client = contract.data.client.replace("委託者：", "");
                 const agent = contract.data.agent.replace("代理者：", "");
                 const salesPeriod = contract.data.salesPeriod.replace("銷售期間：", "");
                 const commissionRate = contract.data.commissionRate.replace("佣金比例：", "");
 
-                // 更新模態框中的詳細資訊
                 modalDetails.innerHTML = `
-                    <div class="contract-info-details">
-                        <p><strong>商品名稱:</strong> ${productName}</p>
-                        <p><strong>委託者:</strong> ${client}</p>
-                        <p><strong>代理者:</strong> ${agent}</p>
-                        <p><strong>銷售期間:</strong> ${salesPeriod}</p>
-                        <p><strong>佣金比例:</strong> ${commissionRate}</p>
-                    </div>
-                    <div class="contract-signature-container-A">
-                        <div class="contract-signature-section-A">
-                            <p>委託者簽名：</p>
-                            <div class="contract-signature-image-container-A">
-                                <img class="contract-signature-image-A" src="${contract.data.clientSignature}" alt="委託者簽名">
-                            </div>
-                        </div>
-                        <div class="contract-signature-section-A">
-                            <p>代理者簽名：</p>
-                            <div class="contract-signature-image-container-A">
-                                <img class="contract-signature-image-A" src="${contract.data.agentSignature}" alt="代理者簽名">
-                            </div>
+                <div class="contract-info-details">
+                    <p><strong>商品名稱:</strong> ${productName}</p>
+                    <p><strong>委託者:</strong> ${client}</p>
+                    <p><strong>代理者:</strong> ${agent}</p>
+                    <p><strong>銷售期間:</strong> ${salesPeriod}</p>
+                    <p><strong>佣金比例:</strong> ${commissionRate}</p>
+                </div>
+                <div class="contract-signature-container-A">
+                    <div class="contract-signature-section-A">
+                        <p>委託者簽名：</p>
+                        <div class="contract-signature-image-container-A">
+                            <img class="contract-signature-image-A" src="${contract.data.clientSignature}" alt="委託者簽名">
                         </div>
                     </div>
-                    <p class="contract-creation-date"><strong>建立日期:</strong> ${contract.data.createdAt}</p>
-                `;
+                    <div class="contract-signature-section-A">
+                        <p>代理者簽名：</p>
+                        <div class="contract-signature-image-container-A">
+                            <img class="contract-signature-image-A" src="${contract.data.agentSignature}" alt="代理者簽名">
+                        </div>
+                    </div>
+                </div>
+                <p class="contract-creation-date"><strong>建立日期:</strong> ${contract.data.createdAt}</p>
+            `;
                 modal.style.display = "flex";
             })
             .catch(error => console.error('Error fetching contract details:', error));
     }
 
-    // 關閉合約詳細視窗
-    closeModal.addEventListener('click', () => {
-        modal.style.display = "none";
-    });
+    // 事件監聽器
+    closeModalBtn.addEventListener('click', closeModal);
 
-    // 點擊視窗外部關閉
     window.onclick = function(event) {
         if (event.target == modal) {
-            modal.style.display = "none";
+            closeModal();
         }
-    }
+    };
 
-    document.addEventListener('DOMContentLoaded', function () {
-
-        // 初始隱藏合約彈出視窗
-        document.querySelector('.contract-signature-container').style.display = 'none';
-
-
-        // 取得下拉選單和隱藏欄位的元素
-        const productSelect = document.getElementById('productName');
-        const productIdInput = document.getElementById('productId');
-
-        // 使用 fetch API 來從後端取得商品數據
-        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
-            .then(response => response.json())
-            .then(data => {
-                const products = data.data;
-
-                // 將每個商品加入到下拉選單中
-                products.forEach(product => {
-                    const option = document.createElement('option');
-                    option.value = product.id; // 將商品的 id 作為選項的值
-                    option.textContent = product.name; // 將商品的名稱顯示出來
-                    productSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching product data:', error);
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabType = this.textContent.includes('委託') ? 'as-client' : 'as-agent';
+                showContracts(tabType);
             });
-
-
-        // 當使用者選擇商品時，更新隱藏欄位的值
-        productSelect.addEventListener('change', function () {
-            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
         });
-    })
-    document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
-        document.querySelector('.chat-container').style.display = "none";
-        document.querySelector('.floating-circle').style.display = "flex"
+
+        showContracts('as-client');
     });
-    document.querySelector('.floating-circle').addEventListener('click',()=>{
-        document.querySelector('.floating-circle').style.display = "none"
-        document.querySelector('.chat-container').style.display = "flex";
-    });
-
-    document.querySelector('.contract-signature-container').style.display="none";
-    document.querySelector('.contract-signature-block').style.display="none";
-    document.querySelector('.signature-block-A').style.display="none";
-    document.querySelector('.signature-block-B').style.display="none";
-    document.querySelector('.signature-A').style.display="none";
-    document.querySelector('.signature-B').style.display="none";
-    document.querySelector('.contract-signature-send-button').style.display='none';
-    document.getElementById('sendAcceptBtn').style.display='none';
-    document.getElementById('sendRejectBtn').style.display='none';
-
-    document.getElementById('contract-closeBtn').addEventListener('click', function () {
-        document.querySelector('.contract-signature-container').style.display = 'none';
-    });
-    document.getElementById('createContractBtn').addEventListener('click',function () {
-        document.querySelector('.contract-signature-container').style.display = 'block';
-    });
-
-
-    // 生成合約
-    document.getElementById('generateContractBtn').addEventListener('click', function () {
-        const contractData = {
-            clientName: document.getElementById('clientName').value,
-            sellerName: document.getElementById('sellerName').value,
-            productName: document.getElementById('productName').value,
-            salesPeriod: document.getElementById('salesPeriod').value,
-            commissionRate: document.getElementById('commissionRate').value
-        };
-        const productSelect = document.getElementById('productName');
-        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
-        const contract_container = document.querySelector('.contract-content-container');
-        const signature_container = document.querySelector('.contract-signature-block');
-
-        const contract = `
-        <div class="contract-content-container">
-    <h3>委託銷售合約</h3>
-    <hr>
-    <p><strong>委託者</strong>：${contractData.clientName}</p>
-    <p><strong>代理者</strong>：${contractData.sellerName}</p>
-    <p><strong>商品名稱</strong>：${selectedProductName}</p>
-    <p><strong>銷售期間</strong>：${contractData.salesPeriod}</p>
-    <p><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${contractData.commissionRate}% 的佣金。</p>
-    <p>此合約由雙方協議達成，並自簽署日起生效。</p>
-    <hr>
-</div>
-    `;
-        document.getElementById('generated-contract').innerHTML = contract;
-        document.querySelector('.contract-input-container').style.display = "none";
-        document.getElementById('generated-contract').appendChild(signature_container);
-        document.querySelector('.contract-signature-block').style.display="flex";
-        document.querySelector('.signature-block-A').style.display="block";
-    });
-
-
-    // 初始化畫布
-    const signaturePadA = document.getElementById('signature-pad-a');
-    // 清除畫布按鈕
-    const clearSignatureA = document.getElementById('clearSignatureA');
-    // 將簽名保存變成圖片
-    const saveSignatureA = document.getElementById('saveSignatureA');
-    // 顯示照片的區域
-    const signatureImageA = document.getElementById('signatureImageA');
-    // 2D繪製
-    const ctxA = signaturePadA.getContext('2d');
-
-    // A是否可畫
-    let drawingA = false;
-
-    // 開始簽名
-    signaturePadA.addEventListener('mousedown', function(event) {
-        drawingA = true;
-        ctxA.beginPath();
-        ctxA.moveTo(event.offsetX, event.offsetY);
-    });
-
-    // 畫簽名的過程
-    signaturePadA.addEventListener('mousemove', function(event) {
-        if (drawingA) {
-            ctxA.lineTo(event.offsetX, event.offsetY);
-            ctxA.stroke();
-        }
-    });
-
-    // 停止畫簽名
-    signaturePadA.addEventListener('mouseup', function() {
-        drawingA = false;
-    });
-
-    saveSignatureA.addEventListener('click',function () {
-        saveSignature(signaturePadA,signatureImageA);
-        clearSignature(ctxA,signaturePadA);
-        document.querySelector('.signature-A').style.display = "block";
-    })
-
-    // 初始化畫布
-    const signaturePadB = document.getElementById('signature-pad-b');
-    // 清除畫布按鈕
-    const clearSignatureB = document.getElementById('clearSignatureB');
-    // 將簽名保存變成圖片
-    const saveSignatureB = document.getElementById('saveSignatureB');
-    // 顯示照片的區域
-    const signatureImageB = document.getElementById('signatureImageB');
-    // 2D繪製
-    const ctxB = signaturePadB.getContext('2d');
-    // A是否可畫
-    let drawingB = false;
-
-
-    // 開始簽名
-    signaturePadB.addEventListener('mousedown', function(event) {
-        drawingB = true;
-        ctxB.beginPath();
-        ctxB.moveTo(event.offsetX, event.offsetY);
-    });
-
-    // 畫簽名的過程
-    signaturePadB.addEventListener('mousemove', function(event) {
-        if (drawingB) {
-            ctxB.lineTo(event.offsetX, event.offsetY);
-            ctxB.stroke();
-        }
-    });
-
-    // 停止畫簽名
-    signaturePadB.addEventListener('mouseup', function() {
-        drawingB = false;
-    });
-
-    saveSignatureB.addEventListener('click',function () {
-        saveSignature(signaturePadB,signatureImageB);
-        clearSignature(ctxB,signaturePadB);
-        document.querySelector('.signature-B').style.display = "block";
-    })
-
-    // 保存簽名並清除畫布
-    function saveSignature(signaturePad,signatureImage) {
-        let dataURL = signaturePad.toDataURL();
-        signatureImage.src = dataURL; // 顯示簽名圖片
-        document.querySelector('.contract-signature-block').style.display="none";
-        if (signatureImage === signatureImageA){
-            document.querySelector('.signature-B').style.display="none";
-            document.querySelector('.contract-signature-send-button').style.display="block";
-        }else{
-            document.querySelector('.signature-A').style.display="none";
-            document.getElementById('sendAcceptBtn').style.display='block';
-            document.getElementById('sendRejectBtn').style.display='block';
-        }
-    }
-
-    // 清除畫布
-    function clearSignature(ctx,signaturePad) {
-        ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
-    }
-
-    let contractRoomId = null;
-
-    function connectWebSocketForContract(chatRoomId) {
-        const socket = new SockJS('/contract'); // 確認 WebSocket 端點為 /contract
-        const contractStompClient = Stomp.over(socket);
-        contractStompClient.connect({}, function(frame) {
-            console.log(chatRoomId);
-            contractRoomId = chatRoomId;
-            console.log('已連接到合約端點: ' + frame);
-            const userId = getCurrentUserId(); // 確認是否有用戶 ID
-            if (userId) {
-                subscribeToNewContract(contractRoomId); // 訂閱合約頻道
-            } else {
-                alert("請先登入");
-            }
-        }, function(error) {
-            console.error('合約連接失敗:', error);
-            setTimeout(connectWebSocketForContract, 5000); // 5 秒後重試連接
-        });
-    }
-
-    function subscribeToNewContract(contractRoomId){
-        stompClient.subscribe(`/topic/contract/${contractRoomId}`,function(choose){
-            console.log(`已經訂閱:/topic/contract/${contractRoomId}`)
-            const result = JSON.parse(choose.body);
-            console.log(result);
-            if(result.senderId !== localStorage.getItem('userId')){
-                switch(result.requestType){
-                    case "accept":
-                        document.querySelector('.contract-signature-container').style.display = 'none';
-                        alert("代理者已簽署，該份合約已生效。");
-                        break;
-                    case "reject":
-                        document.querySelector('.contract-signature-container').style.display = 'none';
-                        alert("代理者未簽署，請與其聯絡。");
-                        break;
-                    case "request":
-                        document.querySelector('.contract-signature-container').style.display = 'block';
-                        // 得到請求，先清空合約填空處
-                        document.querySelector('.contract-input-container').innerHTML='';
-                        // 獲取合約內容
-                        const contract = `
-                <div class="contract-content-container">
-                <h3>委託銷售合約</h3>
-                <hr>
-                <p id="clientName"><strong>委託者</strong>：${result.clientName}</p>
-                <p id="sellerName"><strong>代理者</strong>：${result.sellerName}</p>
-                <p id="productName"><strong>商品名稱</strong>：${result.productName}</p>
-                <p id="salesPeriod"><strong>銷售期間</strong>：${result.salesPeriod}</p>
-                <p id="commissionRate"><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${result.commissionRate}% 的佣金。</p>
-                <p>此合約由雙方協議達成，並自簽署日起生效。</p>
-                <span id="clientId" style="display: none;">${result.clientId}</span>
-                <span id="productId" style="display: none;">${result.productId}</span>
-                <span id="signatureImage" style="display: none;">${result.signatureImage}</span>
-                <hr>
-                </div>
-                `;
-                        document.getElementById('generated-contract').innerHTML = contract;
-
-                        document.querySelector('.contract-signature-block').style.display="flex";
-                        document.querySelector('.signature-block-B').style.display="block";
-                        break;
-                }
-            }else{
-                switch (result.requestType){
-                    case "accept":
-                        document.querySelector('.contract-signature-container').style.display = 'none';
-                        alert("合約已保存。");
-                        break;
-                    case "reject":
-                        document.querySelector('.contract-signature-container').style.display = 'none';
-                        alert("已通知委託者，發回處理。");
-                        break;
-                }
-            }
-        });
-    }
-
-    // 發送訊息
-    document.getElementById("sendContractBtn").addEventListener("click", function() {
-
-        const productSelect = document.getElementById('productName');
-        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
-
-        if (document.getElementById('currentChatRoomName').textContent) {
-            const message = {
-                requestType:"request",
-                chatRoomId: contractRoomId,   // 當前聊天室 ID
-                senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
-                clientId: localStorage.getItem("userId"),
-                clientName: document.getElementById('clientName').value,
-                sellerName: document.getElementById('sellerName').value,
-                productName: selectedProductName,
-                productId:document.getElementById('productId').value,
-                salesPeriod: document.getElementById('salesPeriod').value,
-                commissionRate: document.getElementById('commissionRate').value,
-                signatureImage:signatureImageA.getAttribute('src'),
-                timestamp: new Date().toISOString() // 當前時間
-            };
-            stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
-            document.getElementById('signature-preview').innerHTML=``;
-            document.getElementById('generated-contract').innerHTML=`
-            <div class = "contract-loading">
-                <h3>合約已送出，等待代理者簽署中</h3>
-                <div class="dots-container">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            `;
-            document.getElementById('sendContractBtn').style.display="none";
-            document.getElementById('signature-preview').innerHTML=``;
-        } else {
-            alert("請選擇聊天室並輸入訊息");
-        }
-    });
-
-    document.getElementById("sendAcceptBtn").addEventListener("click", function() {
-        const message = {
-            requestType:"accept",
-            chatRoomId: contractRoomId,   // 當前聊天室 ID
-            senderId: localStorage.getItem("userId"),                // 發送者 ID
-            clientId:document.getElementById('clientId').textContent,
-            agentId:localStorage.getItem('userId'),
-            clientName: document.getElementById('clientName').textContent,
-            sellerName: document.getElementById('sellerName').textContent,
-            productName: document.getElementById('productName').textContent,
-            productId: document.getElementById('productId').textContent,
-            salesPeriod: document.getElementById('salesPeriod').textContent,
-            commissionRate: document.getElementById('commissionRate').textContent,
-            signatureImage:document.getElementById('signatureImage').textContent,
-            agentSignatureImage:signatureImageB.getAttribute('src'),
-            timestamp: new Date().toISOString() // 當前時間
-        };
-        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
-    });
-
-    document.getElementById("sendRejectBtn").addEventListener("click", function() {
-        const message = {
-            requestType:"reject",
-            chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
-            senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
-            timestamp: new Date().toISOString() // 當前時間
-        };
-        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
-    });
-
 </script>
 </body>
 </html>

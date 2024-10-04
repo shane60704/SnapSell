@@ -14,10 +14,11 @@ public class PersonalProfile {
     private String backgroundImage;
     private String description;
     private Long followers;
-    private Long totalViewers;
-    private Long totalQuantity;
-    private Long totalFigures;
-    private Long averageScore;
-    private Long totalProducts;
-    private Long averageProductScore;
+    private Long totalViewers;  // 總觀看數
+    private Long totalQuantity; // 總銷售數
+    private Long totalFigures;  // 總銷售額
+    private Long averageScore;  // 直播平均分數
+    private Long totalProducts; // 上架商品數
+    private Long averageProductScore;  // 平均商品評價
+    private Long totalDelegationCount; // 累積代理數
 }

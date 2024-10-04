@@ -29,7 +29,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #f0f0f0;
+            background-color: #EEEEEE;
             line-height: 1.6;
         }
         .page-container {
@@ -55,13 +55,15 @@
             font-size: 1.2em;
             color: #fff;
         }
+
         .content-wrapper {
             display: flex;
             gap: 30px;
         }
+
         /* 熱門代理者區塊 */
         .top-agents-section {
-            flex: 1;
+            flex: 0.8;
             background-color: #ffffff;
             padding: 30px;
             border-radius: 10px;
@@ -182,19 +184,29 @@
         }
 
         .sort-direction {
-            padding: 0.75rem 1rem;
-            background-color: var(--accent-color);
+            padding: 12px 10px 8px 10px;
+            background-color: #FFFFFF;
             color: white;
-            border: none;
             border-radius: 4px;
+            border: 1px solid var(--secondary-color);
             cursor: pointer;
             font-size: 1rem;
             font-weight: bold;
         }
 
+        .sort-direction img {
+            width: 20px;
+            height: 20px;
+        }
+
         /* 用戶列表區塊 */
+        .userlist-container{
+            flex: 1.6;
+            display: flex;
+            flex-direction: column;
+        }
         #userList {
-            flex: 2;
+            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -264,23 +276,33 @@
         }
 
         .custom-message-btn {
-            padding: 10px 15px;
-            background: linear-gradient(135deg, #00C6FF 0%, #0072FF 100%);
-            color: white;
-            border: none;
-            border-radius: 15px;
+            padding: 8px 12px;
+            background-color: transparent;
+            color: #333333;
+            border: 1px solid #CCCCCC;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.8em;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 0.9em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             white-space: nowrap;
         }
 
         .custom-message-btn:hover {
-            background: linear-gradient(135deg, #00A3FF 0%, #0056FF 100%);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
+            background-color: #CCCCCC;
+            color: black;
+            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .custom-message-btn i {
+            margin-right: 5px;
+            font-size: 0.9em;
         }
 
         @media (max-width: 768px) {
@@ -312,14 +334,6 @@
                 justify-content: space-around;
             }
         }
-        /* Footer 樣式 */
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: auto;
-        }
         /* 響應式設計 */
         @media (max-width: 1200px) {
             .content-wrapper {
@@ -342,7 +356,9 @@
 <body>
 <header>
     <div class="header-container">
-        <div class="header-logo">SnapSell</div>
+        <div class="header-logo">
+            SnapSell
+        </div>
         <nav>
             <ul>
                 <li><a href="client.html">找委託</a></li>
@@ -353,13 +369,13 @@
         <div class="user-info">
             <div id="user-name"></div>
             <div class="user-actions">
-                <img class="icon-user" src="assets/image/user.png" alt="User Avatar">
+                <img class="icon-user" src='https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png' alt="User Avatar">
                 <div class="info-window">
-                    <div class = "log-out">
+                    <div class = "log-out" id = "my-profile-btn">
                         <div class="log-out-content">個人檔案</div>
                     </div>
                     <hr>
-                    <div class = "log-out">
+                    <div class = "log-out" id = "my-order-btn">
                         <div class="log-out-content">我的訂單</div>
                     </div>
                     <hr>
@@ -405,19 +421,19 @@
                 <option value="totalFigures">總銷售額</option>
                 <option value="averageScore">平均評價</option>
             </select>
-            <button id="sortDirectionBtn" class="sort-direction">↓</button>
+            <button id="sortDirectionBtn" class="sort-direction">
+                <img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/south28.png" alt="Sort Direction" id="sortDirectionImg">
+            </button>
         </div>
     </div>
     <div class="content-wrapper">
         <div class="top-agents-section">
             <h2 class="section-title">熱門代理者排行榜</h2>
             <div class="top-agents-container" id="topAgentsContainer">
-                <!-- 代理者卡片將在這裡動態插入 -->
             </div>
         </div>
-
-        <div id="userList">
-            <!-- 使用者卡片將在這裡動態插入 -->
+        <div class ="userlist-container">
+            <div id="userList"></div>
         </div>
     </div>
 </div>
@@ -455,14 +471,14 @@
         <!-- 聊天輸入框 -->
         <div class="chat-input">
             <input type="text" id="messageInput" placeholder="輸入訊息...">
-            <button id="sendMessageBtn">發送</button>
+            <button id="sendMessageBtn">送出</button>
         </div>
     </div>
 </div>
 
 <!-- 合約生成區塊 -->
 <div class="contract-signature-container">
-    <button class="contract-close-btn" id="contract-closeBtn">X</button>
+    <button class="contract-close-btn" id="contract-closeBtn">x</button>
     <div class="contract-input-container">
         <h2>產生合約</h2>
 
@@ -507,7 +523,7 @@
             <h4>委託者簽名區</h4>
             <canvas id="signature-pad-a" class="contract-signature-pad"></canvas>
             <div class="signature-button-group">
-                <button id="clearSignatureA" class="contract-signature-button">清除簽名</button>
+                <button id="clearSignatureA" class="contract-signature-button secondary-btn">清除簽名</button>
                 <button id="saveSignatureA" class="contract-signature-button">保存簽名</button>
             </div>
         </div>
@@ -515,7 +531,7 @@
             <h4>代理者簽名區</h4>
             <canvas id="signature-pad-b" class="contract-signature-pad"></canvas>
             <div class="signature-button-group">
-                <button id="clearSignatureB" class="contract-signature-button">清除簽名</button>
+                <button id="clearSignatureB" class="contract-signature-button secondary-btn">清除簽名</button>
                 <button id="saveSignatureB" class="contract-signature-button">保存簽名</button>
             </div>
         </div>
@@ -534,18 +550,18 @@
     <!-- 發送合約按鈕 -->
     <div class="contract-signature-send-button-container">
         <button id="sendContractBtn" class="contract-signature-send-button contract-signature-button">發送合約給代理者</button>
+        <button id="sendRejectBtn" class=" contract-signature-button secondary-btn">拒絕合約</button>
         <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
-        <button id="sendRejectBtn" class=" contract-signature-button">拒絕合約</button>
     </div>
 </div>
 
 <!-- 引入js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-<script src="assets/js/header.js"></script>
-<script src="assets/js/chat.js"></script>
-<!--<script src="assets/js/contract.js"></script>-->
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src = "assets/js/header.js"></script>
+<script src ="assets/js/chat.js"></script>
+<script src ="assets/js/contract.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const userId = localStorage.getItem("userId");
@@ -579,7 +595,7 @@
             const card = document.createElement('div');
             card.className = 'user-card';
 
-            const imageUrl = user.userInfo.image || '/api/placeholder/50/50';
+            const imageUrl = user.userInfo.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png';
             const totalViewers = user.liveStatistics.totalViewers || 0;
             const totalQuantity = user.liveStatistics.totalQuantity || 0;
             const totalFigures = user.liveStatistics.totalFigures || 0;
@@ -587,43 +603,43 @@
             const averageScore = user.liveStatistics.averageScore ? user.liveStatistics.averageScore.toFixed(1) : '0';
 
             card.innerHTML = `
-        <div class="custom-user-image-container">
-            <img src="${imageUrl}" alt="${user.userInfo.name}" class="custom-user-image">
-        </div>
-        <div class="custom-user-info">
-            <div class="custom-user-name">${user.userInfo.name}</div>
-            <div class="custom-user-stats">
-                <div class="custom-stat-item">
-                    <div class="custom-stat-value">${totalViewers}</div>
-                    <div class="custom-stat-label">總觀看數</div>
+                <div class="custom-user-image-container">
+                    <img src="${imageUrl}" alt="${user.userInfo.name}" class="custom-user-image">
                 </div>
-                <div class="custom-stat-item">
-                    <div class="custom-stat-value">${totalDelegationCount}</div>
-                    <div class="custom-stat-label">總代理數</div>
+                <div class="custom-user-info">
+                    <div class="custom-user-name">${user.userInfo.name}</div>
+                    <div class="custom-user-stats">
+                        <div class="custom-stat-item">
+                            <div class="custom-stat-value">${totalViewers}</div>
+                            <div class="custom-stat-label">總觀看數</div>
+                        </div>
+                        <div class="custom-stat-item">
+                            <div class="custom-stat-value">${totalDelegationCount}</div>
+                            <div class="custom-stat-label">總代理數</div>
+                        </div>
+                        <div class="custom-stat-item">
+                            <div class="custom-stat-value">${totalQuantity}</div>
+                            <div class="custom-stat-label">總銷量</div>
+                        </div>
+                        <div class="custom-stat-item">
+                            <div class="custom-stat-value">${totalFigures.toLocaleString()}</div>
+                            <div class="custom-stat-label">總銷售額</div>
+                        </div>
+                        <div class="custom-stat-item">
+                            <div class="custom-stat-value">${averageScore}</div>
+                            <div class="custom-stat-label">平均分數</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="custom-stat-item">
-                    <div class="custom-stat-value">${totalQuantity}</div>
-                    <div class="custom-stat-label">總銷量</div>
+                <div class="custom-user-actions">
+                    <button class="custom-message-btn" data-id="${user.userInfo.id}">
+                        <i class="fas fa-user"></i> 查看檔案
+                    </button>
+                    <button class="custom-message-btn" data-userid="${user.userInfo.id}">
+                        <i class="fas fa-comment"></i> 私訊
+                    </button>
                 </div>
-                <div class="custom-stat-item">
-                    <div class="custom-stat-value">${totalFigures.toLocaleString()}</div>
-                    <div class="custom-stat-label">總銷售額</div>
-                </div>
-                <div class="custom-stat-item">
-                    <div class="custom-stat-value">${averageScore}</div>
-                    <div class="custom-stat-label">平均分數</div>
-                </div>
-            </div>
-        </div>
-        <div class="custom-user-actions">
-            <button class="custom-message-btn">
-                <i class="fas fa-user"></i> 查看檔案
-            </button>
-            <button class="custom-message-btn" data-userid="${user.userInfo.id}">
-                <i class="fas fa-comment"></i> 私訊
-            </button>
-        </div>
-    `;
+            `;
             // 綁定私訊按鈕的事件
             const messageBtn = card.querySelector('.custom-message-btn[data-userid]');
             messageBtn.addEventListener('click', function() {
@@ -650,6 +666,11 @@
                 }
             });
 
+            const profileBtn = card.querySelector('.custom-message-btn[data-id]');
+            profileBtn.addEventListener('click', function () {
+                window.location.href = `profile.html?userId=${this.getAttribute('data-id')}&type=all`;
+            });
+
             return card;
         }
 
@@ -663,7 +684,8 @@
             const sortSelect = document.getElementById('sortSelect');
             currentSortField = sortSelect.value;
             currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-            document.getElementById('sortDirectionBtn').textContent = currentSortDirection === 'asc' ? '↑' : '↓';
+            const sortDirectionImg = document.getElementById('sortDirectionImg');
+            sortDirectionImg.src = currentSortDirection === 'asc' ? 'https://seanproject.s3.ap-northeast-1.amazonaws.com/north_28.png' : 'https://seanproject.s3.ap-northeast-1.amazonaws.com/south28.png';
             fetchUsers(userId,currentSortField,currentSortDirection);
         }
 
@@ -709,7 +731,7 @@
             card.className = 'agent-card';
             card.style.animationDelay = `${index * 0.1}s`;
 
-            const imageUrl = agent.image || '/api/placeholder/80/80';
+            const imageUrl = agent.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png';
             const totalViewers = agent.totalViewers || 0;
             const totalQuantity = agent.totalQuantity || 0;
             const totalFigures = agent.totalFigures || 0;
@@ -726,7 +748,7 @@
                 </div>
                 <div class="stat-item">
                     <div class="stat-value">${totalQuantity}</div>
-                    <div>總銷量</div>
+                    <div>總銷售數</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value">${totalFigures.toLocaleString()}</div>
@@ -744,354 +766,6 @@
             document.getElementById('sortSelect').addEventListener('change', handleSortChange);
             document.getElementById('sortDirectionBtn').addEventListener('click', toggleSortDirection);
         }
-
-
-
-    });
-
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-
-        // 初始隱藏合約彈出視窗
-        document.querySelector('.contract-signature-container').style.display = 'none';
-
-
-        // 取得下拉選單和隱藏欄位的元素
-        const productSelect = document.getElementById('productName');
-        const productIdInput = document.getElementById('productId');
-
-        // 使用 fetch API 來從後端取得商品數據
-        fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
-            .then(response => response.json())
-            .then(data => {
-                const products = data.data;
-
-                // 將每個商品加入到下拉選單中
-                products.forEach(product => {
-                    const option = document.createElement('option');
-                    option.value = product.id; // 將商品的 id 作為選項的值
-                    option.textContent = product.name; // 將商品的名稱顯示出來
-                    productSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching product data:', error);
-            });
-
-
-        // 當使用者選擇商品時，更新隱藏欄位的值
-        productSelect.addEventListener('change', function () {
-            productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
-        });
-    })
-    document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
-        document.querySelector('.chat-container').style.display = "none";
-        document.querySelector('.floating-circle').style.display = "flex"
-    });
-    document.querySelector('.floating-circle').addEventListener('click',()=>{
-        document.querySelector('.floating-circle').style.display = "none"
-        document.querySelector('.chat-container').style.display = "flex";
-    });
-
-    document.querySelector('.contract-signature-container').style.display="none";
-    document.querySelector('.contract-signature-block').style.display="none";
-    document.querySelector('.signature-block-A').style.display="none";
-    document.querySelector('.signature-block-B').style.display="none";
-    document.querySelector('.signature-A').style.display="none";
-    document.querySelector('.signature-B').style.display="none";
-    document.querySelector('.contract-signature-send-button').style.display='none';
-    document.getElementById('sendAcceptBtn').style.display='none';
-    document.getElementById('sendRejectBtn').style.display='none';
-
-    document.getElementById('contract-closeBtn').addEventListener('click', function () {
-        document.querySelector('.contract-signature-container').style.display = 'none';
-    });
-    document.getElementById('createContractBtn').addEventListener('click',function () {
-        document.querySelector('.contract-signature-container').style.display = 'block';
-    });
-
-
-    // 生成合約
-    document.getElementById('generateContractBtn').addEventListener('click', function () {
-        const contractData = {
-            clientName: document.getElementById('clientName').value,
-            sellerName: document.getElementById('sellerName').value,
-            productName: document.getElementById('productName').value,
-            salesPeriod: document.getElementById('salesPeriod').value,
-            commissionRate: document.getElementById('commissionRate').value
-        };
-        const productSelect = document.getElementById('productName');
-        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
-        const contract_container = document.querySelector('.contract-content-container');
-        const signature_container = document.querySelector('.contract-signature-block');
-
-        const contract = `
-        <div class="contract-content-container">
-    <h3>委託銷售合約</h3>
-    <hr>
-    <p><strong>委託者</strong>：${contractData.clientName}</p>
-    <p><strong>代理者</strong>：${contractData.sellerName}</p>
-    <p><strong>商品名稱</strong>：${selectedProductName}</p>
-    <p><strong>銷售期間</strong>：${contractData.salesPeriod}</p>
-    <p><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${contractData.commissionRate}% 的佣金。</p>
-    <p>此合約由雙方協議達成，並自簽署日起生效。</p>
-    <hr>
-</div>
-    `;
-        document.getElementById('generated-contract').innerHTML = contract;
-        document.querySelector('.contract-input-container').style.display = "none";
-        document.getElementById('generated-contract').appendChild(signature_container);
-        document.querySelector('.contract-signature-block').style.display="flex";
-        document.querySelector('.signature-block-A').style.display="block";
-    });
-
-
-    // 初始化畫布
-    const signaturePadA = document.getElementById('signature-pad-a');
-    // 清除畫布按鈕
-    const clearSignatureA = document.getElementById('clearSignatureA');
-    // 將簽名保存變成圖片
-    const saveSignatureA = document.getElementById('saveSignatureA');
-    // 顯示照片的區域
-    const signatureImageA = document.getElementById('signatureImageA');
-    // 2D繪製
-    const ctxA = signaturePadA.getContext('2d');
-
-    // A是否可畫
-    let drawingA = false;
-
-    // 開始簽名
-    signaturePadA.addEventListener('mousedown', function(event) {
-        drawingA = true;
-        ctxA.beginPath();
-        ctxA.moveTo(event.offsetX, event.offsetY);
-    });
-
-    // 畫簽名的過程
-    signaturePadA.addEventListener('mousemove', function(event) {
-        if (drawingA) {
-            ctxA.lineTo(event.offsetX, event.offsetY);
-            ctxA.stroke();
-        }
-    });
-
-    // 停止畫簽名
-    signaturePadA.addEventListener('mouseup', function() {
-        drawingA = false;
-    });
-
-    saveSignatureA.addEventListener('click',function () {
-        saveSignature(signaturePadA,signatureImageA);
-        clearSignature(ctxA,signaturePadA);
-        document.querySelector('.signature-A').style.display = "block";
-    })
-
-    // 初始化畫布
-    const signaturePadB = document.getElementById('signature-pad-b');
-    // 清除畫布按鈕
-    const clearSignatureB = document.getElementById('clearSignatureB');
-    // 將簽名保存變成圖片
-    const saveSignatureB = document.getElementById('saveSignatureB');
-    // 顯示照片的區域
-    const signatureImageB = document.getElementById('signatureImageB');
-    // 2D繪製
-    const ctxB = signaturePadB.getContext('2d');
-    // A是否可畫
-    let drawingB = false;
-
-
-    // 開始簽名
-    signaturePadB.addEventListener('mousedown', function(event) {
-        drawingB = true;
-        ctxB.beginPath();
-        ctxB.moveTo(event.offsetX, event.offsetY);
-    });
-
-    // 畫簽名的過程
-    signaturePadB.addEventListener('mousemove', function(event) {
-        if (drawingB) {
-            ctxB.lineTo(event.offsetX, event.offsetY);
-            ctxB.stroke();
-        }
-    });
-
-    // 停止畫簽名
-    signaturePadB.addEventListener('mouseup', function() {
-        drawingB = false;
-    });
-
-    saveSignatureB.addEventListener('click',function () {
-        saveSignature(signaturePadB,signatureImageB);
-        clearSignature(ctxB,signaturePadB);
-        document.querySelector('.signature-B').style.display = "block";
-    })
-
-    // 保存簽名並清除畫布
-    function saveSignature(signaturePad,signatureImage) {
-        let dataURL = signaturePad.toDataURL();
-        signatureImage.src = dataURL; // 顯示簽名圖片
-        document.querySelector('.contract-signature-block').style.display="none";
-        if (signatureImage === signatureImageA){
-            document.querySelector('.signature-B').style.display="none";
-            document.querySelector('.contract-signature-send-button').style.display="block";
-        }else{
-            document.querySelector('.signature-A').style.display="none";
-            document.getElementById('sendAcceptBtn').style.display='block';
-            document.getElementById('sendRejectBtn').style.display='block';
-        }
-    }
-
-    // 清除畫布
-    function clearSignature(ctx,signaturePad) {
-        ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
-    }
-
-    let contractRoomId = null;
-
-    function connectWebSocketForContract(chatRoomId) {
-        const socket = new SockJS('/contract'); // 確認 WebSocket 端點為 /contract
-        const contractStompClient = Stomp.over(socket);
-        contractStompClient.connect({}, function(frame) {
-            console.log(chatRoomId);
-            contractRoomId = chatRoomId;
-            console.log('已連接到合約端點: ' + frame);
-            const userId = getCurrentUserId(); // 確認是否有用戶 ID
-            if (userId) {
-                subscribeToNewContract(contractRoomId); // 訂閱合約頻道
-            } else {
-                alert("請先登入");
-            }
-        }, function(error) {
-            console.error('合約連接失敗:', error);
-            setTimeout(connectWebSocketForContract, 5000); // 5 秒後重試連接
-        });
-    }
-
-    function subscribeToNewContract(contractRoomId){
-        stompClient.subscribe(`/topic/contract/${contractRoomId}`,function(choose){
-            console.log(`已經訂閱:/topic/contract/${contractRoomId}`)
-            const result = JSON.parse(choose.body);
-            console.log(result);
-            if(result.senderId !== localStorage.getItem('userId')){
-                switch(result.requestType){
-                    case "accept":
-                        document.querySelector('.contract-signature-container').style.display = 'none';
-                        alert("代理者已簽署，該份合約已生效。");
-                        break;
-                    case "reject":
-                        document.querySelector('.contract-signature-container').style.display = 'none';
-                        alert("代理者未簽署，請與其聯絡。");
-                        break;
-                    case "request":
-                        document.querySelector('.contract-signature-container').style.display = 'block';
-                        // 得到請求，先清空合約填空處
-                        document.querySelector('.contract-input-container').innerHTML='';
-                        // 獲取合約內容
-                        const contract = `
-                <div class="contract-content-container">
-                <h3>委託銷售合約</h3>
-                <hr>
-                <p id="clientName"><strong>委託者</strong>：${result.clientName}</p>
-                <p id="sellerName"><strong>代理者</strong>：${result.sellerName}</p>
-                <p id="productName"><strong>商品名稱</strong>：${result.productName}</p>
-                <p id="salesPeriod"><strong>銷售期間</strong>：${result.salesPeriod}</p>
-                <p id="commissionRate"><strong>佣金比例</strong>：代理者將從每筆銷售中獲得 ${result.commissionRate}% 的佣金。</p>
-                <p>此合約由雙方協議達成，並自簽署日起生效。</p>
-                <span id="clientId" style="display: none;">${result.clientId}</span>
-                <span id="productId" style="display: none;">${result.productId}</span>
-                <span id="signatureImage" style="display: none;">${result.signatureImage}</span>
-                <hr>
-                </div>
-                `;
-                        document.getElementById('generated-contract').innerHTML = contract;
-
-                        document.querySelector('.contract-signature-block').style.display="flex";
-                        document.querySelector('.signature-block-B').style.display="block";
-                        break;
-                }
-            }else{
-                switch (result.requestType){
-                    case "accept":
-                        document.querySelector('.contract-signature-container').style.display = 'none';
-                        alert("合約已保存。");
-                        break;
-                    case "reject":
-                        document.querySelector('.contract-signature-container').style.display = 'none';
-                        alert("已通知委託者，發回處理。");
-                        break;
-                }
-            }
-        });
-    }
-
-    // 發送訊息
-    document.getElementById("sendContractBtn").addEventListener("click", function() {
-
-        const productSelect = document.getElementById('productName');
-        const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
-
-        if (document.getElementById('currentChatRoomName').textContent) {
-            const message = {
-                requestType:"request",
-                chatRoomId: contractRoomId,   // 當前聊天室 ID
-                senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
-                clientId: localStorage.getItem("userId"),
-                clientName: document.getElementById('clientName').value,
-                sellerName: document.getElementById('sellerName').value,
-                productName: selectedProductName,
-                productId:document.getElementById('productId').value,
-                salesPeriod: document.getElementById('salesPeriod').value,
-                commissionRate: document.getElementById('commissionRate').value,
-                signatureImage:signatureImageA.getAttribute('src'),
-                timestamp: new Date().toISOString() // 當前時間
-            };
-            stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
-            document.getElementById('signature-preview').innerHTML=``;
-            document.getElementById('generated-contract').innerHTML=`
-            <div class = "contract-loading">
-                <h3>合約已送出，等待代理者簽署中</h3>
-                <div class="dots-container">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            `;
-            document.getElementById('sendContractBtn').style.display="none";
-            document.getElementById('signature-preview').innerHTML=``;
-        } else {
-            alert("請選擇聊天室並輸入訊息");
-        }
-    });
-
-    document.getElementById("sendAcceptBtn").addEventListener("click", function() {
-        const message = {
-            requestType:"accept",
-            chatRoomId: contractRoomId,   // 當前聊天室 ID
-            senderId: localStorage.getItem("userId"),                // 發送者 ID
-            clientId:document.getElementById('clientId').textContent,
-            agentId:localStorage.getItem('userId'),
-            clientName: document.getElementById('clientName').textContent,
-            sellerName: document.getElementById('sellerName').textContent,
-            productName: document.getElementById('productName').textContent,
-            productId: document.getElementById('productId').textContent,
-            salesPeriod: document.getElementById('salesPeriod').textContent,
-            commissionRate: document.getElementById('commissionRate').textContent,
-            signatureImage:document.getElementById('signatureImage').textContent,
-            agentSignatureImage:signatureImageB.getAttribute('src'),
-            timestamp: new Date().toISOString() // 當前時間
-        };
-        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
-    });
-
-    document.getElementById("sendRejectBtn").addEventListener("click", function() {
-        const message = {
-            requestType:"reject",
-            chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
-            senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
-            timestamp: new Date().toISOString() // 當前時間
-        };
-        stompClient.send("/app/contract.sign", {}, JSON.stringify(message));// 透過 STOMP 發送訊息到後端
     });
 </script>
 </body>

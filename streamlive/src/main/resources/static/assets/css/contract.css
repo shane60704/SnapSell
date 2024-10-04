@@ -28,6 +28,10 @@
     text-align: center;
 }
 
+.contract-signature-container p{
+    padding: 5px 0;
+}
+
 /* 輸入欄位容器 */
 .contract-input-container {
     display: flex;
@@ -59,11 +63,11 @@
 .contract-signature-button {
     display: block;
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px 10px;
     background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 30px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
@@ -73,6 +77,16 @@
 
 .contract-signature-button:hover {
     background-color: #45a049;
+}
+
+.secondary-btn{
+    margin-right: 20px;
+    background-color: #d3d3d3;
+    color: #666666;
+}
+.secondary-btn:hover{
+    background-color:#666666 ;
+    color: white;
 }
 
 /* 簽名區塊樣式 */
@@ -87,6 +101,11 @@
 .signature-block-B {
     width: 100%;
 }
+
+.signature-button-group{
+    display: flex;
+}
+
 
 .contract-signature-pad {
     margin:10px 0;
@@ -136,7 +155,6 @@
 /* 發送按鈕容器 */
 .contract-signature-send-button-container {
     display: flex;
-    flex-direction: column;
     gap: 10px;
     margin-top: 20px;
 }
@@ -148,23 +166,22 @@
 /* 關閉按鈕 */
 .contract-close-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #d9534f;
-    color: white;
+    top: 8px;
+    right: 13px;
     border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
+    font-size: 22px;
+    font-weight: 600;
     cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    color: #aaa;
+    background-color: white;
+    float: right;
 }
 
-.contract-close-btn:hover {
-    background-color: #c9302c;
+.contract-close-btn:hover,
+.contract-close-btn:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* 響應式調整 */

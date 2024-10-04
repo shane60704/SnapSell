@@ -22,18 +22,18 @@ public class SaleDaoImpl implements SaleDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public int createOrder (CheckOutDto checkOutDto) {
+    public int createOrder(CheckOutDto checkOutDto) {
         String sql = "INSERT INTO `order` (user_id,product_id,live_id,quantity,total_price,freight,order_time,status) VALUES" +
                 "(:userId,:productId,:liveId,:quantity,:totalPrice,:freight,:orderTime,:status)";
         Map<String, Object> map = new HashMap<>();
-        map.put("userId",checkOutDto.getUserId());
-        map.put("productId",checkOutDto.getProductId());
-        map.put("liveId",checkOutDto.getLiveId());
-        map.put("quantity",checkOutDto.getQuantity());
-        map.put("totalPrice",checkOutDto.getTotalPrice());
-        map.put("freight",checkOutDto.getFreight());
-        map.put("orderTime",checkOutDto.getOrderTime());
-        map.put("status",0);
+        map.put("userId", checkOutDto.getUserId());
+        map.put("productId", checkOutDto.getProductId());
+        map.put("liveId", checkOutDto.getLiveId());
+        map.put("quantity", checkOutDto.getQuantity());
+        map.put("totalPrice", checkOutDto.getTotalPrice());
+        map.put("freight", checkOutDto.getFreight());
+        map.put("orderTime", checkOutDto.getOrderTime());
+        map.put("status", 0);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder, new String[]{"id"});
@@ -69,8 +69,9 @@ public class SaleDaoImpl implements SaleDao {
     @Override
     public List<Order> getOrdersByUserId(Long userId) {
         String sql = "SELECT id, order_time AS orderTime, total_price AS totalPrice, logistics_status AS logisticsStatus " +
-                     "FROM `order` " +
-                     "WHERE user_id=:userId";
+                "FROM `order` " +
+                "WHERE user_id=:userId " +
+                "ORDER BY id DESC";
         Map<String, Object> map = new HashMap<>();
         map.put("userId", userId);
         return namedParameterJdbcTemplate.query(sql, map, new BeanPropertyRowMapper<>(Order.class));

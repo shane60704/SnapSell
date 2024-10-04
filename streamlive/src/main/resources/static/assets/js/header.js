@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('user-name').textContent="嗨,"+localStorage.getItem("userName");
 
     // 載入當前使用者的頭像
-    document.querySelector('.icon-user').src = `${localStorage.getItem("userImage")}`;
+    document.querySelector('.icon-user').src = `${localStorage.getItem("userImage")}`|| 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png';
 
     // 使用者頭像綁定監聽事件(顯示隱藏視窗)
     document.querySelector('.icon-user').addEventListener('click', function() {
@@ -37,6 +37,16 @@ document.addEventListener('DOMContentLoaded', function(){
     // 我的商品
     document.getElementById('my-products-btn').addEventListener('click',function (){
         window.location.href = "my-products.html";
+    });
+
+    // 個人檔案
+    document.getElementById('my-profile-btn').addEventListener('click',function (){
+        window.location.href = `profile.html?userId=${localStorage.getItem('userId')}&type=all`;
+    });
+
+    // 我的訂單
+    document.getElementById('my-order-btn').addEventListener('click',function (){
+       window.location.href = 'order.html';
     });
 
 

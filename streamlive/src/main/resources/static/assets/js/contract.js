@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
+
     // 初始隱藏合約彈出視窗
     document.querySelector('.contract-signature-container').style.display = 'none';
+
     // 取得下拉選單和隱藏欄位的元素
     const productSelect = document.getElementById('productName');
     const productIdInput = document.getElementById('productId');
+
     // 使用 fetch API 來從後端取得商品數據
     fetch(`/api/1.0/product/undelgated?userId=${localStorage.getItem('userId')}`)
         .then(response => response.json())
@@ -21,11 +24,22 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Error fetching product data:', error);
         });
+
+
     // 當使用者選擇商品時，更新隱藏欄位的值
     productSelect.addEventListener('change', function () {
         productIdInput.value = productSelect.value; // 將選中的商品 ID 設置到隱藏欄位中
     });
 })
+
+document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
+    document.querySelector('.chat-container').style.display = "none";
+    document.querySelector('.floating-circle').style.display = "flex"
+});
+document.querySelector('.floating-circle').addEventListener('click',()=>{
+    document.querySelector('.floating-circle').style.display = "none"
+    document.querySelector('.chat-container').style.display = "flex";
+});
 
 document.querySelector('.contract-signature-container').style.display="none";
 document.querySelector('.contract-signature-block').style.display="none";
@@ -43,6 +57,8 @@ document.getElementById('contract-closeBtn').addEventListener('click', function 
 document.getElementById('createContractBtn').addEventListener('click',function () {
     document.querySelector('.contract-signature-container').style.display = 'block';
 });
+
+
 
 // 生成合約
 document.getElementById('generateContractBtn').addEventListener('click', function () {
@@ -180,18 +196,20 @@ function clearSignature(ctx,signaturePad) {
     ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
 }
 
-function connectWebSocketForContract(chatRoomName) {
+let contractRoomId = null;
+
+function connectWebSocketForContract(chatRoomId) {
     const socket = new SockJS('/contract'); // 確認 WebSocket 端點為 /contract
     const contractStompClient = Stomp.over(socket);
-
     contractStompClient.connect({}, function(frame) {
+        console.log(chatRoomId);
+        contractRoomId = chatRoomId;
         console.log('已連接到合約端點: ' + frame);
         const userId = getCurrentUserId(); // 確認是否有用戶 ID
         if (userId) {
-            subscribeToNewContract(chatRoomName); // 訂閱合約頻道
+            subscribeToNewContract(contractRoomId); // 訂閱合約頻道
         } else {
             alert("請先登入");
-            window.location.href='login.html';
         }
     }, function(error) {
         console.error('合約連接失敗:', error);
@@ -199,8 +217,9 @@ function connectWebSocketForContract(chatRoomName) {
     });
 }
 
-function subscribeToNewContract(chatRoomName){
-    stompClient.subscribe(`/topic/contract/${chatRoomName}`,function(choose){
+function subscribeToNewContract(contractRoomId){
+    stompClient.subscribe(`/topic/contract/${contractRoomId}`,function(choose){
+        console.log(`已經訂閱:/topic/contract/${contractRoomId}`)
         const result = JSON.parse(choose.body);
         console.log(result);
         if(result.senderId !== localStorage.getItem('userId')){
@@ -264,7 +283,7 @@ document.getElementById("sendContractBtn").addEventListener("click", function() 
     if (document.getElementById('currentChatRoomName').textContent) {
         const message = {
             requestType:"request",
-            chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+            chatRoomId: contractRoomId,   // 當前聊天室 ID
             senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
             clientId: localStorage.getItem("userId"),
             clientName: document.getElementById('clientName').value,
@@ -297,7 +316,7 @@ document.getElementById("sendContractBtn").addEventListener("click", function() 
 document.getElementById("sendAcceptBtn").addEventListener("click", function() {
     const message = {
         requestType:"accept",
-        chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+        chatRoomId: contractRoomId,   // 當前聊天室 ID
         senderId: localStorage.getItem("userId"),                // 發送者 ID
         clientId:document.getElementById('clientId').textContent,
         agentId:localStorage.getItem('userId'),

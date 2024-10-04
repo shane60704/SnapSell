@@ -53,7 +53,7 @@ public class ContractDaoImpl implements ContractDao {
     public Integer createDelegationDetails(String delegationId,SignatureData signatureData) {
         String sql = "INSERT INTO delegation_details (delegation_id,client,agent,product,sales_period,commission_rate,client_signature,agent_signature,created_at) VALUES " +
                 "(:delegationId,:client,:agent,:product,:salesPeriod,:commissionRate,:clientSignature,:agentSignature,:createdAt)";
-        // 設置參數映射
+
         Map<String, Object> params = new HashMap<>();
         params.put("delegationId", delegationId);
         params.put("client", signatureData.getClientName());
@@ -65,14 +65,13 @@ public class ContractDaoImpl implements ContractDao {
         params.put("agentSignature", signatureData.getAgentSignatureImage());
         params.put("createdAt", signatureData.getTimestamp());
 
-        // 執行插入並返回受影響的行數
         return namedParameterJdbcTemplate.update(sql, params);
     }
 
     // 取得自己是委託者的合約
     @Override
     public List<Delegation> findDelegationsByClientId(int clientId){
-        String sql = "SELECT * FROM delegation WHERE client_id = :clientId AND agent_id != 0";
+        String sql = "SELECT * FROM delegation WHERE client_id = :clientId AND agent_id != 0 ORDER BY id DESC";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("clientId", clientId);
         return namedParameterJdbcTemplate.query(sql, params, new DelegationRowMapper());
@@ -81,7 +80,7 @@ public class ContractDaoImpl implements ContractDao {
     // 取得自己是代理者的合約
     @Override
     public List<Delegation> findDelegationsByAgentId(int agentId){
-        String sql = "SELECT * FROM delegation WHERE agent_id = :agentId";
+        String sql = "SELECT * FROM delegation WHERE agent_id = :agentId ORDER BY id DESC";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("agentId", agentId);
 

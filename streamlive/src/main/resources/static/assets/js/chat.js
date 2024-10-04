@@ -95,7 +95,7 @@ function addChatRoomToList(chatRoom) {
 
         // 添加頭像
         const avatar = document.createElement("img");
-        avatar.src = contactInfo.image ? contactInfo.image : "assets/image/default-avatar.png";
+        avatar.src = contactInfo.image ? contactInfo.image : 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png';
         avatar.alt = contactInfo.name;
         avatar.classList.add("chat-room-avatar");
 

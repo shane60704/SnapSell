@@ -34,6 +34,7 @@ public class SignalingHandler extends TextWebSocketHandler {
     private Map<String, WebSocketSession> broadcasters = new ConcurrentHashMap<>();
     private Map<String, RoomInfo> roomInfos = new ConcurrentHashMap<>(); // 保存房間資訊
     private Map<String, Integer> roomViewerCount = new HashMap<>(); // 記錄每個房間的累積觀眾人數
+    private Map<String, Integer> totalViewerCount = new HashMap<>(); // 記錄每個房間的累積觀眾人數
     private Set<WebSocketSession> lobbySessions = Collections.synchronizedSet(new HashSet<>()); //大廳連線
 
     @Override
@@ -48,7 +49,6 @@ public class SignalingHandler extends TextWebSocketHandler {
                 String description = jsonMessage.getString("description");
                 liveStreamDao.createLiveStreamRecord(userId, createRoomId);
                 String userImage = userDao.getUserImageById(userId);
-                log.info("----------:"+userImage);
                 JSONArray productsArray = jsonMessage.getJSONArray("products");
                 List<String> productsList = new ArrayList<>();
                 for (int i = 0; i < productsArray.length(); i++) {
@@ -202,7 +202,7 @@ public class SignalingHandler extends TextWebSocketHandler {
         for (Map.Entry<String, WebSocketSession> entry : broadcasters.entrySet()) {
             if (entry.getValue() == session) {
                 String roomId = entry.getKey();
-                Integer viewerCount = roomViewerCount.get(roomId);
+                Integer viewerCount = totalViewerCount.get(roomId);
                 Map<String,Object> liveStatistics = liveStreamDao.getTotalPriceAndQuantity(roomId);
                 BigDecimal totalPriceDecimal = (BigDecimal) liveStatistics.get("totalPrice");
                 BigDecimal totalQuantityDecimal = (BigDecimal) liveStatistics.get("totalQuantity");
@@ -212,6 +212,7 @@ public class SignalingHandler extends TextWebSocketHandler {
                 if (viewerCount == null){
                     liveStreamDao.updateLiveStreamRecord(roomId,0,totalQuantity,totalPrice);
                 }else{
+                    log.info("Updating live stream record for room " + roomId + ": viewers=" + viewerCount + ", quantity=" + totalQuantity + ", price=" + totalPrice);
                     liveStreamDao.updateLiveStreamRecord(roomId,viewerCount,totalQuantity,totalPrice);
                 }
                 rooms.get(roomId).forEach(viewer -> {
@@ -266,6 +267,13 @@ public class SignalingHandler extends TextWebSocketHandler {
 
     // 當有觀眾加入房間時調用此方法
     public void onViewerJoined(String roomId) {
+
+        // 確保累積觀眾人數不被重置
+        totalViewerCount.putIfAbsent(roomId, 0);
+        // 增加累積觀眾人數
+        totalViewerCount.put(roomId, totalViewerCount.get(roomId) + 1);
+        System.out.println("房間 " + roomId + " 的累積觀眾人數: " + totalViewerCount.get(roomId));
+
         // 如果房間之前沒有累積人數，初始化為0
         roomViewerCount.putIfAbsent(roomId, 0);
 

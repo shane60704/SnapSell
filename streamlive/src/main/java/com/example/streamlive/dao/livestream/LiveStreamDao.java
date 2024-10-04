@@ -2,6 +2,7 @@ package com.example.streamlive.dao.livestream;
 
 import com.example.streamlive.dto.SatisfactionDto;
 import com.example.streamlive.model.livestream.LiveStreamRecord;
+import com.example.streamlive.model.livestream.LiveSummary;
 import com.example.streamlive.model.livestream.Satisfaction;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface LiveStreamDao {
     Integer findLiveRecordIdByLiveId(String liveId);
     void saveSatisfactionRecord(SatisfactionDto satisfactionDto, Integer liveRecordId);
     List<Satisfaction> findSatisfactionRecordByLiveId(Long liveId);
+    List<Satisfaction> findSatisfactionRecordByUserId(Long userId);
+    LiveSummary findLiveSummaryByUserId(Long userId);
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品列表</title>
+    <title>SnapSell 我的訂單</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="assets/css/header.css"/>
     <link rel="stylesheet" href="assets/css/chat.css"/>
@@ -15,99 +15,57 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
             background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
-        .product-list-container {
+
+        .order-container {
             flex: 1;
-            width: calc(100% - 40px);
-            box-sizing: border-box;
+            width: 100%;
             max-width: 1200px;
             margin: 20px auto;
             background-color: #fff;
-            padding: 0 20px 20px 20px;
+            padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
-        .product-list-container h1 {
-            margin-top: 20px;
+
+        .order-container h1 {
             color: #FFFFFF;
             background: linear-gradient(45deg, #1a2a3a, #3a4a5a);
             padding: 1rem 0.5rem;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: center;
         }
-        .products-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .add-product-btn {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 14px;
-        }
-        .add-product-btn:hover {
-            background-color: #2ecc71;
-        }
-        .tabs {
-            display: flex;
-        }
 
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-bottom: none;
-            border-radius: 5px 5px 0 0;
-            font-size: 16px;
-        }
-
-        .tab.active {
-            background-color: #fff;
-            border-bottom: 2px solid #3498db;
-        }
-
-        .tab:hover {
-            background-color: #f0f0f0;
-        }
-
-        .product-list {
-            display: none;
-        }
-
-        .product-list.active {
-            display: block;
-        }
-        .product-list table {
+        .order-container table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        .product-list th, .product-list td {
+
+        .order-container th, td {
             padding: 12px;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
-            width: 20%;
         }
-        .product-list th {
+
+        .order-container th {
             background-color: #f8f9fa;
             font-weight: 600;
             color: #2c3e50;
         }
-        .detail-button {
+
+        .order-details-btn {
             padding: 8px 16px;
             background-color: #3498db;
             color: #fff;
@@ -116,10 +74,13 @@
             border-radius: 4px;
             transition: background-color 0.3s ease;
         }
-        .detail-button:hover {
+
+        .order-details-btn:hover {
             background-color: #2980b9;
         }
-        .no-products {
+
+        .no-orders {
+            text-align: center;
             padding: 40px;
             font-size: 18px;
             color: #7f8c8d;
@@ -127,33 +88,111 @@
             border-radius: 8px;
             margin-top: 20px;
         }
-        @media screen and (max-width: 768px) {
-            .product-list table, .product-list thead, .product-list tbody, .product-list th, .product-list td, .product-list tr {
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeInContract 0.5s ease-in-out;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            margin-top: 150px;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        @keyframes fadeInContract {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -55%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+
+        .order-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .order-close:hover,
+        .order-close:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .modal-body p {
+            margin: 0;
+            padding: 8px 0;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .modal-body strong {
+            color: #34495e;
+            min-width: 120px;
+            display: inline-block;
+        }
+
+        .modal-body span {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        @media screen and (max-width: 600px) {
+            .order-container table, tr, td {
                 display: block;
             }
-            .product-list-container {
-                width: calc(100% - 20px);  /* 在小屏幕上減少邊距 */
-                margin: 10px auto;
-                padding: 15px;
+
+            .order-container tr {
+                margin-bottom: 15px;
             }
-            .product-list thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-            .product-list tr {
-                border: 1px solid #ccc;
-                margin-bottom: 10px;
-            }
-            .product-list td {
+
+            .order-container td {
                 border: none;
-                border-bottom: 1px solid #eee;
                 position: relative;
                 padding-left: 50%;
-                width: 100%;
-                box-sizing: border-box;
             }
-            .product-list td:before {
+
+            .order-container td:before {
                 content: attr(data-label);
                 position: absolute;
                 left: 6px;
@@ -161,6 +200,10 @@
                 padding-right: 10px;
                 white-space: nowrap;
                 font-weight: bold;
+            }
+
+            .modal-body {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -181,29 +224,30 @@
         <div class="user-info">
             <div id="user-name"></div>
             <div class="user-actions">
-                <img class="icon-user" src='https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png' alt="User Avatar">
+                <img class="icon-user" src='https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png'
+                     alt="User Avatar">
                 <div class="info-window">
-                    <div class = "log-out" id = "my-profile-btn">
+                    <div class="log-out" id="my-profile-btn">
                         <div class="log-out-content">個人檔案</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id = "my-order-btn">
+                    <div class="log-out" id="my-order-btn">
                         <div class="log-out-content">我的訂單</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id="my-livestream-btn">
+                    <div class="log-out" id="my-livestream-btn">
                         <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id="my-products-btn">
+                    <div class="log-out" id="my-products-btn">
                         <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id = "my-contract-btn">
+                    <div class="log-out" id="my-contract-btn">
                         <div class="log-out-content">我的合約</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id = "logout-btn">
+                    <div class="log-out" id="logout-btn">
                         <div class="log-out-content">登出</div>
                     </div>
                 </div>
@@ -211,46 +255,31 @@
         </div>
     </div>
 </header>
-<div class="product-list-container">
-    <h1>我的商品</h1>
-    <div class="products-header">
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('undelegated')">未被代理</button>
-            <button class="tab" onclick="switchTab('delegated')">已被代理</button>
+<div class="order-container">
+    <h1>我的訂單</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>訂單編號</th>
+            <th>訂單日期</th>
+            <th>合計</th>
+            <th>訂單狀態</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="orderTableBody">
+        </tbody>
+    </table>
+</div>
+
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <span class="order-close">&times;</span>
+        <div class="modal-header">
+            <h2>訂單詳情</h2>
         </div>
-        <button class="add-product-btn" onclick="navigateToAddProduct()">我要上架</button>
-    </div>
-    <div id="undelegatedProductList" class="product-list active">
-        <table>
-            <thead>
-            <tr>
-                <th>商品名稱</th>
-                <th>價格</th>
-                <th>庫存</th>
-                <th>上架時間</th>
-                <th>操作</th>
-            </tr>
-            </thead>
-            <tbody id="undelegatedProductTableBody">
-            <!-- 未被代理的商品將被動態插入這裡 -->
-            </tbody>
-        </table>
-    </div>
-    <div id="delegatedProductList" class="product-list">
-        <table>
-            <thead>
-            <tr>
-                <th>商品名稱</th>
-                <th>價格</th>
-                <th>庫存</th>
-                <th>上架時間</th>
-                <th>操作</th>
-            </tr>
-            </thead>
-            <tbody id="delegatedProductTableBody">
-            <!-- 已被代理的商品將被動態插入這裡 -->
-            </tbody>
-        </table>
+        <div id="orderDetails" class="modal-body">
+        </div>
     </div>
 </div>
 <footer>
@@ -258,6 +287,7 @@
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
+
 <!-- 聊天室區塊 -->
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
@@ -377,90 +407,91 @@
 <script src = "assets/js/header.js"></script>
 <script src ="assets/js/chat.js"></script>
 <script src ="assets/js/contract.js"></script>
+
 <script>
-    let currentTab = 'undelegated';
+    const userId = localStorage.getItem("userId");
+    const orderTableBody = document.getElementById('orderTableBody');
+    const orderModal = document.getElementById('orderModal');
+    const orderDetails = document.getElementById('orderDetails');
+    const closeBtn = document.getElementsByClassName('order-close')[0];
 
-    function switchTab(tab) {
-        currentTab = tab;
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelector(`.tab:nth-child(${tab === 'undelegated' ? 1 : 2})`).classList.add('active');
-        document.querySelectorAll('.product-list').forEach(list => list.classList.remove('active'));
-        document.getElementById(`${tab}ProductList`).classList.add('active');
-        loadProducts(tab);
-    }
-
-    async function loadProducts(tab) {
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
-            console.error('No user ID found. User might not be logged in.');
-            return;
-        }
-        // 注意這裡 'undelgated' 的拼寫，它應該是 'undelegated'
-        const url = `/api/1.0/product/${tab === 'undelegated' ? 'undelgated' : 'delegated'}?userId=${userId}`;
-        console.log('Fetching products from:', url);
-
+    async function fetchOrders() {
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            const response = await fetch(`/api/1.0/order/user/${userId}`);
             const data = await response.json();
-            const tableBody = document.getElementById(`${tab}ProductTableBody`);
-            tableBody.innerHTML = '';
-
-            if (data.data && data.data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="no-products">暫無${tab === 'undelegated' ? '未被代理' : '已被代理'}的商品</td></tr>`;
-            } else if (data.data && data.data.length > 0) {
-                data.data.forEach(product => {
-                    tableBody.innerHTML += createProductRow(product);
-                });
-            } else {
-                throw new Error('Invalid data format received from server');
-            }
+            return data.data;
         } catch (error) {
-            console.error('Error fetching products:', error);
-            document.getElementById(`${tab}ProductTableBody`).innerHTML = `<tr><td colspan="5" class="error">加載商品時發生錯誤：${error.message}</td></tr>`;
+            console.error('Error fetching orders:', error);
+            return [];
         }
     }
 
-    function createProductRow(product) {
-        return `
-                <tr>
-                    <td data-label="商品名稱">${product.name || '無名稱'}</td>
-                    <td data-label="價格">NT$${(product.price || 0).toLocaleString()}</td>
-                    <td data-label="庫存">${product.stock || 0}</td>
-                    <td data-label="上架時間">${formatDate(product.created_at)}</td>
-                    <td data-label="操作">
-                        <button class="detail-button" onclick="showDetails(${product.id})">詳細資訊</button>
-                    </td>
-                </tr>
-            `;
+    async function fetchOrderDetails(orderId) {
+        try {
+            const response = await fetch(`/api/1.0/order/${orderId}`);
+            const data = await response.json();
+            return data.data;
+        } catch (error) {
+            console.error('Error fetching order details:', error);
+            return null;
+        }
     }
 
     function formatDate(dateString) {
         const date = new Date(dateString);
-        return date.toLocaleString('zh-TW', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        return date.toLocaleDateString('zh-TW', {year: 'numeric', month: '2-digit', day: '2-digit'});
     }
 
-    function showDetails(productId) {
-        console.log(`顯示商品 ID ${productId} 的詳細資訊`);
-        // 實現詳細信息顯示邏輯
+    async function displayOrders() {
+        const orders = await fetchOrders();
+        if (orders.length === 0) {
+            orderTableBody.innerHTML = '<div class="no-orders">暫無訂單記錄</div>';
+        } else {
+            orderTableBody.innerHTML = orders.map(order => `
+                <tr>
+                    <td data-label="訂單編號">${order.id}</td>
+                    <td data-label="訂單日期">${formatDate(order.orderTime)}</td>
+                    <td data-label="合計">NT$${order.totalPrice.toLocaleString()}</td>
+                    <td data-label="訂單狀態">${order.logisticsStatus || '處理中'}</td>
+                    <td data-label="操作">
+                        <button class="order-details-btn" onclick="showOrderDetails(${order.id})">查閱</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
     }
 
-    function navigateToAddProduct() {
-        window.location.href = 'product-upload.html';
+    async function showOrderDetails(orderId) {
+        const details = await fetchOrderDetails(orderId);
+        if (details) {
+            orderDetails.innerHTML = `
+                    <p><strong>訂單編號:</strong> ${details.orderId}</p>
+                    <p><strong>用戶名稱:</strong> ${details.userName}</p>
+                    <p><strong>商品名稱:</strong> ${details.productName}</p>
+                    <p><strong>商品價格:</strong> NT$${details.productPrice.toLocaleString()}</p>
+                    <p><strong>數量:</strong> ${details.quantity}</p>
+                    <p><strong>總金額:</strong> NT$${details.totalPrice.toLocaleString()}</p>
+                    <p><strong>訂單時間:</strong> ${details.orderTime ? formatDate(details.orderTime) : '未提供'}</p>
+                    <p><strong>收件人姓名:</strong> ${details.recipientName}</p>
+                    <p><strong>收件人電話:</strong> ${details.recipientPhone}</p>
+                    <p><strong>收件人Email:</strong> ${details.recipientEmail}</p>
+                    <p><strong>收件地址:</strong> ${details.recipientAddress}</p>
+                `;
+            orderModal.style.display = "block";
+        }
     }
 
-    // 初始加載未被代理的商品
-    document.addEventListener('DOMContentLoaded', () => {
-        switchTab('undelegated');
-    });
+    closeBtn.onclick = function () {
+        orderModal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == orderModal) {
+            orderModal.style.display = "none";
+        }
+    }
+
+    displayOrders();
 </script>
 </body>
 </html>

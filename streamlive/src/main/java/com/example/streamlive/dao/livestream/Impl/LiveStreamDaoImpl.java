@@ -3,6 +3,7 @@ package com.example.streamlive.dao.livestream.Impl;
 import com.example.streamlive.dao.livestream.LiveStreamDao;
 import com.example.streamlive.dto.SatisfactionDto;
 import com.example.streamlive.model.livestream.LiveStreamRecord;
+import com.example.streamlive.model.livestream.LiveSummary;
 import com.example.streamlive.model.livestream.Satisfaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -132,6 +133,49 @@ public class LiveStreamDaoImpl implements LiveStreamDao {
         params.put("liveId", liveId);
 
         return namedParameterJdbcTemplate.query(sql, params, new BeanPropertyRowMapper<>(Satisfaction.class));
+    }
+
+    @Override
+    public List<Satisfaction> findSatisfactionRecordByUserId(Long userId) {
+        String sql = "SELECT " +
+                "    s.id AS satisfactionId, " +
+                "    s.score, " +
+                "    s.comment, " +
+                "    s.created_at AS createdTime, " +
+                "    su.name , " +
+                "    su.image " +
+                "FROM " +
+                "    live_record lr " +
+                "JOIN " +
+                "    satisfaction s ON lr.id = s.live_id " +
+                "JOIN " +
+                "    `user` su ON s.user_id = su.id " +
+                "WHERE " +
+                "    lr.user_id = :userId " +
+                "ORDER BY " +
+                "    s.created_at DESC;";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        return namedParameterJdbcTemplate.query(sql, params, new BeanPropertyRowMapper<>(Satisfaction.class));
+    }
+
+    @Override
+    public LiveSummary findLiveSummaryByUserId(Long userId) {
+        String sql = "SELECT " +
+                "    COUNT(lr.id) AS liveCount, " +
+                "    COALESCE(AVG(s.score), 0) AS averageScore, " +
+                "    COUNT(s.comment) AS commentCount " +
+                "FROM " +
+                "    live_record lr " +
+                "LEFT JOIN " +
+                "    satisfaction s ON lr.id = s.live_id " +
+                "WHERE " +
+                "    lr.user_id = :userId;";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        return namedParameterJdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(LiveSummary.class));
     }
 
 }
