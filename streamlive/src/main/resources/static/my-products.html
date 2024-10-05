@@ -395,7 +395,6 @@
             console.error('No user ID found. User might not be logged in.');
             return;
         }
-        // 注意這裡 'undelgated' 的拼寫，它應該是 'undelegated'
         const url = `/api/1.0/product/${tab === 'undelegated' ? 'undelgated' : 'delegated'}?userId=${userId}`;
         console.log('Fetching products from:', url);
 
@@ -409,7 +408,7 @@
             tableBody.innerHTML = '';
 
             if (data.data && data.data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="no-products">暫無${tab === 'undelegated' ? '未被代理' : '已被代理'}的商品</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="5" >暫無${tab === 'undelegated' ? '未被代理' : '已被代理'}的商品</td></tr>`;
             } else if (data.data && data.data.length > 0) {
                 data.data.forEach(product => {
                     tableBody.innerHTML += createProductRow(product);

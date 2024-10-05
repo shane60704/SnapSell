@@ -578,7 +578,7 @@
                         contractTableBody.innerHTML += row;
                     });
                 } else {
-                    contractTableBody.innerHTML = `<tr><td colspan="6" class="no-contracts">暫無${type === 'as-client' ? '委託' : '代理'}合約</td></tr>`;
+                    contractTableBody.innerHTML = `<tr><td colspan="6">暫無${type === 'as-client' ? '委託' : '代理'}合約</td></tr>`;
                 }
             })
             .catch(error => {

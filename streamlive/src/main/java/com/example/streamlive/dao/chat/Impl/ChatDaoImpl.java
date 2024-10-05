@@ -3,6 +3,7 @@ package com.example.streamlive.dao.chat.Impl;
 import com.example.streamlive.dao.chat.ChatDao;
 import com.example.streamlive.model.ChatRoom;
 import com.example.streamlive.model.Message;
+import com.example.streamlive.model.chat.ChatMessage;
 import com.example.streamlive.model.chat.RecentMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,6 @@ public class ChatDaoImpl implements ChatDao {
     // 根據兩個用戶的ID查詢聊天室
     @Override
     public ChatRoom findChatRoomByUsersId(Long user1Id, Long user2Id) {
-        // SQL 查詢，無論 user1 和 user2 是 user_a_id 還是 user_b_id 都能匹配
         String sql = "SELECT * FROM chat_room WHERE (user_a_id = :user1Id AND user_b_id = :user2Id) "
                 + "OR (user_a_id = :user2Id AND user_b_id = :user1Id)";
 
@@ -58,11 +58,7 @@ public class ChatDaoImpl implements ChatDao {
         params.addValue("user2Id", user2Id);
 
         try {
-            return namedParameterJdbcTemplate.queryForObject(
-                    sql,
-                    params,
-                    new BeanPropertyRowMapper<>(ChatRoom.class)
-            );
+            return namedParameterJdbcTemplate.queryForObject(sql,params,new BeanPropertyRowMapper<>(ChatRoom.class));
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -103,7 +99,7 @@ public class ChatDaoImpl implements ChatDao {
 
     @Override
     // 保存聊天紀錄
-    public void saveMessage(Message message) {
+    public void saveMessage(ChatMessage message) {
         String sql = "INSERT INTO messages (chat_room_id, sender_id, content, timestamp) " +
                 "VALUES (:chatRoomId, :senderId, :content, :timestamp)";
 
@@ -122,7 +118,6 @@ public class ChatDaoImpl implements ChatDao {
         String sql = "SELECT * FROM messages WHERE chat_room_id = :chatRoomId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("chatRoomId", chatRoomId);
-
         if (start != null && end != null) {
             sql += " AND timestamp BETWEEN :start AND :end";
             params.addValue("start", start);
@@ -144,8 +139,4 @@ public class ChatDaoImpl implements ChatDao {
         }
     }
 
-//    @Override
-//    public ChatRoom findChatRoomByRoomId(int roomId){
-//
-//    }
 }

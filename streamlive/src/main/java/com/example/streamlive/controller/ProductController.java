@@ -21,9 +21,8 @@ public class ProductController {
     // 上架商品 API
     @PostMapping("/listProduct")
     public ResponseEntity<?> listProduct(@ModelAttribute ProductDto productDto) {
-        log.info("productDto: {}", productDto.toString());
         if (productService.listProduct(productDto)) {
-            return ResponseEntity.ok("Success");
+            return ResponseEntity.ok("Product listed successfully");
         } else {
             return new ResponseEntity<>(ErrorResponseDto.error("failed"), HttpStatus.BAD_REQUEST);
         }

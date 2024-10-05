@@ -32,6 +32,7 @@ public class LiveStreamDaoImpl implements LiveStreamDao {
     public Long createLiveStreamRecord(String userId, String liveId) {
         String sql = "INSERT INTO live_record (user_id, live_id, start_time) VALUES (:userId, :liveId, :startTime)";
         Map<String, Object> params = new HashMap<>();
+        log.info("userId:"+userId+","+"liveId:"+liveId+","+"startTime:"+new Timestamp(System.currentTimeMillis()));
         params.put("userId", userId);
         params.put("liveId", liveId);
         params.put("startTime", new Timestamp(System.currentTimeMillis()));

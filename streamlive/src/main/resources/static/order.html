@@ -445,7 +445,7 @@
     async function displayOrders() {
         const orders = await fetchOrders();
         if (orders.length === 0) {
-            orderTableBody.innerHTML = '<div class="no-orders">暫無訂單記錄</div>';
+            orderTableBody.innerHTML = `<tr><td colspan="5" class="no-products">暫無訂單紀錄</td></tr>`;
         } else {
             orderTableBody.innerHTML = orders.map(order => `
                 <tr>

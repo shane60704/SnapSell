@@ -11,7 +11,7 @@
     justify-content: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    z-index: 1000;
+    z-index: 800;
 }
 
 .floating-circle img {
@@ -21,24 +21,23 @@
 
 .chat-container {
     position: fixed;
-    z-index: 1000;
+    z-index: 801;
     bottom: 20px;
     right: 20px;
     display: none;
-    width: 600px;
-    height: 500px;
+    width: 750px;
+    height: 600px;
     border-radius: 10px;
-    background-color: #F3F3F3;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     overflow: hidden;
 }
 
 .chat-sidebar {
-    width: 40%;
-    background-color: #F3F3F3;
+    width: 35%;
+    background-color:#F7FAFC;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 10px 0 10px 7px;
     border-right: 2px solid #E0E0E0;
 }
 
@@ -105,19 +104,20 @@
 }
 
 .chat-main {
-    width: 60%;
+    width: 65%;
     display: flex;
     flex-direction: column;
-    background-color: #F3F3F3;
+    background-color: #F7FAFC;
+    padding-bottom: 7px;
 }
 
 
 .current-chat-room {
     position: relative;
     padding: 5px;
-    background-color: #F3F3F3;
     border-bottom: 2px solid #E0E0E0;
     color: #333;
+    background-color: #F7FAFC;
     font-weight: bold;
     text-align: center;
     font-size: 18px;
@@ -125,6 +125,7 @@
 
 .chatRoomHidden {
     position: absolute;
+    cursor: pointer;
     top: 5px;
     right: 10px;
     font-size: 15px;
@@ -133,10 +134,13 @@
 }
 
 .chat-window {
+    display: flex;
+    flex-direction: column;
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background-color: #F3F3F3;
+    background-color: #F7FAFC;
+
 }
 
 .message-area {
@@ -147,51 +151,58 @@
 .message-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 15px;
     max-width: 70%;
 }
 
 .message-wrapper.right {
-    align-self: flex-end;
-    align-items: flex-end;
+    margin-left: auto;
 }
 
 .message {
-    padding: 10px 15px;
-    background-color: #E5E5E5;
+    padding: 8px 15px;
+    margin-bottom: 5px;
+    background-color: #FFFFFF;
     color: #333;
-    border-radius: 18px;
+    border-radius: 15px;
     word-wrap: break-word;
     white-space: pre-wrap;
     font-size: 14px;
     line-height: 1.2;
-    box-shadow: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
 }
 
-.message.right {
-    background-color: #CCCCCC;
+.message.background{
+    background-color: #EBF4FF
 }
 
 .timestamp {
     font-size: 12px;
     color: #999;
     margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.timestamp.time-right{
+    margin-left: auto;
 }
 
 .chat-input {
+    width: 97%;
+    margin: auto;
     display: flex;
-    padding: 10px;
-    background-color: #F3F3F3;
-    border-top: 2px solid #E0E0E0;
+    padding: 7px 5px;
+    background-color: #ebf2fa;
+    border-radius: 13px;
 }
 
 .chat-input input {
     flex: 1;
-    padding: 10px;
+    padding: 7px;
     border-radius: 10px;
     border: 1px solid #E0E0E0;
-    background-color: #E5E5E5;
+    margin-right: 5px;
+    background-color: white;
     font-size: 14px;
     outline: none;
     transition: border-color 0.3s;
@@ -201,21 +212,25 @@
     border-color: #4A90E2;
 }
 
-.chat-input button {
-    padding: 12px 12px;
-    background-color: #4A90E2;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-left: 10px;
-    font-size: 16px;
-    transition: background-color 0.3s;
+.chat-avatar{
+    object-fit: cover;
 }
 
-.chat-input button:hover {
-    background-color: #3a78bb;
-}
+/*.chat-input button {*/
+/*    padding: 12px 12px;*/
+/*    background-color: #4A90E2;*/
+/*    color: white;*/
+/*    border: none;*/
+/*    border-radius: 10px;*/
+/*    cursor: pointer;*/
+/*    margin-left: 10px;*/
+/*    font-size: 16px;*/
+/*    transition: background-color 0.3s;*/
+/*}*/
+
+/*.chat-input button:hover {*/
+/*    background-color: #3a78bb;*/
+/*}*/
 
 .chatRoomHidden img {
     margin-top: 3px;
@@ -224,20 +239,16 @@
 }
 
 #createContractBtn {
-    padding: 8px 12px;
-    background-color: #4F4F4F;
-    border: none;
-    color: white;
-    border-radius: 5px;
     cursor: pointer;
-    margin-bottom: 5px;
-    font-size: 14px;
-    transition: background-color 0.3s, color 0.3s;
+    margin-right: 5px;
+    padding: 3px 5px;
+    border-radius: 3px;
 }
 
-#createContractBtn:hover {
-    background-color: #A9A9A9;
-    color: #333;
+
+#createContractBtn img{
+    width: 28px;
+    height: 28px;
 }
 
 .floating-circle.new-message {

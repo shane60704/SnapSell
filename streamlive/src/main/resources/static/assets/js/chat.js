@@ -52,13 +52,14 @@ function subscribeToChatRoom(chatRoomId) {
 
         // 訂閱新的聊天室頻道
         currentSubscription = stompClient.subscribe(`/topic/chat/${chatRoomId}`, function(messageOutput) {
-            const message = JSON.parse(messageOutput.body);
-            displayMessage(message, true); // 新訊息觸發自動滾動
+            const data = JSON.parse(messageOutput.body);
+            displayCurrentMessage(data, true); // 新訊息觸發自動滾動
         });
 
         currentChatRoomId = chatRoomId;
     }
 }
+
 
 // 加載用戶的聊天室清單
 function loadUserChatRooms(userId) {
@@ -192,37 +193,25 @@ function joinChatRoom(chatRoomId, chatRoomName) {
     loadChatHistory(chatRoomId); // 加載該聊天室的歷史訊息
 }
 
-// 加載聊天歷史記錄
-function loadChatHistory(chatRoomId) {
-    fetch(`/api/1.0/chatrooms/${chatRoomId}/messages`)
-        .then(response => response.json())
-        .then(messages => {
-            const messageArea = document.getElementById("messageArea");
-            messageArea.innerHTML = ''; // 清空之前的訊息
-            messages.forEach(message => {
-                displayMessage(message, false); // 加載歷史訊息不滾動
-            });
-            // 在加載歷史訊息後，將視窗滾動到最新的訊息
-            messageArea.scrollTop = messageArea.scrollHeight;
-        })
-        .catch(error => console.error('加載聊天歷史失敗:', error));
-}
 
 // 加載聊天歷史記錄
 function loadChatHistory(chatRoomId) {
     fetch(`/api/1.0/chatrooms/${chatRoomId}/messages`)
         .then(response => response.json())
-        .then(messages => {
+        .then(data => {
             const messageArea = document.getElementById("messageArea");
             messageArea.innerHTML = ''; // 清空之前的訊息
-            messages.forEach(message => {
-                displayMessage(message, false); // 加載歷史訊息不滾動
+            const clientInfo = data.client;
+            const agentInfo = data.agent;
+
+            data.messages.forEach(message => {
+                displayMessage(message,clientInfo,agentInfo ,false); // 加載歷史訊息不滾動
             });
+
             // 在加載歷史訊息後，將視窗滾動到最新的訊息
             setTimeout(() => {
-                // 確保所有訊息已被添加到 DOM 中後滾動到底部
                 messageArea.scrollTop = messageArea.scrollHeight;
-            }, 100); // 延遲100ms來確保DOM渲染完成
+            }, 100);
         })
         .catch(error => console.error('加載聊天歷史失敗:', error));
 }
@@ -238,37 +227,123 @@ function getChatRoomInfo(currentUserId,otherUserId){
         })
 }
 
-// 顯示訊息
-function displayMessage(message, shouldScroll) {
+function displayMessage(message, clientInfo, agentInfo, shouldScroll) {
     const messageArea = document.getElementById("messageArea");
     const messageWrapper = document.createElement("div");
     messageWrapper.classList.add("message-wrapper");
 
-    // 判斷訊息發送者，將訊息顯示在不同的位置
-    const userId = getCurrentUserId();
-    if (message.senderId == userId) {
-        messageWrapper.classList.add("right");  // 自己發送的訊息顯示在右邊
-    } else {
-        messageWrapper.classList.add("left");   // 對方的訊息顯示在左邊
-    }
-
     const messageElement = document.createElement("div");
     messageElement.classList.add("message");
-    messageElement.textContent = `${message.content}`;
+    messageElement.textContent = message.content;
 
+    // 時間戳
     const timestampElement = document.createElement("div");
     timestampElement.classList.add("timestamp");
     timestampElement.textContent = formatTimestamp(message.timestamp);
 
-    messageWrapper.appendChild(messageElement);
+    const messageDisplay = document.createElement("div");
+    messageDisplay.style.display="flex";
+
+    const chatAvatar = document.createElement("img");
+    chatAvatar.classList.add("chat-avatar");
+    chatAvatar.style.width = "36px";
+    chatAvatar.style.height = "36px";
+    chatAvatar.style.borderRadius = "50%";
+
+    const userId =localStorage.getItem("userId");
+    // 根據訊息發送者設定頭像
+    if (String(message.senderId) === String(clientInfo.id)) {
+        chatAvatar.src = clientInfo.image ? clientInfo.image : 'default-avatar.png';
+    } else {
+        chatAvatar.src = agentInfo.image ? agentInfo.image : 'default-avatar.png';
+    }
+
+    // 根據訊息發送者決定訊息顯示方向
+    if (String(message.senderId) === userId) {
+        messageWrapper.classList.add("right");
+        chatAvatar.style.margin ="0 0 0 8px";
+        timestampElement.classList.add("time-right");
+        messageElement.classList.add("background");
+        messageDisplay.appendChild(messageElement);
+        messageDisplay.appendChild(chatAvatar);
+        messageWrapper.appendChild(messageDisplay);
+    } else {
+        chatAvatar.style.margin ="0 8px 0 0";
+        messageDisplay.appendChild(chatAvatar);
+        messageDisplay.appendChild(messageElement);
+        messageWrapper.appendChild(messageDisplay);
+    }
+
+
     messageWrapper.appendChild(timestampElement);
+    // 加入訊息區域
     messageArea.appendChild(messageWrapper);
 
-    // 當是新訊息時才滾動到最新
+    // 滾動到最新
     if (shouldScroll) {
         messageWrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    } else {
+        messageWrapper.scrollIntoView({ behavior: 'auto', block: 'end' });
     }
 }
+
+
+function displayCurrentMessage(message,scroll){
+    const messageArea = document.getElementById("messageArea");
+    const messageWrapper = document.createElement("div");
+    messageWrapper.classList.add("message-wrapper");
+
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("message");
+    messageElement.textContent = message.content;
+
+    // 時間戳
+    const timestampElement = document.createElement("div");
+    timestampElement.classList.add("timestamp");
+    timestampElement.textContent = formatTimestamp(message.timestamp);
+
+    const messageDisplay = document.createElement("div");
+    messageDisplay.style.display="flex";
+
+    const chatAvatar = document.createElement("img");
+    chatAvatar.classList.add("chat-avatar");
+    chatAvatar.style.width = "36px";
+    chatAvatar.style.height = "36px";
+    chatAvatar.style.borderRadius = "50%";
+    const userId =localStorage.getItem("userId");
+
+    // 根據訊息發送者決定訊息顯示方向
+    if (String(message.senderId) === userId) {
+        chatAvatar.src = `${message.imgSrc}`;
+        messageWrapper.classList.add("right");
+        chatAvatar.style.margin ="0 0 0 8px";
+        timestampElement.classList.add("time-right");
+        messageElement.classList.add("background");
+        messageDisplay.appendChild(messageElement);
+        messageDisplay.appendChild(chatAvatar);
+        messageWrapper.appendChild(messageDisplay);
+    } else {
+        chatAvatar.src = `${message.imgSrc}`;
+        chatAvatar.style.margin ="0 8px 0 0";
+        messageDisplay.appendChild(chatAvatar);
+        messageDisplay.appendChild(messageElement);
+        messageWrapper.appendChild(messageDisplay);
+    }
+
+
+    messageWrapper.appendChild(timestampElement);
+    // 加入訊息區域
+    messageArea.appendChild(messageWrapper);
+
+    // 滾動到最新
+    if (scroll) {
+        messageWrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    } else {
+        messageWrapper.scrollIntoView({ behavior: 'auto', block: 'end' });
+    }
+}
+
+
 
 // 發送訊息
 document.getElementById("sendMessageBtn").addEventListener("click", function() {
@@ -280,7 +355,8 @@ document.getElementById("sendMessageBtn").addEventListener("click", function() {
             chatRoomId: currentChatRoomId,   // 當前聊天室 ID
             senderId: userId,                // 發送者 ID (從 localStorage 獲取)
             content: messageContent,         // 訊息內容
-            timestamp: new Date().toISOString() // 當前時間
+            timestamp: new Date().toISOString(), // 當前時間
+            imgSrc: localStorage.getItem("userImage")
         };
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(message));  // 透過 STOMP 發送訊息到後端
         messageInput.value = ''; // 清空輸入框

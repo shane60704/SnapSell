@@ -47,6 +47,7 @@ public class SignalingHandler extends TextWebSocketHandler {
                 String userId = jsonMessage.getString("userId");
                 String title = jsonMessage.getString("title");
                 String description = jsonMessage.getString("description");
+                log.info("創建成功:"+createRoomId);
                 liveStreamDao.createLiveStreamRecord(userId, createRoomId);
                 String userImage = userDao.getUserImageById(userId);
                 JSONArray productsArray = jsonMessage.getJSONArray("products");
@@ -92,7 +93,8 @@ public class SignalingHandler extends TextWebSocketHandler {
         broadcasters.put(roomId, session);
         roomInfos.put(roomId, new RoomInfo(roomId,userImage,title,description,Instant.now(), 0, products));
         sendToSession(session, new JSONObject().put("type", "created").toString());
-        broadcastRoomList(); // 更新大廳的房間清單
+        // 更新大廳的房間清單
+        broadcastRoomList();
     }
 
     private void joinRoom(String roomId, WebSocketSession session) throws IOException {
@@ -112,7 +114,6 @@ public class SignalingHandler extends TextWebSocketHandler {
         // 通知主播、觀眾 直播間的觀眾人數需要更動
         broadcastViewerCount(roomId);
 
-
         // 發送 'joined' 消息，包含 viewerId
         sendToSession(session, new JSONObject().put("type", "joined").put("viewerId", viewerId).toString());
 
@@ -120,7 +121,8 @@ public class SignalingHandler extends TextWebSocketHandler {
         WebSocketSession broadcaster = broadcasters.get(roomId);
         sendToSession(broadcaster, new JSONObject().put("type", "newViewer").put("viewerId", viewerId).toString());
 
-        broadcastRoomList(); // 更新大廳的房間清單
+        // 更新大廳的房間清單
+        broadcastRoomList();
     }
 
     private void forwardMessage(String roomId, WebSocketSession sender, JSONObject message) throws IOException {

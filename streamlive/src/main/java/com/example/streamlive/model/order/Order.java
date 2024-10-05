@@ -11,5 +11,5 @@ public class Order {
     private Long id;
     private String orderTime;
     private Long totalPrice;
-    private Long logisticsStatus;
+    private String logisticsStatus;
 }

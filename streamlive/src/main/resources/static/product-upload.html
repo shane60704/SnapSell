@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
+    <link rel="stylesheet" href="assets/css/popup.css"/>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
         * {
             box-sizing: border-box;
             margin: 0;
@@ -164,6 +166,30 @@
             object-fit: contain;
         }
 
+        .demo-buttons {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .demo-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3B82F6;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .demo-button:hover {
+            background-color: #2563EB;
+        }
+
         @media (max-width: 768px) {
             .product-listing__content {
                 flex-direction: column;
@@ -275,6 +301,34 @@
     </div>
 </footer>
 
+<div class="popup-overlay" id="successPopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">上架成功</div>
+        <div class="popup-message">您的商品已成功上架。</div>
+        <button class="popup-button" onclick="closeResultPopup('successPopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="failurePopup">
+    <div class="popup failure">
+        <div class="popup-icon">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+                <circle cx="50" cy="50" r="35" fill="#F44336"/>
+                <path d="M35 35 L65 65 M65 35 L35 65" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">上架失敗</div>
+        <div class="popup-message">很抱歉，上架商品時發生錯誤，請稍後再試。</div>
+        <button class="popup-button" onclick="closeResultPopup('failurePopup')">關閉</button>
+    </div>
+</div>
 
 <!-- 聊天室區塊 -->
 <div class="floating-circle">
@@ -394,8 +448,8 @@
 <script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script src = "assets/js/header.js"></script>
 <script src ="assets/js/chat.js"></script>
+<script src ="assets/js/popup.js"></script>
 <script src ="assets/js/contract.js"></script>
-
 <script>
 
     function submitProduct() {
@@ -405,11 +459,8 @@
         const price = document.getElementById('price').value;
         const stock = document.getElementById('stock').value;
         const mainImage = document.getElementById('mainImage').files[0];
-
-        // 收集特色數組
         const features = Array.from(document.querySelectorAll('input[name="feature[]"]')).map(input => input.value);
 
-        // 構造 FormData
         const formData = new FormData();
         formData.append('userId', userId);
         formData.append('name', name);
@@ -421,27 +472,20 @@
             formData.append(`feature[${index}]`, feature);
         });
 
-        // 發送 POST 請求
         fetch('/api/1.0/product/listProduct', {
             method: 'POST',
             body: formData,
         })
             .then(response => {
-                // 檢查是否是成功狀態碼
                 if (response.ok) {
-                    return response.json();  // 或者 .text() 取決於你的返回內容類型
+                    showResultPopup('successPopup');
                 } else {
                     throw new Error("HTTP error " + response.status);
                 }
             })
-            .then(data => {
-                // 這裡處理回傳的數據
-                console.log('商品上傳成功:', data);
-                alert('商品上傳成功');
-            })
             .catch(error => {
                 console.error('上傳失敗:', error);
-                alert('商品上傳成功');
+                showResultPopup('failurePopup');
             });
     }
 

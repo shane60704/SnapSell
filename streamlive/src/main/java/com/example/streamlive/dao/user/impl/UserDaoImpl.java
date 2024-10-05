@@ -204,7 +204,7 @@ public class UserDaoImpl implements UserDao {
                 "FROM user u " +
                 "LEFT JOIN live_record lr ON u.id = lr.user_id " +
                 "LEFT JOIN satisfaction s ON lr.id = s.live_id " +
-                "LEFT JOIN Delegation d ON u.id = d.client_id " +
+                "LEFT JOIN delegation d ON u.id = d.client_id " +
                 "LEFT JOIN `order` o ON d.product_id = o.product_id " +
                 "WHERE u.id = :userId " +
                 "GROUP BY u.id, u.name, u.image, u.background_image, u.description, u.followers";

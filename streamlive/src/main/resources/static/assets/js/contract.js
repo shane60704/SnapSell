@@ -36,6 +36,7 @@ document.querySelector('.chatRoomHidden').addEventListener('click',()=>{
     document.querySelector('.chat-container').style.display = "none";
     document.querySelector('.floating-circle').style.display = "flex"
 });
+
 document.querySelector('.floating-circle').addEventListener('click',()=>{
     document.querySelector('.floating-circle').style.display = "none"
     document.querySelector('.chat-container').style.display = "flex";
@@ -57,8 +58,6 @@ document.getElementById('contract-closeBtn').addEventListener('click', function 
 document.getElementById('createContractBtn').addEventListener('click',function () {
     document.querySelector('.contract-signature-container').style.display = 'block';
 });
-
-
 
 // 生成合約
 document.getElementById('generateContractBtn').addEventListener('click', function () {
@@ -94,7 +93,6 @@ document.getElementById('generateContractBtn').addEventListener('click', functio
     document.querySelector('.signature-block-A').style.display="block";
 });
 
-
 // 初始化畫布
 const signaturePadA = document.getElementById('signature-pad-a');
 // 清除畫布按鈕
@@ -105,7 +103,6 @@ const saveSignatureA = document.getElementById('saveSignatureA');
 const signatureImageA = document.getElementById('signatureImageA');
 // 2D繪製
 const ctxA = signaturePadA.getContext('2d');
-
 
 // A是否可畫
 let drawingA = false;
@@ -132,7 +129,6 @@ signaturePadA.addEventListener('mouseup', function() {
 
 saveSignatureA.addEventListener('click',function () {
     saveSignature(signaturePadA,signatureImageA);
-    clearSignature(ctxA,signaturePadA);
     document.querySelector('.signature-A').style.display = "block";
 })
 
@@ -146,9 +142,8 @@ const saveSignatureB = document.getElementById('saveSignatureB');
 const signatureImageB = document.getElementById('signatureImageB');
 // 2D繪製
 const ctxB = signaturePadB.getContext('2d');
-// A是否可畫
+// B是否可畫
 let drawingB = false;
-
 
 // 開始簽名
 signaturePadB.addEventListener('mousedown', function(event) {
@@ -172,7 +167,6 @@ signaturePadB.addEventListener('mouseup', function() {
 
 saveSignatureB.addEventListener('click',function () {
     saveSignature(signaturePadB,signatureImageB);
-    clearSignature(ctxB,signaturePadB);
     document.querySelector('.signature-B').style.display = "block";
 })
 
@@ -190,6 +184,13 @@ function saveSignature(signaturePad,signatureImage) {
         document.getElementById('sendRejectBtn').style.display='block';
     }
 }
+document.getElementById("clearSignatureB").addEventListener('click',function (){
+    ctxB.clearRect(0, 0, signaturePadB.width, signaturePadB.height);
+});
+
+document.getElementById("clearSignatureA").addEventListener('click',function (){
+    ctxA.clearRect(0, 0, signaturePadA.width, signaturePadA.height);
+});
 
 // 清除畫布
 function clearSignature(ctx,signaturePad) {
@@ -226,11 +227,11 @@ function subscribeToNewContract(contractRoomId){
             switch(result.requestType){
                 case "accept":
                     document.querySelector('.contract-signature-container').style.display = 'none';
-                    alert("代理者已簽署，該份合約已生效。");
+                    showResultPopup('successPopup');
                     break;
                 case "reject":
                     document.querySelector('.contract-signature-container').style.display = 'none';
-                    alert("代理者未簽署，請與其聯絡。");
+                    showResultPopup('failurePopup');
                     break;
                 case "request":
                     document.querySelector('.contract-signature-container').style.display = 'block';
@@ -263,16 +264,18 @@ function subscribeToNewContract(contractRoomId){
             switch (result.requestType){
                 case "accept":
                     document.querySelector('.contract-signature-container').style.display = 'none';
-                    alert("合約已保存。");
+                    showResultPopup('agentAgreePopup');
                     break;
                 case "reject":
                     document.querySelector('.contract-signature-container').style.display = 'none';
-                    alert("已通知委託者，發回處理。");
+                    showResultPopup('agentDisagreePopup');
                     break;
             }
         }
     });
 }
+
+
 
 // 發送訊息
 document.getElementById("sendContractBtn").addEventListener("click", function() {
@@ -284,7 +287,7 @@ document.getElementById("sendContractBtn").addEventListener("click", function() 
         const message = {
             requestType:"request",
             chatRoomId: contractRoomId,   // 當前聊天室 ID
-            senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
+            senderId: localStorage.getItem("userId"), // 發送者 ID (從 localStorage 獲取)
             clientId: localStorage.getItem("userId"),
             clientName: document.getElementById('clientName').value,
             sellerName: document.getElementById('sellerName').value,
@@ -317,7 +320,7 @@ document.getElementById("sendAcceptBtn").addEventListener("click", function() {
     const message = {
         requestType:"accept",
         chatRoomId: contractRoomId,   // 當前聊天室 ID
-        senderId: localStorage.getItem("userId"),                // 發送者 ID
+        senderId: localStorage.getItem("userId"), // 發送者 ID
         clientId:document.getElementById('clientId').textContent,
         agentId:localStorage.getItem('userId'),
         clientName: document.getElementById('clientName').textContent,
@@ -337,7 +340,8 @@ document.getElementById("sendAcceptBtn").addEventListener("click", function() {
 document.getElementById("sendRejectBtn").addEventListener("click", function() {
     const message = {
         requestType:"reject",
-        chatRoomId: document.getElementById('currentChatRoomName').textContent,   // 當前聊天室 ID
+        chatRoomId: contractRoomId,   // 當前聊天室 ID
+        clientId:document.getElementById('clientId').textContent,
         senderId: localStorage.getItem("userId"),                // 發送者 ID (從 localStorage 獲取)
         timestamp: new Date().toISOString() // 當前時間
     };

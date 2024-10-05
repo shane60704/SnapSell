@@ -3,7 +3,7 @@ package com.example.streamlive.service.chat.impl;
 import com.example.streamlive.dao.chat.ChatDao;
 import com.example.streamlive.dao.user.UserDao;
 import com.example.streamlive.model.ChatRoom;
-import com.example.streamlive.model.Message;
+import com.example.streamlive.model.chat.ChatMessage;
 import com.example.streamlive.model.chat.RecentMessage;
 import com.example.streamlive.model.chat.UserChatRoom;
 import com.example.streamlive.model.user.UserInfo;
@@ -23,7 +23,7 @@ public class ChatServiceImpl implements ChatService {
 
     // 保存訊息到資料庫的邏輯
     @Override
-    public void saveMessage(Message message) {
+    public void saveMessage(ChatMessage message) {
         // 調用 DAO 來將訊息保存到資料庫
         chatDao.saveMessage(message);
     }
@@ -46,7 +46,6 @@ public class ChatServiceImpl implements ChatService {
                  senderInfo = userDao.getUserInfoById(userBId);
                  receiverInfo = userDao.getUserInfoById(userAId);
             }
-            System.out.println(chatRooms.get(i).getId());
             RecentMessage recentMessage = chatDao.findRecentMessageByChatRoomId(chatRooms.get(i).getId());
             userChatRoom.setId(chatRooms.get(i).getId());
             userChatRoom.setUniqueChatroom(chatRooms.get(i).getUniqueChatroom());
@@ -58,9 +57,4 @@ public class ChatServiceImpl implements ChatService {
         return userChatRooms;
     }
 
-//    // 塞入
-//    public UserChatRoom getUserChatRoomById(int userId) {
-//        UserChatRoom userChatRoom = new UserChatRoom();
-//
-//    }
 }

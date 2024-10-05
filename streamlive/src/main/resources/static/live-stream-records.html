@@ -21,9 +21,13 @@
             background-color: #f4f4f4;
             color: #333;
             line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .record-container {
+            flex: 1;
             max-width: 1200px;
             width: calc(100% - 40px);
             box-sizing: border-box;
@@ -40,7 +44,7 @@
             padding: 1rem 0.5rem;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
@@ -483,7 +487,7 @@
                     livestreamRecordList.innerHTML += recordElement;
                 });
             } else {
-                livestreamRecordList.innerHTML = '<tr><td colspan="7" class="no-records">暫無直播紀錄</td></tr>';
+                livestreamRecordList.innerHTML = '<tr><td colspan="8" >暫無直播紀錄</td></tr>';
             }
         })
         .catch(error => {

@@ -36,17 +36,24 @@ public class SaleServiceImpl implements SaleService {
 
     public Boolean checkout(CheckOutDto checkOutDto){
         try {
+
             // 檢查庫存
-            if(productDao.findProductStockById(checkOutDto.getProductId()) < checkOutDto.getQuantity()){
+            int currentStock = productDao.findProductStockById(checkOutDto.getProductId());
+            int purchaseQuantity = checkOutDto.getQuantity();
+            int newStock = currentStock - purchaseQuantity;
+
+            if(currentStock < purchaseQuantity){
                 log.error("檢查庫存 error");
                 return false;
             }
+
             // 更新庫存
-            Integer updateResult = productDao.updateProductStockById(checkOutDto.getProductId(), checkOutDto.getQuantity());
+            Integer updateResult = productDao.updateProductStockById(checkOutDto.getProductId(), newStock);
             if (updateResult == null || updateResult == 0) {
                 log.error("updateResult error");
                 return false;
             }
+
             // 產生訂單
             int orderId = saleDao.createOrder(checkOutDto);
             // 寄件資訊

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>儀表板</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --tertiary-color: #2ecc71;
+            --background-color: #f5f8fa;
+            --card-background: #ffffff;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .chart-container {
+            background-color: var(--card-background);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+        h2 {
+            color: var(--text-color);
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        button {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        button:hover {
+            background-color: #3a7bc8;
+            transform: translateY(-2px);
+        }
+        button.active {
+            background-color: #2c3e50;
+        }
+        .total-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            text-align: center;
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .stat-label {
+            font-size: 1em;
+            color: var(--text-color);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>精緻直播數據可視化儀表板</h1>
+
+<div class="controls">
+    <button id="yearBtn" onclick="changeTimeScale('year')">年</button>
+    <button id="monthBtn" onclick="changeTimeScale('month')">月</button>
+    <button id="weekBtn" onclick="changeTimeScale('week')">週</button>
+    <button id="dayBtn" onclick="changeTimeScale('day')">日</button>
+</div>
+
+<div class="total-stats">
+    <div class="stat-item">
+        <div class="stat-value" id="totalCommission">0</div>
+        <div class="stat-label">總佣金</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="totalSales">0</div>
+        <div class="stat-label">總銷售量</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="totalViewers">0</div>
+        <div class="stat-label">總觀看人數</div>
+    </div>
+</div>
+
+<div class="dashboard">
+    <div class="chart-container">
+        <h2>佣金</h2>
+        <div id="commissionChart"></div>
+    </div>
+    <div class="chart-container">
+        <h2>銷售數量</h2>
+        <div id="salesChart"></div>
+    </div>
+    <div class="chart-container">
+        <h2>觀看人數</h2>
+        <div id="viewersChart"></div>
+    </div>
+</div>
+
+<script>
+    let currentTimeScale = 'month';
+    let charts = {};
+
+    function generateData(scale) {
+        const data = [];
+        const now = new Date();
+        let count;
+        let total = 0;
+        switch(scale) {
+            case 'year':
+                count = 5;
+                for (let i = 0; i < count; i++) {
+                    const value = Math.floor(Math.random() * 1000);
+                    total += value;
+                    data.push({
+                        x: now.getFullYear() - i,
+                        y: total
+                    });
+                }
+                break;
+            case 'month':
+                count = 12;
+                for (let i = 0; i < count; i++) {
+                    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const value = Math.floor(Math.random() * 100);
+                    total += value;
+                    data.push({
+                        x: date.toLocaleString('default', { month: 'short' }),
+                        y: total
+                    });
+                }
+                break;
+            case 'week':
+                count = 12;
+                for (let i = 0; i < count; i++) {
+                    const value = Math.floor(Math.random() * 50);
+                    total += value;
+                    data.push({
+                        x: `第${i+1}週`,
+                        y: total
+                    });
+                }
+                break;
+            case 'day':
+                count = 30;
+                for (let i = 0; i < count; i++) {
+                    const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+                    const value = Math.floor(Math.random() * 20);
+                    total += value;
+                    data.push({
+                        x: `${date.getMonth() + 1}/${date.getDate()}`,
+                        y: total
+                    });
+                }
+                break;
+        }
+        return data.reverse();
+    }
+
+    function createChart(el, data, title, color) {
+        const options = {
+            series: [{
+                name: title,
+                data: data
+            }],
+            chart: {
+                type: 'area',
+                height: 350,
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
+                },
+                fontFamily: 'Noto Sans TC, sans-serif',
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            xaxis: {
+                type: 'category',
+                tickAmount: 5
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (value) {
+                        return value.toFixed(0);
+                    }
+                }
+            },
+            tooltip: {
+                x: {
+                    format: 'dd/MM/yy HH:mm'
+                },
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.9,
+                    stops: [0, 90, 100]
+                }
+            },
+            colors: [color]
+        };
+
+        return new ApexCharts(document.querySelector(el), options);
+    }
+
+    function updateChart(chart, newData) {
+        chart.updateSeries([{data: newData}]);
+    }
+
+    function initCharts() {
+        charts.commission = createChart('#commissionChart', generateData(currentTimeScale), '佣金', '#4a90e2');
+        charts.sales = createChart('#salesChart', generateData(currentTimeScale), '銷售數量', '#f39c12');
+        charts.viewers = createChart('#viewersChart', generateData(currentTimeScale), '觀看人數', '#2ecc71');
+
+        charts.commission.render();
+        charts.sales.render();
+        charts.viewers.render();
+    }
+
+    function updateTotalStats() {
+        document.getElementById('totalCommission').textContent = charts.commission.w.globals.series[0].slice(-1)[0].toFixed(0);
+        document.getElementById('totalSales').textContent = charts.sales.w.globals.series[0].slice(-1)[0].toFixed(0);
+        document.getElementById('totalViewers').textContent = charts.viewers.w.globals.series[0].slice(-1)[0].toFixed(0);
+    }
+
+    function changeTimeScale(scale) {
+        currentTimeScale = scale;
+        document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`${scale}Btn`).classList.add('active');
+
+        updateChart(charts.commission, generateData(scale));
+        updateChart(charts.sales, generateData(scale));
+        updateChart(charts.viewers, generateData(scale));
+
+        updateTotalStats();
+    }
+
+    initCharts();
+    changeTimeScale('month');
+</script>
+</body>
+</html>

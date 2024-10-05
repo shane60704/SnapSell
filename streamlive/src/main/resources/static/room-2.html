@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SnapSell | 直播間</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/popup.css"/>
     <style>
         * {
             box-sizing: border-box;
@@ -36,7 +37,7 @@
             flex-direction: column;
             gap:10px;
             padding-right:10px;
-            flex: 1.8;
+            flex: 1.6;
         }
 
         /* 視訊區 */
@@ -134,6 +135,12 @@
             background-color: #2C2F3F;
         }
 
+        #messageInput,
+        #sendMessage {
+            border: none; /* 移除邊框 */
+            box-shadow: none; /* 移除陰影 */
+        }
+
         #chatMessages {
             flex-grow: 1;
             overflow-y: auto;
@@ -146,6 +153,7 @@
 
         #chatInput {
             display: flex;
+            color: #FFFFFF;
             background-color: #3C3F50;
         }
 
@@ -154,14 +162,24 @@
             padding: 10px;
             border-radius: 5px 0 0 5px;
             background-color: #4C4F60;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: #FFFFFF;
+        }
+
+        #messageInput:focus {
+            border-color: #5FB1F7;
+            outline: none;
+            box-shadow: 0 0 5px rgba(95, 177, 247, 0.5);
         }
 
         #sendMessage {
             padding: 10px;
             border-radius: 0 5px 5px 0;
             background-color: #5FB1F7;
+            cursor: pointer;
             color: #FFFFFF;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
         }
 
         #sendMessage:hover {
@@ -170,6 +188,7 @@
 
         /* 商品區域 */
         #products {
+            border-radius: 8px;
             flex:1.7;
             display: flex;
             gap: 10px;
@@ -185,41 +204,38 @@
             border: 1px solid #3C3F50;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 10px 20px;
             margin: 10px;
             width: calc(33.33% - 20px);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .product-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
         .product-item img {
             max-width: 100%;
-            height: auto;
+            width: 120px;
+            height: 110px;
             border-radius: 8px;
+            object-fit: cover;
             margin-bottom: 10px;
         }
 
         .product-item h3 {
             font-size: 1.4rem;
             color: #FFFFFF;
-            margin-bottom: 10px;
+            margin: 0 0 5px 0;
         }
 
         .product-item p {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: #AAB4CF;
             margin: 5px 0;
         }
 
         .buy-button {
-            background-color: #5FB1F7;
+            background-color: #4CAF50;
             color: #fff;
-            padding: 10px 15px;
+            padding: 8px 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -227,7 +243,8 @@
         }
 
         .buy-button:hover {
-            background-color: #4C9FE4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
 
         .buy-button:active {
@@ -1030,6 +1047,36 @@
     </div>
 </div>
 
+<!-- 付款狀態彈出視窗 -->
+<div class="popup-overlay" id="successPopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">付款成功</div>
+        <div class="popup-message">您的訂單已成立，感謝購買！</div>
+        <button class="popup-button" onclick="closeResultPopup('successPopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="failurePopup">
+    <div class="popup failure">
+        <div class="popup-icon">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+                <circle cx="50" cy="50" r="35" fill="#F44336"/>
+                <path d="M35 35 L65 65 M65 35 L35 65" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">付款失敗</div>
+        <div class="popup-message">很抱歉，請檢查您的信用卡資訊，稍後再試。</div>
+        <button class="popup-button" onclick="closeResultPopup('failurePopup')">關閉</button>
+    </div>
+</div>
+
 <!-- 評分彈出視窗-->
 <div id="ratingModal" class="modal">
     <div class="modal-content">
@@ -1081,7 +1128,7 @@
 <!-- TapPay SDK -->
 <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.18.0"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-
+<script src ="assets/js/popup.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1097,7 +1144,7 @@
         document.querySelector('.streamer-details p').textContent = `正在直播：${title}`;
 
         function getProductInfo(productArray) {
-            const productsContainer = document.getElementById('products');  // 產品渲染容器
+            const productsContainer = document.getElementById('products');
 
             // 遍歷每個產品 ID，使用 fetch 獲取資料
             productArray.forEach(productId => {
@@ -1115,16 +1162,15 @@
                         const productDiv = document.createElement('div');
                         productDiv.className = 'product-item';
 
-                        // 渲染產品詳細資料
+                        // 渲染產品詳細資料 product.mainImage
                         productDiv.innerHTML = `
-                        <img src="${product.mainImage}" alt="${product.name}" style="width: 100%; height: auto; border-radius: 8px;">
+                        <img src="${"https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png"}" alt="${product.name}" >
                         <h3>${product.name}</h3>
-                        <p>庫存: ${product.stock}</p>
                         <p>價格: NT$ ${product.price}</p>
                         <button class="buy-button">立即購買</button>
                     `;
 
-                        // 將產品資料添加到產品容器中
+                        // 將產品資料添加到產品容器中.
                         productsContainer.appendChild(productDiv);
 
                         // 處理「我要購買」按鈕點擊事件
@@ -1345,14 +1391,14 @@
                     if (response.status === 200) {
                         modal.style.display = 'none';
                         resetModal();
-                        showSuccessModal();
+                        showResultPopup('successPopup');
                     } else {
                         throw new Error("failed");
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('付款發生錯誤，請稍後再試。');
+                    showResultPopup('failurePopup');
                 })
         }
 
@@ -1362,34 +1408,6 @@
             document.getElementById('unitPrice').value = unitPrice;
             document.getElementById('senderName').value = senderName;
             updateTotalPrice();
-        }
-
-        // 顯示成功彈出視窗
-        // 顯示成功彈出視窗
-        function showSuccessModal() {
-            const successModal = document.getElementById('successModal');
-            const closeButton = successModal.querySelector('.custom-close-button');
-            const confirmButton = successModal.querySelector('.custom-confirm-button');
-
-            // 顯示彈出視窗
-            successModal.style.display = 'block';
-
-            // 點擊關閉按鈕關閉彈出視窗
-            closeButton.addEventListener('click', () => {
-                successModal.style.display = 'none';
-            });
-
-            // 點擊「確認」按鈕關閉彈出視窗
-            confirmButton.addEventListener('click', () => {
-                successModal.style.display = 'none';
-            });
-
-            // 點擊視窗外部也關閉彈出視窗
-            window.addEventListener('click', (event) => {
-                if (event.target === successModal) {
-                    successModal.style.display = 'none';
-                }
-            });
         }
 
     });

@@ -1,6 +1,6 @@
 package com.example.streamlive.controller;
 
-import com.example.streamlive.model.Message;
+import com.example.streamlive.model.chat.ChatMessage;
 import com.example.streamlive.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -15,7 +15,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @MessageMapping("/chat.sendMessage")
-    public void sendMessage(Message chatMessage) {
+    public void sendMessage(ChatMessage chatMessage) {
         // 保存訊息到資料庫
         chatService.saveMessage(chatMessage);
 
