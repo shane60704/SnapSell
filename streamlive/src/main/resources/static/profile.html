@@ -3,21 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>個人檔案 - SnapSell</title>
+    <title>SnapSell 個人檔案</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.4.4/dist/flowbite.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="assets/css/header.css"/>
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/popup.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
 
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #3b82f6;
-            --text-color: #1f2937;
-            --light-text: #f3f4f6;
-            --background: #f9fafb;
+            --primary-color: #4a90e2;
+            --secondary-color: #f39c12;
+            --tertiary-color: #2ecc71;
+            --quaternary-color: #e74c3c;
+            --background-color: #f5f8fa;
+            --card-background: #ffffff;
+            --text-color: #2c3e50;
         }
 
         * {
@@ -27,26 +35,73 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
-            background-color: #EEEEEE;
+        }
+
+        .all-container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .profile-section {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .dashboard-section {
+            flex: 1.5;
         }
 
         .profile-container {
-            max-width: 1200px;
-            width: calc(100% - 40px);
-            box-sizing: border-box;
-            margin: 20px auto;
-            background: #fff;
+            background: #FFFFFF;
+            position: relative;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            margin-bottom: 20px;
+            height: 98.4%;
         }
 
+        .custom-message-btn {
+            position: absolute;
+            top:155px;
+            right:10px;
+            padding: 8px 20px;
+            background-color: transparent;
+            color: #333333;
+            border: 1px solid #CCCCCC;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .custom-message-btn:hover {
+            background-color: #CCCCCC;
+            color: black;
+            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .custom-message-btn i{
+            margin-right: 5px;
+        }
         .profile-header {
             position: relative;
-            height: 300px;
+            height: 148px;
             background-size: cover;
             background-position: center;
             display: flex;
@@ -54,7 +109,6 @@
             justify-content: flex-end;
             align-items: center;
             padding-bottom: 60px;
-            margin-bottom: 80px;
         }
 
         .profile-header::before {
@@ -65,6 +119,26 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.3);
+        }
+
+        .edit-avatar {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .edit-avatar:hover {
+            background-color: var(--secondary-color);
         }
 
         .edit-background {
@@ -136,32 +210,28 @@
             font-size: 2em;
             font-weight: 700;
             color: black;
-            z-index: 2;
             text-align: center;
-            margin-top: 85px;
+            font-family: 'Noto Sans TC', sans-serif;
+            margin-top: 75px;
+            margin-bottom: 10px;
         }
 
         .profile-info {
-            background-color: #f8fafc;
-            border-radius: 12px;
-            margin: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            padding: 15px;
+            padding: 20px;
+            display: none;
         }
 
         .profile-stats {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
 
         .stat-item {
             text-align: center;
-            flex-basis: 20%;
             padding: 15px;
-            background-color:#EEEEEE;
+            background-color: #f8fafc;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .stat-value {
@@ -176,34 +246,191 @@
             margin-top: 5px;
         }
 
-        .toggle-container {
-            position: absolute;
-            right: 8px;
-            bottom: -40px;
+        .livestream-summary {
+            margin: auto;
+            width: 95%;
+            background-color: white;
+            border-radius: 12px;
+            border: 2px solid lightgrey;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+
+        .livestream-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #dbe4ee;
+            padding-bottom: 20px;
+        }
+
+        .livestream-stat-item {
+            text-align: center;
+        }
+
+        .livestream-stat-value {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .livestream-stat-label {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        .comment {
+            display: flex;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .comment-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .comment-content {
+            flex-grow: 1;
+        }
+        .comment-time{
+            text-align: right;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .comment-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .comment-score {
+            color: #f59e0b;
+        }
+
+        .comment-text {
+            font-size: 0.95em;
+            color: #4a5568;
+        }
+        .pagination {
             display: flex;
             justify-content: center;
+            margin-top: 20px;
         }
 
-        .toggle-btn {
-            background-color: #6b7280;
-            color: white;
-            border: none;
-            padding: 7px 12px;
-            border-radius: 5px;
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+        }
+
+        .pagination button.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .snap-dashboard-controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 7px;
+        }
+
+        .snap-dashboard-btn {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .snap-dashboard-btn:hover {
+            background-color: #3a7bc8;
+        }
+
+        .snap-dashboard-btn.active {
+            background-color: #2c3e50;
+        }
+
+        .snap-dashboard-total-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            flex-wrap: wrap;
+        }
+
+        .snap-dashboard-stat-item {
+            text-align: center;
+            background-color: var(--card-background);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex: 1 1 calc(25% - 10px);
+            margin: 5px;
+        }
+
+        .snap-dashboard-stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .snap-dashboard-stat-label {
+            font-size: 0.9em;
+            color: var(--text-color);
+            margin-top: 5px;
+        }
+
+        .dashboard-all-container{
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .snap-dashboard-chart-container {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 49.5%;
+            min-width: 450px;
+        }
+
+        h2 {
+            color: var(--text-color);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
             font-weight: 500;
         }
-
-        .toggle-btn:hover {
-            background-color: var(--secondary-color);
-        }
-
-        #send-message-btn{
-            margin-right: 10px;
-            padding:0 20px;
-        }
-
         .modal {
             display: none;
             position: fixed;
@@ -300,120 +527,34 @@
             background-color: var(--secondary-color);
         }
 
-        .livestream-summary {
-            margin: 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
 
-        .livestream-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            border-bottom: 1px solid gray;
-            padding-bottom: 20px;
-        }
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+            }
 
-        .livestream-stat-item {
-            text-align: center;
-            flex-basis: 33.33%;
-        }
+            .profile-section, .dashboard-section {
+                width: 100%;
+                margin-right: 0;
+            }
 
-        .livestream-stat-value {
-            font-size: 1.4em;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .livestream-stat-label {
-            font-size: 0.9em;
-            color: #6b7280;
-            margin-top: 5px;
-        }
-
-        .comments-section {
-            margin-top: 30px;
-        }
-
-        .comment {
-            display: flex;
-            background-color: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid gainsboro;
-        }
-
-        .comment-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-            object-fit: cover;
-        }
-
-        .comment-content {
-            flex-grow: 1;
-        }
-
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-
-        .comment-info{
-            display: flex;
-            justify-content: space-between;
-        }
-        .comment-time{
-            color: darkgrey;
-            font-size: 14px;
-        }
-
-        .comment-name {
-            font-weight: 600;
-            color: #2d3748;
-        }
-
-        .comment-score {
-            color: #f59e0b;
-        }
-
-        .comment-text {
-            font-size: 0.95em;
-            color: #4a5568;
+            .profile-section {
+                margin-bottom: 20px;
+            }
         }
 
         @media (max-width: 768px) {
-            .profile-header {
-                height: 250px;
-            }
-
-            .profile-avatar {
-                width: 120px;
-                height: 120px;
-            }
-
-            .profile-name {
-                font-size: 1.6em;
-                margin-top: 65px;
-            }
-
-            .profile-info {
-                padding: 20px;
-            }
-
-            .stat-item {
-                flex-basis: 45%;
-            }
-
-            .livestream-stat-item {
+            .stat-item, .snap-dashboard-stat-item {
                 flex-basis: 100%;
-                margin-bottom: 15px;
+            }
+            .snap-dashboard-chart-container {
+                background-color: var(--card-background);
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                margin-bottom: 20px;
+                width: 100%;
+                min-width: 450px;
             }
         }
     </style>
@@ -464,47 +605,76 @@
         </div>
     </div>
 </header>
-<div class="profile-container">
-    <div class="profile-header" id="profile-header">
-        <button class="edit-background" id="edit-background">編輯背景</button>
-        <div class="profile-avatar-container">
-            <img src="" alt="用戶頭像" class="profile-avatar" id="profile-avatar">
-            <button class="edit-avatar" id="edit-avatar">更新頭像</button>
-        </div>
-        <div class="toggle-container">
-            <button id="send-message-btn" class="toggle-btn">私訊</button>
-            <button id="toggle-btn" class="toggle-btn">切換至委託數據</button>
-        </div>
-    </div>
-    <h1 class="profile-name" id="profile-name"></h1>
-    <div class="profile-info">
-        <div class="profile-stats" id="profile-stats">
-            <!-- 主要統計數據將在這裡動態插入 -->
-        </div>
-    </div>
-    <div class="livestream-summary">
-        <h2>直播統計</h2>
-        <div class="livestream-stats" id="livestream-stats">
-            <!-- 直播統計將在這裡動態插入 -->
-        </div>
-        <div class="comments-section" id="comments-section">
-            <h3>評論</h3>
-            <!-- 評論將在這裡動態插入 -->
+<div class="all-container">
+    <div class="profile-section">
+        <div class="profile-container">
+            <div class="profile-header" id="profile-header">
+                <button class="edit-background" id="edit-background">編輯背景</button>
+                <div class="profile-avatar-container">
+                    <img src="" alt="用戶頭像" class="profile-avatar" id="profile-avatar">
+                    <button class="edit-avatar" id="edit-avatar">更新頭像</button>
+                </div>
+            </div>
+            <p class="profile-name" id="profile-name"></p>
+            <button class="custom-message-btn"><i class="fas fa-comment"></i> 私訊</button>
+            <div class="profile-info">
+                <div class="profile-stats" id="profile-stats">
+                </div>
+            </div>
+            <div class="livestream-summary">
+                <div class="livestream-stats" id="livestream-stats">
+                </div>
+                <div class="comments-section" id="comments-section">
+                    <div id="comments-container"></div>
+                    <div class="pagination" id="comments-pagination"></div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<div id="uploadModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitle" class="modal-title"></h2>
-            <span class="close">&times;</span>
+    <div class="dashboard-section">
+        <div class="snap-dashboard-controls">
+            <button id="yearBtn" class="snap-dashboard-btn" onclick="changeTimeScale('year')">年</button>
+            <button id="monthBtn" class="snap-dashboard-btn" onclick="changeTimeScale('month')">月</button>
+            <button id="weekBtn" class="snap-dashboard-btn" onclick="changeTimeScale('week')">週</button>
+            <button id="dayBtn" class="snap-dashboard-btn" onclick="changeTimeScale('day')">日</button>
         </div>
-        <div class="modal-body">
-            <label for="imageUpload" class="file-upload-btn">選擇圖片</label>
-            <input type="file" id="imageUpload" accept="image/*">
-            <img id="imagePreview" src="" alt="圖片預覽">
+        <div class="snap-dashboard-total-stats">
+            <div class="snap-dashboard-stat-item">
+                <div class="snap-dashboard-stat-value" id="totalViewers">0</div>
+                <div class="snap-dashboard-stat-label">總觀看人數</div>
+            </div>
+            <div class="snap-dashboard-stat-item">
+                <div class="snap-dashboard-stat-value" id="totalSales">0</div>
+                <div class="snap-dashboard-stat-label">總銷售數量</div>
+            </div>
+            <div class="snap-dashboard-stat-item">
+                <div class="snap-dashboard-stat-value" id="totalFigures">0</div>
+                <div class="snap-dashboard-stat-label">總銷售額</div>
+            </div>
+            <div class="snap-dashboard-stat-item">
+                <div class="snap-dashboard-stat-value" id="totalCommission">0</div>
+                <div class="snap-dashboard-stat-label">總佣金</div>
+            </div>
         </div>
-        <button id="uploadButton" class="toggle-btn">上傳</button>
+
+        <div class ="dashboard-all-container">
+            <div class="snap-dashboard-chart-container">
+                <h2>觀看人數</h2>
+                <div id="viewersChart"></div>
+            </div>
+            <div class="snap-dashboard-chart-container">
+                <h2>銷售數量</h2>
+                <div id="salesChart"></div>
+            </div>
+            <div class="snap-dashboard-chart-container">
+                <h2>銷售總額</h2>
+                <div id="figuresChart"></div>
+            </div>
+            <div class="snap-dashboard-chart-container">
+                <h2>佣金</h2>
+                <div id="commissionChart"></div>
+            </div>
+        </div>
     </div>
 </div>
 <footer>
@@ -512,7 +682,6 @@
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
-<!-- 聊天室區塊 -->
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
 </div>
@@ -526,20 +695,20 @@
     <div class="chat-main">
         <!-- 顯示當前聊天室名稱的區塊 -->
         <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
-        <div class = "chatRoomHidden"><img src="assets/image/close.png"></div>
+        <div class = "chatRoomHidden"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/positionBottom.png"></div>
 
         <!-- 訊息區 -->
         <div id="chatWindow" class="chat-window">
             <div id="messageArea" class="message-area"></div>
         </div>
 
-        <!-- 創建合約按鈕 -->
-        <button id="createContractBtn">創建合約</button>
-
         <!-- 聊天輸入框 -->
         <div class="chat-input">
+            <button id="createContractBtn"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/draw.png"></button>
             <input type="text" id="messageInput" placeholder="輸入訊息...">
-            <button id="sendMessageBtn">送出</button>
+            <button id="sendMessageBtn" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                <svg class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+            </button>
         </div>
     </div>
 </div>
@@ -547,7 +716,7 @@
 <div class="contract-signature-container">
     <button class="contract-close-btn" id="contract-closeBtn">x</button>
     <div class="contract-input-container">
-        <h2>產生合約</h2>
+        <h2>制定合約</h2>
 
         <div class="contract-input-field">
             <label for="clientName">委託者名稱</label>
@@ -621,61 +790,144 @@
         <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
     </div>
 </div>
+<!-- 委託狀態彈出視窗 -->
+<div class="popup-overlay" id="successPopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('successPopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="failurePopup">
+    <div class="popup failure">
+        <div class="popup-icon">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+                <circle cx="50" cy="50" r="35" fill="#F44336"/>
+                <path d="M35 35 L65 65 M65 35 L35 65" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託失敗</div>
+        <div class="popup-message">很抱歉，代理者駁回合約，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('failurePopup')">關閉</button>
+    </div>
+</div>
+<!-- 代理狀態彈出視窗 -->
+<div class="popup-overlay" id="agentAgreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">代理成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentAgreePopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="agentDisagreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">駁回成功</div>
+        <div class="popup-message">合約已成功撤銷，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentDisagreePopup')">確定</button>
+    </div>
+</div>
+<div id="uploadModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <label for="imageUpload" class="file-upload-btn">選擇圖片</label>
+            <input type="file" id="imageUpload" accept="image/*">
+            <img id="imagePreview" src="" alt="圖片預覽">
+        </div>
+        <button id="uploadButton" class="toggle-btn">上傳</button>
+    </div>
+</div>
+
 <!-- 引入js -->
 <script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 <script src = "https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
 <script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script src = "assets/js/header.js"></script>
 <script src ="assets/js/chat.js"></script>
+<script src ="assets/js/popup.js"></script>
 <script src ="assets/js/contract.js"></script>
 <script>
-
-    let profileData = null;
-    let isShowingAgent = true;
+    // 從 localStorage 獲取使用者 ID
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('userId');
     const currentUserId = localStorage.getItem("userId");
-    const profileName = document.getElementById('profile-name');
-    const profileStats = document.getElementById('profile-stats');
-    const profileAvatar = document.getElementById('profile-avatar');
-    const profileHeader = document.getElementById('profile-header');
-    const toggleBtn = document.getElementById('toggle-btn');
     const modal = document.getElementById("uploadModal");
     const closeBtn = document.getElementsByClassName("close")[0];
     const imageUpload = document.getElementById("imageUpload");
     const imagePreview = document.getElementById("imagePreview");
-    const uploadButton = document.getElementById("uploadButton");
     const modalTitle = document.getElementById("modalTitle");
     const updateBackgroundBtn= document.getElementById("edit-background");
     const updateAvatarBtn= document.getElementById("edit-avatar");
+    const customMessageBtn = document.querySelector('.custom-message-btn');
+    let currentTimeScale = 'day';
+    let charts = {};
+    let profileData = null;
+    let isShowingAgent = true;
 
-    let currentUploadType = '';
-
-    if(currentUserId === userId){
-        document.getElementById("send-message-btn").style.display = "none";
+    if(currentUserId !== userId){
+        updateBackgroundBtn.style.display = "none";
+        updateAvatarBtn.style.display = "none";
     }else{
-        document.getElementById("send-message-btn").style.display = "block";
+        customMessageBtn.style.display = "none";
     }
 
-    document.getElementById("send-message-btn").addEventListener('click',function (){
-        if (currentUserId && userId) {
-            fetch(`/api/1.0/chatroom?user1Id=${currentUserId}&user2Id=${userId}`, {
-                method: 'POST'
-            })
-                .then(response => response.json())
-                .then(chatRoom => {
-                    console.log(chatRoom);
-                    loadUserChatRooms(currentUserId);
-                    getChatRoomInfo(currentUserId,userId);
-                    document.querySelector('.floating-circle').style.display = "none";
-                    document.querySelector('.chat-container').style.display = "flex";
-                })
-                .catch(error => console.error('創建聊天室失敗:', error));
-        } else {
-            console.log("請輸入有效的用戶 ID");
-        }
-    });
+    // API 基礎 URL
+    const apiBaseUrl = '/api/1.0/livestream';
 
+    // 定義不同數據類型和時間尺度的 API 端點
+    const apiEndpoints = {
+        viewers: {
+            year: `${apiBaseUrl}/yearly-viewers/${userId}`,
+            month: `${apiBaseUrl}/monthly-viewers/${userId}`,
+            week: `${apiBaseUrl}/weekly-viewers/${userId}`,
+            day: `${apiBaseUrl}/daily-viewers/${userId}`
+        },
+        sales: {
+            year: `${apiBaseUrl}/yearly-sales/${userId}`,
+            month: `${apiBaseUrl}/monthly-sales/${userId}`,
+            week: `${apiBaseUrl}/weekly-sales/${userId}`,
+            day: `${apiBaseUrl}/daily-sales/${userId}`
+        },
+        figures: {
+            year: `${apiBaseUrl}/yearly-figures/${userId}`,
+            month: `${apiBaseUrl}/monthly-figures/${userId}`,
+            week: `${apiBaseUrl}/weekly-figures/${userId}`,
+            day: `${apiBaseUrl}/daily-figures/${userId}`
+        },
+        commissions: {
+            year: `${apiBaseUrl}/yearly-commissions/${userId}`,
+            month: `${apiBaseUrl}/monthly-commissions/${userId}`,
+            week: `${apiBaseUrl}/weekly-commissions/${userId}`,
+            day: `${apiBaseUrl}/daily-commissions/${userId}`
+        }
+    };
+
+    // 個人檔案相關函數
     function fetchProfileData(userId) {
         return fetch(`/api/1.0/user/${userId}/profile?type=all`)
             .then(response => response.json())
@@ -686,9 +938,9 @@
         const statItem = document.createElement('div');
         statItem.className = 'stat-item';
         statItem.innerHTML = `
-            <div class="stat-value">${value}</div>
-            <div class="stat-label">${label}</div>
-        `;
+        <div class="stat-value">${value}</div>
+        <div class="stat-label">${label}</div>
+    `;
         return statItem;
     }
 
@@ -711,6 +963,11 @@
     }
 
     function updateProfile(data, showAgent = true) {
+        const profileName = document.getElementById('profile-name');
+        const profileStats = document.getElementById('profile-stats');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileHeader = document.getElementById('profile-header');
+
         profileName.textContent = data.name;
         profileAvatar.src = data.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png';
         profileHeader.style.backgroundImage = data.backgroundImage
@@ -719,36 +976,434 @@
 
         profileStats.innerHTML = '';
 
-        if (showAgent) {
-            profileStats.appendChild(createStatItem(0, '總觀看數'));
-            profileStats.appendChild(createStatItem(0, '總銷售數'));
-            profileStats.appendChild(createStatItem(0, '總銷售額'));
-            profileStats.appendChild(createStatItem(0, '代理次數'));
-            toggleBtn.textContent = '切換至委託數據';
-        } else {
-            profileStats.appendChild(createStatItem(0, '上架商品數'));
-            profileStats.appendChild(createStatItem(0, '平均商品評價'));
-            toggleBtn.textContent = '切換至行銷數據';
-        }
-
-        setTimeout(() => {
-            const statValues = profileStats.querySelectorAll('.stat-value');
-            if (showAgent) {
-                animateValue(statValues[0], 0, data.totalViewers || 0, 1500);
-                animateValue(statValues[1], 0, data.totalQuantity || 0, 1500);
-                animateValue(statValues[2], 0, data.totalFigures || 0, 1500);
-                animateValue(statValues[3], 0, data.totalDelegationCount || 0, 1500);
-                animateValue(statValues[4], 0, data.averageScore || 0, 1500);
-            } else {
-                animateValue(statValues[0], 0, data.totalProducts || 0, 1500);
-                animateValue(statValues[1], 0, data.averageProductScore || 0, 1500);
-            }
-        }, 75);
+        // if (showAgent) {
+        //     profileStats.appendChild(createStatItem(0, '總觀看數'));
+        //     profileStats.appendChild(createStatItem(0, '總銷售數'));
+        //     profileStats.appendChild(createStatItem(0, '總銷售額'));
+        //     profileStats.appendChild(createStatItem(0, '代理次數'));
+        // } else {
+        //     profileStats.appendChild(createStatItem(0, '上架商品數'));
+        //     profileStats.appendChild(createStatItem(0, '平均商品評價'));
+        // }
+        //
+        // setTimeout(() => {
+        //     const statValues = profileStats.querySelectorAll('.stat-value');
+        //     if (showAgent) {
+        //         animateValue(statValues[0], 0, data.totalViewers || 0, 1500);
+        //         animateValue(statValues[1], 0, data.totalQuantity || 0, 1500);
+        //         animateValue(statValues[2], 0, data.totalFigures || 0, 1500);
+        //         animateValue(statValues[3], 0, data.totalDelegationCount || 0, 1500);
+        //     } else {
+        //         animateValue(statValues[0], 0, data.totalProducts || 0, 1500);
+        //         animateValue(statValues[1], 0, data.averageProductScore || 0, 1500);
+        //     }
+        // }, 75);
     }
 
     function toggleDataView() {
         isShowingAgent = !isShowingAgent;
         updateProfile(profileData, isShowingAgent);
+    }
+
+    function fetchLivestreamSummary(userId) {
+        return fetch(`/api/1.0/livestream/${userId}/summary`)
+            .then(response => response.json())
+            .then(data => data.data);
+    }
+
+    function updateLivestreamSummary(data) {
+        const livestreamStats = document.getElementById('livestream-stats');
+        const commentsContainer = document.getElementById('comments-container');
+        const commentsPagination = document.getElementById('comments-pagination');
+
+        livestreamStats.innerHTML = `
+        <div class="livestream-stat-item">
+            <div class="livestream-stat-value">${data.liveSummary.liveCount}</div>
+            <div class="livestream-stat-label">直播次數</div>
+        </div>
+        <div class="livestream-stat-item">
+            <div class="livestream-stat-value">${data.liveSummary.commentCount}</div>
+            <div class="livestream-stat-label">評論數</div>
+        </div>
+        <div class="livestream-stat-item">
+            <div class="livestream-stat-value">${data.liveSummary.averageScore.toFixed(2)}</div>
+            <div class="livestream-stat-label">平均評分</div>
+        </div>
+    `;
+
+        const commentsPerPage = 5;
+        let currentPage = 1;
+
+        function renderComments(page) {
+            const start = (page - 1) * commentsPerPage;
+            const end = start + commentsPerPage;
+            const commentsToShow = data.satisfactions.slice(start, end);
+
+            commentsContainer.innerHTML = commentsToShow.map(comment => `
+            <div class="comment">
+                <img src="${comment.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png'}" alt="${comment.name || '匿名用戶'}" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-name">${comment.name || '匿名用戶'}</span>
+                        <span class="comment-score">${'★'.repeat(comment.score)}${'☆'.repeat(5 - comment.score)}</span>
+                    </div>
+                    <div class="comment-info">
+                        <div class="comment-text">${comment.comment}</div>
+                        <div class="comment-time">${comment.createdTime || '2024/9/22 23:00'}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(data.satisfactions.length / commentsPerPage);
+            let paginationHTML = '';
+
+            if (totalPages > 1) {
+                paginationHTML += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>上一頁</button>`;
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHTML += `<button onclick="changePage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+                }
+                paginationHTML += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>下一頁</button>`;
+            }
+
+            commentsPagination.innerHTML = paginationHTML;
+        }
+
+        window.changePage = function(page) {
+            currentPage = page;
+            renderComments(currentPage);
+        }
+
+        renderComments(currentPage);
+    }
+
+    // 儀表板相關函數
+    async function fetchData(endpoint) {
+        try {
+            const response = await axios.get(endpoint);
+            return response.data.data;
+        } catch (error) {
+            console.error('獲取數據時發生錯誤:', error);
+            return [];
+        }
+    }
+
+    function processData(data, type, scale) {
+        let accumulator = 0;
+        return data.map(item => {
+            let x;
+            switch(scale) {
+                case 'year':
+                    x = item.year.toString();
+                    break;
+                case 'month':
+                    x = item.month;
+                    break;
+                case 'week':
+                    x = `第${item.week}週`;
+                    break;
+                case 'day':
+                    x = item.day;
+                    break;
+            }
+            let y;
+            switch(type) {
+                case 'viewers':
+                    y = item.total_viewers;
+                    break;
+                case 'sales':
+                    y = item.total_sold;
+                    break;
+                case 'figures':
+                    y = item.total_figures;
+                    break;
+                case 'commissions':
+                    y = item.total_commission;
+                    break;
+            }
+            accumulator += y;
+            return {
+                x,
+                y: [accumulator, y]  // [累積值, 當前值]
+            };
+        });
+    }
+
+    function createChart(el, data, title, color) {
+        const options = {
+            series: [
+                {
+                    name: `${title}（累積）`,
+                    type: 'area',
+                    data: data.map(item => ({ x: item.x, y: item.y[0] }))
+                },
+                {
+                    name: title,
+                    type: 'column',
+                    data: data.map(item => ({ x: item.x, y: item.y[1] }))
+                }
+            ],
+            chart: {
+                type: 'line',
+                height: 350,
+                stacked: false,
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
+                },
+                fontFamily: 'Noto Sans TC, sans-serif',
+                toolbar: {
+                    show: true,
+                    tools: {
+                        download: true,
+                        selection: true,
+                        zoom: true,
+                        zoomin: true,
+                        zoomout: true,
+                        pan: true,
+                        reset: true
+                    },
+                    autoSelected: 'zoom'
+                },
+                zoom: {
+                    enabled: true,
+                    type: 'x',
+                    autoScaleYaxis: true
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: [3, 0]
+            },
+            xaxis: {
+                type: 'category',
+                tickAmount: 5,
+                labels: {
+                    style: {
+                        fontSize: '12px',
+                        colors: '#666'
+                    }
+                }
+            },
+            yaxis: [
+                {
+                    title: {
+                        text: `${title}`,
+                        style: {
+                            fontSize: '14px',
+                            fontWeight: 500
+                        }
+                    },
+                    labels: {
+                        formatter: function (value) {
+                            return value.toFixed(0);
+                        },
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                {
+                    opposite: true,
+                    show: false,
+                    title: {
+                        text: title,
+                        style: {
+                            fontSize: '14px',
+                            fontWeight: 500
+                        }
+                    },
+                    labels: {
+                        formatter: function (value) {
+                            return value.toFixed(0);
+                        },
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                }
+            ],
+            tooltip: {
+                shared: true,
+                intersect: false,
+                x: {
+                    format: 'dd/MM/yy HH:mm'
+                },
+                y: {
+                    formatter: function(value) {
+                        return value.toFixed(0);
+                    }
+                }
+            },
+            fill: {
+                type: ['gradient', 'solid'],
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.1,
+                    opacityTo: 0.4,
+                    stops: [0, 90, 100]
+                }
+            },
+            colors: [color, color],
+            plotOptions: {
+                column: {
+                    opacity: 0.7
+                }
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'left',
+                fontSize: '14px'
+            }
+        };
+
+        return new ApexCharts(document.querySelector(el), options);
+    }
+
+    function updateChart(chart, newData) {
+        chart.updateSeries([
+            { data: newData.map(item => ({ x: item.x, y: item.y[0] })) },  // 累積數據
+            { data: newData.map(item => ({ x: item.x, y: item.y[1] })) }   // 當前值數據
+        ]);
+    }
+
+    async function initCharts() {
+        document.getElementById('dayBtn').classList.add('active');
+
+        const viewersData = await fetchData(apiEndpoints.viewers[currentTimeScale]);
+        const salesData = await fetchData(apiEndpoints.sales[currentTimeScale]);
+        const figuresData = await fetchData(apiEndpoints.figures[currentTimeScale]);
+        const commissionsData = await fetchData(apiEndpoints.commissions[currentTimeScale]);
+
+        charts.viewers = createChart('#viewersChart', processData(viewersData, 'viewers', currentTimeScale), '觀看人數', '#4a90e2');
+        charts.sales = createChart('#salesChart', processData(salesData, 'sales', currentTimeScale), '銷售數量', '#f39c12');
+        charts.figures = createChart('#figuresChart', processData(figuresData, 'figures', currentTimeScale), '銷售總額', '#2ecc71');
+        charts.commissions = createChart('#commissionChart', processData(commissionsData, 'commissions', currentTimeScale), '佣金', '#e74c3c');
+
+        charts.viewers.render();
+        charts.sales.render();
+        charts.figures.render();
+        charts.commissions.render();
+
+        updateTotalStats(viewersData, salesData, figuresData, commissionsData);
+    }
+
+    function updateTotalStats(viewersData, salesData, figuresData, commissionsData) {
+        let totalViewers, totalSales, totalFigures, totalCommission;
+
+        switch(currentTimeScale) {
+            case 'year':
+                totalViewers = viewersData[0]?.total_viewers || 0;
+                totalSales = salesData[0]?.total_sold || 0;
+                totalFigures = figuresData[0]?.total_figures || 0;
+                totalCommission = commissionsData[0]?.total_commission || 0;
+                break;
+            default:
+                totalViewers = viewersData.reduce((sum, item) => sum + item.total_viewers, 0);
+                totalSales = salesData.reduce((sum, item) => sum + item.total_sold, 0);
+                totalFigures = figuresData.reduce((sum, item) => sum + item.total_figures, 0);
+                totalCommission = commissionsData.reduce((sum, item) => sum + (item.total_commission || 0), 0);
+        }
+
+        const maxDuration = 1500;
+
+        animateValue(document.getElementById('totalViewers'), 0, totalViewers, maxDuration);
+        animateValue(document.getElementById('totalSales'), 0, totalSales, maxDuration);
+        animateValue(document.getElementById('totalFigures'), 0, totalFigures, maxDuration);
+        animateValue(document.getElementById('totalCommission'), 0, totalCommission, maxDuration);
+    }
+
+    function animateValue(element, start, end, maxDuration = 2000) {
+        if (start === end) return;
+        const range = Math.abs(end - start);
+        const startTime = performance.now();
+
+        function easeOutQuad(t) {
+            return t * (2 - t);
+        }
+
+        function updateNumber(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / maxDuration, 1);
+            const easedProgress = easeOutQuad(progress);
+
+            const current = Math.round(start + (end - start) * easedProgress);
+            element.textContent = current.toLocaleString();
+
+            if (progress < 1) {
+                requestAnimationFrame(updateNumber);
+            } else {
+                element.textContent = end.toLocaleString();
+            }
+        }
+
+        requestAnimationFrame(updateNumber);
+    }
+
+    async function updateChartsAndStats(scale) {
+        const viewersData = await fetchData(apiEndpoints.viewers[scale]);
+        const salesData = await fetchData(apiEndpoints.sales[scale]);
+        const figuresData = await fetchData(apiEndpoints.figures[scale]);
+        const commissionsData = await fetchData(apiEndpoints.commissions[scale]);
+
+        updateChart(charts.viewers, processData(viewersData, 'viewers', scale));
+        updateChart(charts.sales, processData(salesData, 'sales', scale));
+        updateChart(charts.figures, processData(figuresData, 'figures', scale));
+        updateChart(charts.commissions, processData(commissionsData, 'commissions', scale));
+
+        updateTotalStats(viewersData, salesData, figuresData, commissionsData);
+    }
+
+    async function changeTimeScale(scale) {
+        currentTimeScale = scale;
+        document.querySelectorAll('.snap-dashboard-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`${scale}Btn`).classList.add('active');
+
+        await updateChartsAndStats(scale);
+    }
+
+    // 初始化函數
+    async function initializePage() {
+        try {
+            // 獲取並更新個人檔案數據
+            profileData = await fetchProfileData(userId);
+            updateProfile(profileData, isShowingAgent);
+
+            // 獲取並更新直播摘要
+            const livestreamSummary = await fetchLivestreamSummary(userId);
+            updateLivestreamSummary(livestreamSummary);
+
+            // 初始化圖表
+            await initCharts();
+
+            // 設置事件監聽器
+            document.getElementById('edit-background').addEventListener('click', () => openModal('background'));
+            document.getElementById('edit-avatar').addEventListener('click', () => openModal('avatar'));
+
+            const toggleBtn = document.getElementById('toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', toggleDataView);
+            }
+
+        } catch (error) {
+            console.error('初始化頁面時發生錯誤:', error);
+        }
     }
 
     function openModal(type) {
@@ -816,87 +1471,33 @@
         modal.style.display = "none";
     }
 
-    function fetchLivestreamSummary(userId) {
-        return fetch(`/api/1.0/livestream/${userId}/summary`)
-            .then(response => response.json())
-            .then(data => data.data);
-    }
+    customMessageBtn.addEventListener('click', function() {
+        const user1Id = currentUserId;
+        const user2Id = userId;
 
-    function updateLivestreamSummary(data) {
-        const livestreamStats = document.getElementById('livestream-stats');
-        const commentsSection = document.getElementById('comments-section');
-
-        // 更新直播統計
-        livestreamStats.innerHTML = `
-        <div class="livestream-stat-item">
-            <div class="livestream-stat-value">${data.liveSummary.liveCount}</div>
-            <div class="livestream-stat-label">直播次數</div>
-        </div>
-        <div class="livestream-stat-item">
-            <div class="livestream-stat-value">${data.liveSummary.commentCount}</div>
-            <div class="livestream-stat-label">評論數</div>
-        </div>
-        <div class="livestream-stat-item">
-            <div class="livestream-stat-value">${data.liveSummary.averageScore.toFixed(2)}</div>
-            <div class="livestream-stat-label">平均評分</div>
-        </div>
-    `;
-
-        // 更新評論
-        commentsSection.innerHTML = data.satisfactions.map(comment => `
-        <div class="comment">
-            <img src="${comment.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png'}" alt="${comment.name || '匿名用戶'}" class="comment-avatar">
-            <div class="comment-content">
-                <div class="comment-header">
-                    <span class="comment-name">${comment.name || '匿名用戶'}</span>
-                    <span class="comment-score">${'★'.repeat(comment.score)}${'☆'.repeat(5 - comment.score)}</span>
-                </div>
-                <div class ="comment-info">
-                    <div class="comment-text">${comment.comment}</div>
-                    <div class="comment-time">${comment.createdTime || '2024/9/22 23:00'}</div>
-                </div>
-            </div>
-        </div>
-    `).join('');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        if (userId === currentUserId){
-            updateAvatarBtn.style.display="block";
-            updateBackgroundBtn.style.display="block";
-            const profileAvatarContainer = document.querySelector('.profile-avatar-container');
-            profileAvatarContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('edit-avatar') || e.target.classList.contains('profile-avatar')) {
-                    openModal('avatar');
-                }
-            });
-            document.getElementById('edit-background').addEventListener('click', () => openModal('background'));
-            window.onload = function() {
-                document.getElementById('uploadModal').style.display = 'none';
-            }
-        }else{
-            updateAvatarBtn.style.display="none";
-            updateBackgroundBtn.style.display="none";
+        if (user1Id && user2Id) {
+            fetch(`/api/1.0/chatroom?user1Id=${user1Id}&user2Id=${user2Id}`, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(chatRoom => {
+                    console.log(chatRoom);
+                    loadUserChatRooms(localStorage.getItem('userId'));
+                    getChatRoomInfo(user1Id,user2Id);
+                    document.querySelector('.floating-circle').style.display = "none";
+                    document.querySelector('.chat-container').style.display = "flex";
+                })
+                .catch(error => console.error('創建聊天室失敗:', error));
+        } else {
+            console.log("請輸入有效的用戶 ID");
         }
-
-        fetchProfileData(userId)
-            .then(data => {
-                profileData = data;
-                updateProfile(data, true);
-            })
-            .catch(error => console.error('Error fetching profile data:', error));
-
-        toggleBtn.addEventListener('click', toggleDataView);
-
-
-
-        fetchLivestreamSummary(userId)
-            .then(data => {
-                updateLivestreamSummary(data);
-            })
-            .catch(error => console.error('Error fetching livestream summary:', error));
     });
 
-    </script>
+    // 當 DOM 內容加載完成時初始化頁面
+    document.addEventListener('DOMContentLoaded', initializePage);
+
+
+
+</script>
 </body>
 </html>

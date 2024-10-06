@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人檔案 - SnapSell</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/header.css"/>
+    <link rel="stylesheet" href="../assets/css/chat.css"/>
+    <link rel="stylesheet" href="../assets/css/contract.css"/>
+    <link rel="stylesheet" href="../assets/css/footer.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #3b82f6;
+            --text-color: #1f2937;
+            --light-text: #f3f4f6;
+            --background: #f9fafb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: #EEEEEE;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            width: calc(100% - 40px);
+            box-sizing: border-box;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .profile-header {
+            position: relative;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 60px;
+            margin-bottom: 80px;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .edit-background {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-background:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .profile-avatar-container {
+            position: absolute;
+            z-index: 2;
+            bottom: -75px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+            transition: filter 0.3s ease;
+        }
+
+        .profile-avatar-container:hover .profile-avatar {
+            filter: brightness(70%);
+        }
+
+        .profile-avatar-container:hover .edit-avatar {
+            opacity: 1;
+        }
+
+        .edit-avatar {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .edit-avatar:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .profile-name {
+            font-size: 2em;
+            font-weight: 700;
+            color: black;
+            z-index: 2;
+            text-align: center;
+            margin-top: 85px;
+        }
+
+        .profile-info {
+            background-color: #f8fafc;
+            border-radius: 12px;
+            margin: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex-basis: 20%;
+            padding: 15px;
+            background-color:#EEEEEE;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-value {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .toggle-container {
+            position: absolute;
+            right: 8px;
+            bottom: -40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .toggle-btn {
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toggle-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #send-message-btn{
+            margin-right: 10px;
+            padding:0 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 30px;
+            border: none;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: 700;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        #imageUpload {
+            display: none;
+        }
+
+        .file-upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-upload-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        #imagePreview {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #uploadButton {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #uploadButton:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .livestream-summary {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .livestream-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            border-bottom: 1px solid gray;
+            padding-bottom: 20px;
+        }
+
+        .livestream-stat-item {
+            text-align: center;
+            flex-basis: 33.33%;
+        }
+
+        .livestream-stat-value {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .livestream-stat-label {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .comments-section {
+            margin-top: 30px;
+        }
+
+        .comment {
+            display: flex;
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid gainsboro;
+        }
+
+        .comment-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .comment-content {
+            flex-grow: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .comment-info{
+            display: flex;
+            justify-content: space-between;
+        }
+        .comment-time{
+            color: darkgrey;
+            font-size: 14px;
+        }
+
+        .comment-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .comment-score {
+            color: #f59e0b;
+        }
+
+        .comment-text {
+            font-size: 0.95em;
+            color: #4a5568;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                height: 250px;
+            }
+
+            .profile-avatar {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-name {
+                font-size: 1.6em;
+                margin-top: 65px;
+            }
+
+            .profile-info {
+                padding: 20px;
+            }
+
+            .stat-item {
+                flex-basis: 45%;
+            }
+
+            .livestream-stat-item {
+                flex-basis: 100%;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="header-logo">
+            SnapSell
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../client.html">找委託</a></li>
+                <li><a href="../agent.html">找代理</a></li>
+                <li><a href="../live-stream-lobby.html">找直播</a></li>
+            </ul>
+        </nav>
+        <div class="user-info">
+            <div id="user-name"></div>
+            <div class="user-actions">
+                <img class="icon-user" src='https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png' alt="User Avatar">
+                <div class="info-window">
+                    <div class = "log-out" id = "my-profile-btn">
+                        <div class="log-out-content">個人檔案</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "my-order-btn">
+                        <div class="log-out-content">我的訂單</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id="my-livestream-btn">
+                        <div class="log-out-content">我的直播</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id="my-products-btn">
+                        <div class="log-out-content">我的商品</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "my-contract-btn">
+                        <div class="log-out-content">我的合約</div>
+                    </div>
+                    <hr>
+                    <div class = "log-out" id = "logout-btn">
+                        <div class="log-out-content">登出</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="profile-container">
+    <div class="profile-header" id="profile-header">
+        <button class="edit-background" id="edit-background">編輯背景</button>
+        <div class="profile-avatar-container">
+            <img src="" alt="用戶頭像" class="profile-avatar" id="profile-avatar">
+            <button class="edit-avatar" id="edit-avatar">更新頭像</button>
+        </div>
+        <div class="toggle-container">
+            <button id="send-message-btn" class="toggle-btn">私訊</button>
+            <button id="toggle-btn" class="toggle-btn">切換至委託數據</button>
+        </div>
+    </div>
+    <h1 class="profile-name" id="profile-name"></h1>
+    <div class="profile-info">
+        <div class="profile-stats" id="profile-stats">
+            <!-- 主要統計數據將在這裡動態插入 -->
+        </div>
+    </div>
+    <div class="livestream-summary">
+        <h2>直播統計</h2>
+        <div class="livestream-stats" id="livestream-stats">
+            <!-- 直播統計將在這裡動態插入 -->
+        </div>
+        <div class="comments-section" id="comments-section">
+            <h3>評論</h3>
+            <!-- 評論將在這裡動態插入 -->
+        </div>
+    </div>
+</div>
+<div id="uploadModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <label for="imageUpload" class="file-upload-btn">選擇圖片</label>
+            <input type="file" id="imageUpload" accept="image/*">
+            <img id="imagePreview" src="" alt="圖片預覽">
+        </div>
+        <button id="uploadButton" class="toggle-btn">上傳</button>
+    </div>
+</div>
+<footer>
+    <div class="products-container">
+        <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
+    </div>
+</footer>
+<div class="floating-circle">
+    <img src="assets/image/messenger.png" alt="Chat Icon">
+</div>
+<div class="chat-container">
+
+    <div class="chat-sidebar">
+        <ul id="chatRoomList" class="chat-room-list"></ul>
+        <button id="createChatRoomBtn" style="padding: 10px; background-color: #FF5A5F; border: none; border-radius: 30px; color: white; cursor: pointer;display: none;">新增聊天室</button>
+    </div>
+
+    <div class="chat-main">
+        <!-- 顯示當前聊天室名稱的區塊 -->
+        <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
+        <div class = "chatRoomHidden"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/positionBottom.png"></div>
+
+        <!-- 訊息區 -->
+        <div id="chatWindow" class="chat-window">
+            <div id="messageArea" class="message-area"></div>
+        </div>
+
+        <!-- 聊天輸入框 -->
+        <div class="chat-input">
+            <button id="createContractBtn"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/draw.png"></button>
+            <input type="text" id="messageInput" placeholder="輸入訊息...">
+            <button id="sendMessageBtn" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                <svg class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+            </button>
+        </div>
+    </div>
+</div>
+<!-- 合約生成區塊 -->
+<div class="contract-signature-container">
+    <button class="contract-close-btn" id="contract-closeBtn">x</button>
+    <div class="contract-input-container">
+        <h2>制定合約</h2>
+
+        <div class="contract-input-field">
+            <label for="clientName">委託者名稱</label>
+            <input type="text" id="clientName" placeholder="輸入委託者名稱">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="sellerName">代理者名稱</label>
+            <input type="text" id="sellerName" placeholder="輸入代理者名稱">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="productName">商品名稱</label>
+            <select id="productName">
+                <option value="">請選擇商品</option>
+            </select>
+        </div>
+
+        <!-- 隱藏欄位，用來儲存選擇的商品 ID -->
+        <input type="hidden" id="productId" name="productId">
+
+        <div class="contract-input-field">
+            <label for="salesPeriod">銷售期間</label>
+            <input type="text" id="salesPeriod" placeholder="輸入銷售期間">
+        </div>
+
+        <div class="contract-input-field">
+            <label for="commissionRate">佣金比例 (%)</label>
+            <input type="number" id="commissionRate" placeholder="輸入佣金比例">
+        </div>
+
+        <button id="generateContractBtn" class="contract-signature-button">生成合約</button>
+    </div>
+    <!-- 顯示生成的合約 -->
+    <div id="generated-contract" class="contract-signature-generated"></div>
+
+    <!-- 簽名區塊 -->
+    <div class="contract-signature-block">
+        <div class="signature-block-A">
+            <h4>委託者簽名區</h4>
+            <canvas id="signature-pad-a" class="contract-signature-pad"></canvas>
+            <div class="signature-button-group">
+                <button id="clearSignatureA" class="contract-signature-button secondary-btn">清除簽名</button>
+                <button id="saveSignatureA" class="contract-signature-button">保存簽名</button>
+            </div>
+        </div>
+        <div class="signature-block-B">
+            <h4>代理者簽名區</h4>
+            <canvas id="signature-pad-b" class="contract-signature-pad"></canvas>
+            <div class="signature-button-group">
+                <button id="clearSignatureB" class="contract-signature-button secondary-btn">清除簽名</button>
+                <button id="saveSignatureB" class="contract-signature-button">保存簽名</button>
+            </div>
+        </div>
+    </div>
+    <!-- 圖像預覽區 -->
+    <div id="signature-preview" class="contract-signature-preview">
+        <div class ="signature-A">
+            <h4>簽名圖片預覽</h4>
+            <img id="signatureImageA" src="" alt="簽名圖片預覽">
+        </div>
+        <div class ="signature-B">
+            <h4>簽名圖片預覽</h4>
+            <img id="signatureImageB" src="" alt="簽名圖片預覽">
+        </div>
+    </div>
+    <!-- 發送合約按鈕 -->
+    <div class="contract-signature-send-button-container">
+        <button id="sendContractBtn" class="contract-signature-send-button contract-signature-button">發送合約給代理者</button>
+        <button id="sendRejectBtn" class=" contract-signature-button secondary-btn">拒絕合約</button>
+        <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
+    </div>
+</div>
+<!-- 委託狀態彈出視窗 -->
+<div class="popup-overlay" id="successPopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('successPopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="failurePopup">
+    <div class="popup failure">
+        <div class="popup-icon">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+                <circle cx="50" cy="50" r="35" fill="#F44336"/>
+                <path d="M35 35 L65 65 M65 35 L35 65" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託失敗</div>
+        <div class="popup-message">很抱歉，代理者駁回合約，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('failurePopup')">關閉</button>
+    </div>
+</div>
+<!-- 代理狀態彈出視窗 -->
+<div class="popup-overlay" id="agentAgreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">代理成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentAgreePopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="agentDisagreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">駁回成功</div>
+        <div class="popup-message">合約已成功撤銷，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentDisagreePopup')">確定</button>
+    </div>
+</div>
+
+<!-- 引入js -->
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src = "assets/js/header.js"></script>
+<script src ="assets/js/chat.js"></script>
+<script src ="assets/js/popup.js"></script>
+<script src ="assets/js/contract.js"></script>
+<script>
+
+    let profileData = null;
+    let isShowingAgent = true;
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+    const currentUserId = localStorage.getItem("userId");
+    const profileName = document.getElementById('profile-name');
+    const profileStats = document.getElementById('profile-stats');
+    const profileAvatar = document.getElementById('profile-avatar');
+    const profileHeader = document.getElementById('profile-header');
+    const toggleBtn = document.getElementById('toggle-btn');
+    const modal = document.getElementById("uploadModal");
+    const closeBtn = document.getElementsByClassName("close")[0];
+    const imageUpload = document.getElementById("imageUpload");
+    const imagePreview = document.getElementById("imagePreview");
+    const uploadButton = document.getElementById("uploadButton");
+    const modalTitle = document.getElementById("modalTitle");
+    const updateBackgroundBtn= document.getElementById("edit-background");
+    const updateAvatarBtn= document.getElementById("edit-avatar");
+
+    let currentUploadType = '';
+
+    if(currentUserId === userId){
+        document.getElementById("send-message-btn").style.display = "none";
+    }else{
+        document.getElementById("send-message-btn").style.display = "block";
+    }
+
+    document.getElementById("send-message-btn").addEventListener('click',function (){
+        if (currentUserId && userId) {
+            fetch(`/api/1.0/chatroom?user1Id=${currentUserId}&user2Id=${userId}`, {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(chatRoom => {
+                    console.log(chatRoom);
+                    loadUserChatRooms(currentUserId);
+                    getChatRoomInfo(currentUserId,userId);
+                    document.querySelector('.floating-circle').style.display = "none";
+                    document.querySelector('.chat-container').style.display = "flex";
+                })
+                .catch(error => console.error('創建聊天室失敗:', error));
+        } else {
+            console.log("請輸入有效的用戶 ID");
+        }
+    });
+
+    function fetchProfileData(userId) {
+        return fetch(`/api/1.0/user/${userId}/profile?type=all`)
+            .then(response => response.json())
+            .then(data => data.data);
+    }
+
+    function createStatItem(value, label) {
+        const statItem = document.createElement('div');
+        statItem.className = 'stat-item';
+        statItem.innerHTML = `
+            <div class="stat-value">${value}</div>
+            <div class="stat-label">${label}</div>
+        `;
+        return statItem;
+    }
+
+    function animateValue(element, start, end, duration) {
+        if (element && start === end) {
+            element.textContent = end.toLocaleString();
+            return;
+        }
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            element.textContent = value.toLocaleString();
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function updateProfile(data, showAgent = true) {
+        profileName.textContent = data.name;
+        profileAvatar.src = data.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png';
+        profileHeader.style.backgroundImage = data.backgroundImage
+            ? `url(${data.backgroundImage})`
+            : 'url(https://seanproject.s3.ap-northeast-1.amazonaws.com/back.jpg)';
+
+        profileStats.innerHTML = '';
+
+        if (showAgent) {
+            profileStats.appendChild(createStatItem(0, '總觀看數'));
+            profileStats.appendChild(createStatItem(0, '總銷售數'));
+            profileStats.appendChild(createStatItem(0, '總銷售額'));
+            profileStats.appendChild(createStatItem(0, '代理次數'));
+            toggleBtn.textContent = '切換至委託數據';
+        } else {
+            profileStats.appendChild(createStatItem(0, '上架商品數'));
+            profileStats.appendChild(createStatItem(0, '平均商品評價'));
+            toggleBtn.textContent = '切換至行銷數據';
+        }
+
+        setTimeout(() => {
+            const statValues = profileStats.querySelectorAll('.stat-value');
+            if (showAgent) {
+                animateValue(statValues[0], 0, data.totalViewers || 0, 1500);
+                animateValue(statValues[1], 0, data.totalQuantity || 0, 1500);
+                animateValue(statValues[2], 0, data.totalFigures || 0, 1500);
+                animateValue(statValues[3], 0, data.totalDelegationCount || 0, 1500);
+                animateValue(statValues[4], 0, data.averageScore || 0, 1500);
+            } else {
+                animateValue(statValues[0], 0, data.totalProducts || 0, 1500);
+                animateValue(statValues[1], 0, data.averageProductScore || 0, 1500);
+            }
+        }, 75);
+    }
+
+    function toggleDataView() {
+        isShowingAgent = !isShowingAgent;
+        updateProfile(profileData, isShowingAgent);
+    }
+
+    function openModal(type) {
+        currentUploadType = type;
+        modalTitle.textContent = type === 'avatar' ? '上傳頭像' : '上傳背景圖片';
+        modal.style.display = "block";
+        imagePreview.src = '';
+        imageUpload.value = '';
+    }
+
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    imageUpload.onchange = function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    uploadButton.onclick = function() {
+        const file = imageUpload.files[0];
+        if (!file) {
+            alert('請選擇一張圖片');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const endpoint = currentUploadType === 'avatar'
+            ? `/api/1.0/user/${userId}/profile/profile-image`
+            : `/api/1.0/user/${userId}/profile/background-image`;
+
+        fetch(endpoint, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('圖片上傳成功');
+                    location.reload();
+                } else {
+                    alert('圖片上傳失敗');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('上傳過程中發生錯誤');
+            });
+
+        modal.style.display = "none";
+    }
+
+    function fetchLivestreamSummary(userId) {
+        return fetch(`/api/1.0/livestream/${userId}/summary`)
+            .then(response => response.json())
+            .then(data => data.data);
+    }
+
+    function updateLivestreamSummary(data) {
+        const livestreamStats = document.getElementById('livestream-stats');
+        const commentsSection = document.getElementById('comments-section');
+
+        // 更新直播統計
+        livestreamStats.innerHTML = `
+        <div class="livestream-stat-item">
+            <div class="livestream-stat-value">${data.liveSummary.liveCount}</div>
+            <div class="livestream-stat-label">直播次數</div>
+        </div>
+        <div class="livestream-stat-item">
+            <div class="livestream-stat-value">${data.liveSummary.commentCount}</div>
+            <div class="livestream-stat-label">評論數</div>
+        </div>
+        <div class="livestream-stat-item">
+            <div class="livestream-stat-value">${data.liveSummary.averageScore.toFixed(2)}</div>
+            <div class="livestream-stat-label">平均評分</div>
+        </div>
+    `;
+
+        // 更新評論
+        commentsSection.innerHTML = data.satisfactions.map(comment => `
+        <div class="comment">
+            <img src="${comment.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png'}" alt="${comment.name || '匿名用戶'}" class="comment-avatar">
+            <div class="comment-content">
+                <div class="comment-header">
+                    <span class="comment-name">${comment.name || '匿名用戶'}</span>
+                    <span class="comment-score">${'★'.repeat(comment.score)}${'☆'.repeat(5 - comment.score)}</span>
+                </div>
+                <div class ="comment-info">
+                    <div class="comment-text">${comment.comment}</div>
+                    <div class="comment-time">${comment.createdTime || '2024/9/22 23:00'}</div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (userId === currentUserId){
+            updateAvatarBtn.style.display="block";
+            updateBackgroundBtn.style.display="block";
+            const profileAvatarContainer = document.querySelector('.profile-avatar-container');
+            profileAvatarContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('edit-avatar') || e.target.classList.contains('profile-avatar')) {
+                    openModal('avatar');
+                }
+            });
+            document.getElementById('edit-background').addEventListener('click', () => openModal('background'));
+            window.onload = function() {
+                document.getElementById('uploadModal').style.display = 'none';
+            }
+        }else{
+            updateAvatarBtn.style.display="none";
+            updateBackgroundBtn.style.display="none";
+        }
+
+        fetchProfileData(userId)
+            .then(data => {
+                profileData = data;
+                updateProfile(data, true);
+            })
+            .catch(error => console.error('Error fetching profile data:', error));
+
+        toggleBtn.addEventListener('click', toggleDataView);
+
+        fetchLivestreamSummary(userId)
+            .then(data => {
+                updateLivestreamSummary(data);
+            })
+            .catch(error => console.error('Error fetching livestream summary:', error));
+    });
+
+    </script>
+</body>
+</html>

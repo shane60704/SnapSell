@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SnapSell 直播紀錄</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.4.4/dist/flowbite.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="assets/css/header.css"/>
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/popup.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
     <style>
         * {
@@ -46,6 +50,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 10px;
             text-align: center;
+            font-size: 28px;
         }
 
         .record-container table {
@@ -73,6 +78,7 @@
             border: none;
             cursor: pointer;
             border-radius: 4px;
+            font-size: 13px;
             transition: background-color 0.3s ease;
         }
 
@@ -211,6 +217,77 @@
             color: #999;
             text-align: right;
         }
+        .stats-container {
+            background: #dbe4ee;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+
+
+        .stats-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .stats-btn {
+            padding: 10px 20px;
+            margin: 0 8px;
+            background-color: #f0f4f8;
+            border: none;
+            border-radius: 30px;
+            color: #4a5568;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .stats-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        .stats-btn.active {
+            background-color: #4299e1;
+            color: white;
+            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3);
+        }
+
+        .stats-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-item span:not(.stat-label) {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2d3748;
+        }
 
         @media (max-width: 768px) {
             .modal-content {
@@ -241,6 +318,32 @@
                 text-align: center;
             }
         }
+
+        /* 分頁按鈕樣式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination .page-btn {
+            padding: 8px 12px;
+            margin: 0 5px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .pagination .page-btn.active {
+            background-color: #2c3e50;
+        }
+
+        .pagination .page-btn:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
@@ -261,27 +364,27 @@
             <div class="user-actions">
                 <img class="icon-user" src='https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png' alt="User Avatar">
                 <div class="info-window">
-                    <div class = "log-out" id = "my-profile-btn">
+                    <div class="log-out" id="my-profile-btn">
                         <div class="log-out-content">個人檔案</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id = "my-order-btn">
+                    <div class="log-out" id="my-order-btn">
                         <div class="log-out-content">我的訂單</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id="my-livestream-btn">
+                    <div class="log-out" id="my-livestream-btn">
                         <div class="log-out-content">我的直播</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id="my-products-btn">
+                    <div class="log-out" id="my-products-btn">
                         <div class="log-out-content">我的商品</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id = "my-contract-btn">
+                    <div class="log-out" id="my-contract-btn">
                         <div class="log-out-content">我的合約</div>
                     </div>
                     <hr>
-                    <div class = "log-out" id = "logout-btn">
+                    <div class="log-out" id="logout-btn">
                         <div class="log-out-content">登出</div>
                     </div>
                 </div>
@@ -291,6 +394,32 @@
 </header>
 <div class="record-container">
     <h1>我的直播紀錄</h1>
+    <div class="stats-container">
+        <div class="stats-buttons">
+            <button class="stats-btn active" data-period="day">日</button>
+            <button class="stats-btn" data-period="week">週</button>
+            <button class="stats-btn" data-period="month">月</button>
+            <button class="stats-btn" data-period="year">年</button>
+        </div>
+        <div class="stats-info">
+            <div class="stat-item">
+                <span class="stat-label">累積觀眾人數：</span>
+                <span id="total-viewers">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">累積銷售數量：</span>
+                <span id="total-sales">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">累積銷售總額：</span>
+                <span id="total-sales-amount">NT$ 0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">累積佣金：</span>
+                <span id="total-commission">NT$ 0</span>
+            </div>
+        </div>
+    </div>
     <table>
         <thead>
         <tr>
@@ -308,6 +437,9 @@
         <!-- JavaScript will populate this -->
         </tbody>
     </table>
+
+    <!-- 分頁按鈕區塊 -->
+    <div id="pagination" class="pagination"></div>
 </div>
 <!-- 評價模態窗口 -->
 <div id="reviewModal" class="modal">
@@ -324,11 +456,9 @@
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
-<!-- 聊天室區塊 -->
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
 </div>
-
 <div class="chat-container">
 
     <div class="chat-sidebar">
@@ -339,29 +469,28 @@
     <div class="chat-main">
         <!-- 顯示當前聊天室名稱的區塊 -->
         <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
-        <div class = "chatRoomHidden"><img src="assets/image/close.png"></div>
+        <div class = "chatRoomHidden"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/positionBottom.png"></div>
 
         <!-- 訊息區 -->
         <div id="chatWindow" class="chat-window">
             <div id="messageArea" class="message-area"></div>
         </div>
 
-        <!-- 創建合約按鈕 -->
-        <button id="createContractBtn">創建合約</button>
-
         <!-- 聊天輸入框 -->
         <div class="chat-input">
+            <button id="createContractBtn"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/draw.png"></button>
             <input type="text" id="messageInput" placeholder="輸入訊息...">
-            <button id="sendMessageBtn">送出</button>
+            <button id="sendMessageBtn" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                <svg class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+            </button>
         </div>
     </div>
 </div>
-
 <!-- 合約生成區塊 -->
 <div class="contract-signature-container">
     <button class="contract-close-btn" id="contract-closeBtn">x</button>
     <div class="contract-input-container">
-        <h2>產生合約</h2>
+        <h2>制定合約</h2>
 
         <div class="contract-input-field">
             <label for="clientName">委託者名稱</label>
@@ -435,6 +564,64 @@
         <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
     </div>
 </div>
+<!-- 委託狀態彈出視窗 -->
+<div class="popup-overlay" id="successPopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('successPopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="failurePopup">
+    <div class="popup failure">
+        <div class="popup-icon">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+                <circle cx="50" cy="50" r="35" fill="#F44336"/>
+                <path d="M35 35 L65 65 M65 35 L35 65" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託失敗</div>
+        <div class="popup-message">很抱歉，代理者駁回合約，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('failurePopup')">關閉</button>
+    </div>
+</div>
+<!-- 代理狀態彈出視窗 -->
+<div class="popup-overlay" id="agentAgreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">代理成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentAgreePopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="agentDisagreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">駁回成功</div>
+        <div class="popup-message">合約已成功撤銷，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentDisagreePopup')">確定</button>
+    </div>
+</div>
 
 <!-- 引入js -->
 <script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
@@ -442,9 +629,11 @@
 <script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script src = "assets/js/header.js"></script>
 <script src ="assets/js/chat.js"></script>
+<script src ="assets/js/popup.js"></script>
 <script src ="assets/js/contract.js"></script>
 <script>
 
+    // 格式化日期時間的函數
     function formatDateTime(date) {
         const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -455,46 +644,101 @@
         return `${year}/${month}/${day} ${hours}:${minutes}`;
     }
 
-    fetch(`/api/1.0/livestream/user/${localStorage.getItem("userId")}/records`)
-        .then(response => {
+    // 獲取佣金的異步函數
+    async function getCommission(liveId) {
+        try {
+            const response = await fetch(`/api/1.0/livestream/${liveId}/summary-records`);
             if (!response.ok) {
-                throw new Error('獲取失敗');
+                throw new Error(`獲取失敗，狀態碼: ${response.status}`);
             }
-            return response.json();
-        })
-        .then(data => {
-            var livestreamRecordList = document.getElementById('livestreamRecordList');
-
-            if (Array.isArray(data.data) && data.data.length > 0) {
-                data.data.forEach(function(record, index) {
-                    var startTimeFormatted = formatDateTime(new Date(record.startTime));
-                    var endTimeFormatted = formatDateTime(new Date(record.endTime));
-                    var commission = record.salesFigures * 0.01;
-                    var recordElement = `
-                            <tr>
-                                <td data-label="直播編號">${index + 1}</td>
-                                <td data-label="開始時間">${startTimeFormatted}</td>
-                                <td data-label="結束時間">${endTimeFormatted}</td>
-                                <td data-label="觀眾人數">${record.viewers}</td>
-                                <td data-label="銷售數量">${record.salesQuantity}</td>
-                                <td data-label="銷售總額">NT$ ${record.salesFigures}</td>
-                                <td data-label="佣金">NT$ ${commission.toFixed(0)}</td>
-                                <td data-label="操作">
-                                    <button class="view-reviews-btn" onclick="viewReviews(${record.id})">查看評價</button>
-                                </td>
-                            </tr>
-                        `;
-                    livestreamRecordList.innerHTML += recordElement;
+            const data = await response.json();
+            let totalCommission = 0;
+            if (data.data && Array.isArray(data.data.productSales)) {
+                data.data.productSales.forEach(product => {
+                    if (product.commissionRate && product.totalPrice) {
+                        const commissionRateMatch = product.commissionRate.match(/(\d+)%/);
+                        if (commissionRateMatch) {
+                            const commissionRate = parseFloat(commissionRateMatch[1]) / 100;
+                            totalCommission += product.totalPrice * commissionRate;
+                        } else {
+                            console.warn(`無效的佣金比例格式: ${product.commissionRate}`);
+                        }
+                    } else {
+                        console.warn(`產品資料不完整: ${JSON.stringify(product)}`);
+                    }
                 });
             } else {
-                livestreamRecordList.innerHTML = '<tr><td colspan="8" >暫無直播紀錄</td></tr>';
+                console.warn(`無效的產品銷售資料: ${JSON.stringify(data.data)}`);
             }
-        })
-        .catch(error => {
-            alert('無法獲取直播紀錄，請稍後再試。');
-            console.error('錯誤:', error);
-        });
+            console.log(`Live ID ${liveId} Total Commission: ${totalCommission}`);
+            return { totalCommission, productSales: data.data.productSales || [] };
+        } catch (error) {
+            console.error(`獲取佣金時發生錯誤 (Live ID ${liveId}):`, error);
+            return { totalCommission: 0, productSales: [] };
+        }
+    }
 
+    // 分頁相關變數
+    const itemsPerPage = 25;
+    let currentPage = 1;
+    let totalPages = 1;
+    let livestreamData = [];
+
+    // 渲染表格頁面的函數
+    async function renderTablePage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageData = livestreamData.slice(start, end);
+
+        const livestreamRecordList = document.getElementById('livestreamRecordList');
+        livestreamRecordList.innerHTML = '';
+
+        for (const [index, record] of pageData.entries()) {
+            const startTimeFormatted = formatDateTime(new Date(record.startTime));
+            const endTimeFormatted = formatDateTime(new Date(record.endTime));
+
+            const recordElement = `
+            <tr>
+                <td data-label="直播編號">${start + index + 1}</td>
+                <td data-label="開始時間">${startTimeFormatted}</td>
+                <td data-label="結束時間">${endTimeFormatted}</td>
+                <td data-label="觀眾人數">${record.viewers.toLocaleString()}</td>
+                <td data-label="銷售數量">${record.salesQuantity.toLocaleString()}</td>
+                <td data-label="銷售總額">NT$ ${record.salesFigures.toLocaleString()}</td>
+                <td data-label="佣金">NT$ ${record.commission.toFixed(0).toLocaleString()}</td>
+                <td data-label="操作">
+                    <button class="view-reviews-btn" onclick="viewReviews(${record.id})">查看評價</button>
+                </td>
+            </tr>
+        `;
+            livestreamRecordList.innerHTML += recordElement;
+        }
+    }
+
+    // 渲染分頁按鈕的函數
+    function renderPagination() {
+        const paginationElement = document.getElementById('pagination');
+        paginationElement.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.classList.add('page-btn');
+            if (i === currentPage) {
+                pageButton.classList.add('active');
+            }
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                renderTablePage(currentPage);
+                // 更新分頁按鈕的活動狀態
+                document.querySelectorAll('.page-btn').forEach(btn => btn.classList.remove('active'));
+                pageButton.classList.add('active');
+            });
+            paginationElement.appendChild(pageButton);
+        }
+    }
+
+    // 查看評價的函數
     function viewReviews(liveId) {
         fetch(`/api/1.0/livestream/${liveId}/satisfaction`)
             .then(response => response.json())
@@ -515,7 +759,7 @@
                                     <span class="review-name">${review.name}</span>
                                     <span class="review-stars">${stars}</span>
                                 </div>
-                                <div class = "review-wrap">
+                                <div class="review-wrap">
                                     <p class="review-comment">${review.comment}</p>
                                     <p class="review-time">${formatDateTime(new Date(review.createdTime))}</p>
                                 </div>
@@ -529,36 +773,171 @@
                 document.getElementById('reviewModal').style.display = 'block';
             })
             .catch(error => {
-                console.error('Error fetching reviews:', error);
+                console.error('獲取評價時發生錯誤:', error);
                 alert('無法獲取評價，請稍後再試。');
             });
     }
 
-    // 關閉模態窗口
-    document.querySelector('.close').onclick = function() {
-        document.getElementById('reviewModal').style.display = 'none';
+    // 計算指定時間段內的統計信息
+    function calculateStats(period) {
+        if (!livestreamData || livestreamData.length === 0) {
+            console.log('No data available for calculation');
+            document.getElementById('total-viewers').textContent = '0';
+            document.getElementById('total-sales').textContent = '0';
+            document.getElementById('total-sales-amount').textContent = 'NT$ 0';
+            document.getElementById('total-commission').textContent = 'NT$ 0';
+            return;
+        }
+
+        const now = new Date();
+        let startDate;
+
+        switch(period) {
+            case 'day':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                break;
+            case 'week':
+                const dayOfWeek = now.getDay();
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
+                break;
+            case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                break;
+            case 'year':
+                startDate = new Date(now.getFullYear(), 0, 1);
+                break;
+            default:
+                startDate = new Date(0); // 如果期間未定義，計算所有資料
+        }
+
+        console.log(`計算期間: ${period}, 開始日期: ${startDate}`);
+
+        let totalViewers = 0;
+        let totalSales = 0;
+        let totalSalesAmount = 0;
+        let totalCommission = 0;
+
+        livestreamData.forEach(record => {
+            const recordDate = new Date(record.startTime);
+            if (isNaN(recordDate)) {
+                console.error(`無效的日期格式 (Record ID ${record.id}): ${record.startTime}`);
+                return; // 跳過無效的日期
+            }
+            if (recordDate >= startDate) {
+                totalViewers += record.viewers;
+                totalSales += record.salesQuantity;
+                totalSalesAmount += record.salesFigures;
+                totalCommission += record.commission;
+            }
+        });
+
+        console.log(`累積結果 - 觀眾人數: ${totalViewers}, 銷售數量: ${totalSales}, 銷售總額: ${totalSalesAmount}, 佣金: ${totalCommission}`);
+
+        document.getElementById('total-viewers').textContent = totalViewers.toLocaleString();
+        document.getElementById('total-sales').textContent = totalSales.toLocaleString();
+        document.getElementById('total-sales-amount').textContent = `NT$ ${totalSalesAmount.toLocaleString()}`;
+        document.getElementById('total-commission').textContent = `NT$ ${totalCommission.toFixed(0).toLocaleString()}`;
     }
 
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('reviewModal')) {
-            document.getElementById('reviewModal').style.display = 'none';
+    // 處理統計按鈕點擊事件
+    function handleStatsBtnClick(event) {
+        if (event.target.classList.contains('stats-btn')) {
+            document.querySelectorAll('.stats-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            calculateStats(event.target.dataset.period);
         }
     }
 
-    function formatDateTime(date) {
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
+    // 主要邏輯
+    document.addEventListener('DOMContentLoaded', async () => {
+        console.log('開始載入直播紀錄');
+        try {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                throw new Error("未找到使用者ID");
+            }
 
-        return `${year}/${month}/${day} ${hours}:${minutes}`;
-    }
+            console.log('正在獲取直播紀錄...');
+            const response = await fetch(`/api/1.0/livestream/user/${userId}/records`);
+            if (!response.ok) {
+                throw new Error(`獲取直播紀錄失敗，狀態碼: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('API返回的數據:', data.data);
+
+            // 處理並設置預設值，使用 ?? 來避免 0 被覆蓋
+            livestreamData = data.data.map(record => ({
+                ...record,
+                viewers: record.viewers ?? 0,
+                salesQuantity: record.salesQuantity ?? 0,
+                salesFigures: record.salesFigures ?? 0,
+                commission: record.commission // 保留原始值，稍後處理
+            }));
+
+            // 等待所有佣金計算完成
+            console.log('開始計算佣金...');
+            await Promise.all(livestreamData.map(async (record) => {
+                if (record.commission === undefined || record.commission === null) {
+                    try {
+                        const commissionResult = await getCommission(record.liveId);
+                        record.commission = commissionResult.totalCommission ?? 0;
+                    } catch (error) {
+                        console.error('無法獲取佣金:', error);
+                        record.commission = 0;
+                    }
+                }
+            }));
+
+            console.log('所有佣金計算完成，準備渲染的數據:', livestreamData);
+            totalPages = Math.ceil(livestreamData.length / itemsPerPage);
+            await renderTablePage(currentPage);
+            renderPagination();
+
+            // 初始化統計信息，顯示 "日" 的結果
+            calculateStats('day');
+            console.log('統計數據已計算完成');
+        } catch (error) {
+            console.error('錯誤:', error);
+            // 顯示錯誤訊息給使用者
+            document.querySelector('.record-container').innerHTML = '<div class="no-records">無法載入直播紀錄，請稍後再試。</div>';
+        }
+
+        // 添加統計按鈕的事件監聽器
+        const statsButtonsContainer = document.querySelector('.stats-buttons');
+        if (statsButtonsContainer) {
+            statsButtonsContainer.addEventListener('click', handleStatsBtnClick);
+        } else {
+            console.error('找不到 .stats-buttons 元素');
+        }
+
+        // 關閉評價模態窗口
+        const closeModalButton = document.querySelector('.close');
+        if (closeModalButton) {
+            closeModalButton.onclick = function() {
+                document.getElementById('reviewModal').style.display = 'none';
+            };
+        } else {
+            console.error('找不到 .close 元素');
+        }
+
+        window.onclick = function(event) {
+            const reviewModal = document.getElementById('reviewModal');
+            if (reviewModal && event.target == reviewModal) {
+                reviewModal.style.display = 'none';
+            }
+        };
+    });
+
+
 
 </script>
 
 </body>
 </html>
+
+
+
 
 
 

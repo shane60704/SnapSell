@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SnapSell 直播帶貨大廳</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.4.4/dist/flowbite.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="assets/css/header.css"/>
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/popup.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
@@ -31,7 +35,8 @@
             width: calc(100% - 40px);
             box-sizing: border-box;
             margin: 20px auto 20px auto;
-            background-color: #fff;
+            background-color: #FFFFFF;
+            border: 1px solid #d9d9d9;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
@@ -582,7 +587,6 @@
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
 </div>
-
 <div class="chat-container">
 
     <div class="chat-sidebar">
@@ -593,29 +597,28 @@
     <div class="chat-main">
         <!-- 顯示當前聊天室名稱的區塊 -->
         <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
-        <div class = "chatRoomHidden"><img src="assets/image/close.png"></div>
+        <div class = "chatRoomHidden"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/positionBottom.png"></div>
 
         <!-- 訊息區 -->
         <div id="chatWindow" class="chat-window">
             <div id="messageArea" class="message-area"></div>
         </div>
 
-        <!-- 創建合約按鈕 -->
-        <button id="createContractBtn">創建合約</button>
-
         <!-- 聊天輸入框 -->
         <div class="chat-input">
+            <button id="createContractBtn"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/draw.png"></button>
             <input type="text" id="messageInput" placeholder="輸入訊息...">
-            <button id="sendMessageBtn">送出</button>
+            <button id="sendMessageBtn" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                <svg class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+            </button>
         </div>
     </div>
 </div>
-
 <!-- 合約生成區塊 -->
 <div class="contract-signature-container">
     <button class="contract-close-btn" id="contract-closeBtn">x</button>
     <div class="contract-input-container">
-        <h2>產生合約</h2>
+        <h2>制定合約</h2>
 
         <div class="contract-input-field">
             <label for="clientName">委託者名稱</label>
@@ -689,6 +692,64 @@
         <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
     </div>
 </div>
+<!-- 委託狀態彈出視窗 -->
+<div class="popup-overlay" id="successPopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('successPopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="failurePopup">
+    <div class="popup failure">
+        <div class="popup-icon">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+                <circle cx="50" cy="50" r="35" fill="#F44336"/>
+                <path d="M35 35 L65 65 M65 35 L35 65" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託失敗</div>
+        <div class="popup-message">很抱歉，代理者駁回合約，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('failurePopup')">關閉</button>
+    </div>
+</div>
+<!-- 代理狀態彈出視窗 -->
+<div class="popup-overlay" id="agentAgreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">代理成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentAgreePopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="agentDisagreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">駁回成功</div>
+        <div class="popup-message">合約已成功撤銷，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentDisagreePopup')">確定</button>
+    </div>
+</div>
 
 <!-- 引入js -->
 <script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
@@ -696,6 +757,7 @@
 <script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script src = "assets/js/header.js"></script>
 <script src ="assets/js/chat.js"></script>
+<script src ="assets/js/popup.js"></script>
 <script src ="assets/js/contract.js"></script>
 <script>
 
@@ -919,9 +981,9 @@
 
         // --------- websocket ------------------------------------------------------------------ //
         // 測試環境使用
-        let ws = new WebSocket('ws://localhost:8080/socket');
+        // let ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        // let ws = new WebSocket('wss://techwavelab.com/socket');
+        let ws = new WebSocket('wss://techwavelab.com/socket');
 
         ws.onopen = () => {
             console.log('已連接到 WebSocket');

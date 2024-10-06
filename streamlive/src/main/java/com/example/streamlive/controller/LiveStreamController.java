@@ -22,21 +22,104 @@ public class LiveStreamController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveSatisfaction(@RequestBody SatisfactionDto satisfactionDto){
+    public ResponseEntity<?> saveSatisfaction(@RequestBody SatisfactionDto satisfactionDto) {
         Integer liveRecordId = liveStreamDao.findLiveRecordIdByLiveId(satisfactionDto.getLiveId());
-        liveStreamDao.saveSatisfactionRecord(satisfactionDto,liveRecordId);
+        liveStreamDao.saveSatisfactionRecord(satisfactionDto, liveRecordId);
         return ResponseEntity.ok(new ApiResponse<>("Success"));
     }
 
     @GetMapping("/{liveId}/satisfaction")
-    public ResponseEntity<?> getSatisfaction(@PathVariable Long liveId){
+    public ResponseEntity<?> getSatisfaction(@PathVariable Long liveId) {
         return ResponseEntity.ok(new ApiResponse<>(liveStreamDao.findSatisfactionRecordByLiveId(liveId)));
     }
 
     @GetMapping("/{userId}/summary")
-    public ResponseEntity<?> getLiveStreamSummary(@PathVariable Long userId){
+    public ResponseEntity<?> getLiveStreamSummary(@PathVariable Long userId) {
         return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getLiveStreamSummary(userId)));
     }
 
+    @GetMapping("/{liveId}/summary-records")
+    public ResponseEntity<?> getLiveStreamStatistics(@PathVariable String liveId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getLiveStreamStatistics(liveId)));
+    }
 
+    @GetMapping("/yearly-viewers/{userId}")
+    public ResponseEntity<?> getYearlyViewers(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalViewersByYear(userId)));
+    }
+
+    @GetMapping("/monthly-viewers/{userId}")
+    public ResponseEntity<?> getMonthlyViewers(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalViewersByMonth(userId)));
+    }
+
+    @GetMapping("/weekly-viewers/{userId}")
+    public ResponseEntity<?> getWeeklyViewers(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalViewersByWeek(userId)));
+    }
+
+    @GetMapping("/daily-viewers/{userId}")
+    public ResponseEntity<?> getDailyViewers(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalViewersByDay(userId)));
+    }
+
+    @GetMapping("/yearly-sales/{userId}")
+    public ResponseEntity<?> getYearlySales(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalSalesByYear(userId)));
+    }
+
+    @GetMapping("/monthly-sales/{userId}")
+    public ResponseEntity<?> getMonthlySales(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalSalesByMonth(userId)));
+    }
+
+    @GetMapping("/weekly-sales/{userId}")
+    public ResponseEntity<?> getWeeklySales(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalSalesByWeek(userId)));
+    }
+
+    @GetMapping("/daily-sales/{userId}")
+    public ResponseEntity<?> getDailySales(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalSalesByDay(userId)));
+    }
+
+    @GetMapping("/yearly-figures/{userId}")
+    public ResponseEntity<?> getYearlyFigures(@PathVariable long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalFiguresByYear(userId)));
+    }
+
+    @GetMapping("/monthly-figures/{userId}")
+    public ResponseEntity<?> getMonthlyFigures(@PathVariable long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalFiguresByMonth(userId)));
+    }
+
+    @GetMapping("/weekly-figures/{userId}")
+    public ResponseEntity<?> getWeeklyFigures(@PathVariable long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalFiguresByWeek(userId)));
+    }
+
+    @GetMapping("/daily-figures/{userId}")
+    public ResponseEntity<?> getDailyFigures(@PathVariable long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getTotalFiguresByDay(userId)));
+    }
+
+    @GetMapping("/yearly-commissions/{userId}")
+    public ResponseEntity<?> getYearlyCommission(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getCommissionByYear(userId)));
+    }
+
+    @GetMapping("/monthly-commissions/{userId}")
+    public ResponseEntity<?> getMonthlyCommission(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getCommissionByMonth(userId)));
+    }
+
+    @GetMapping("/weekly-commissions/{userId}")
+    public ResponseEntity<?> getWeeklyCommission(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getCommissionByWeek(userId)));
+    }
+
+    @GetMapping("/daily-commissions/{userId}")
+    public ResponseEntity<?> getDailyCommission(@PathVariable Long userId) {
+        return ResponseEntity.ok(new ApiResponse<>(liveStreamService.getCommissionByDay(userId)));
+    }
 }

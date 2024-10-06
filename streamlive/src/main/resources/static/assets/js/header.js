@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // 個人檔案
     document.getElementById('my-profile-btn').addEventListener('click',function (){
-        window.location.href = `profile.html?userId=${localStorage.getItem('userId')}&type=all`;
+        window.location.href = `profile.html?userId=${localStorage.getItem("userId")}`;
     });
 
     // 我的訂單

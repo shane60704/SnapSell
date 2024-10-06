@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>商品列表</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.4.4/dist/flowbite.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="assets/css/header.css"/>
     <link rel="stylesheet" href="assets/css/chat.css"/>
     <link rel="stylesheet" href="assets/css/contract.css"/>
+    <link rel="stylesheet" href="assets/css/popup.css"/>
     <link rel="stylesheet" href="assets/css/footer.css"/>
     <style>
         * {
@@ -42,11 +45,117 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             text-align: center;
+            font-size: 28px;
         }
         .products-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        /* 模態框樣式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #333;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .modal-image {
+            width: 40%;
+            max-width: 300px;
+            border-radius: 4px;
+            margin-right: 20px;
+            object-fit: cover;
+        }
+
+        .modal-details {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .modal-info {
+            margin-bottom: 15px;
+        }
+
+        .modal-info-label {
+            font-weight: bold;
+            color: #555;
+            margin-right: 10px;
+        }
+
+        .modal-info-value {
+            color: #333;
+        }
+
+        .status-available {
+            color: orangered;
+            font-weight: bold;
+        }
+
+        .status-delegated {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .modal-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .modal-button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
         }
         .add-product-btn {
             background-color: #27ae60;
@@ -113,6 +222,7 @@
             color: #fff;
             border: none;
             cursor: pointer;
+            font-size: 13px;
             border-radius: 4px;
             transition: background-color 0.3s ease;
         }
@@ -258,11 +368,9 @@
         <p>&copy; 2024 SnapSell. All Rights Reserved.</p>
     </div>
 </footer>
-<!-- 聊天室區塊 -->
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
 </div>
-
 <div class="chat-container">
 
     <div class="chat-sidebar">
@@ -273,29 +381,28 @@
     <div class="chat-main">
         <!-- 顯示當前聊天室名稱的區塊 -->
         <div id="currentChatRoomName" class="current-chat-room">選擇聊天室</div>
-        <div class = "chatRoomHidden"><img src="assets/image/close.png"></div>
+        <div class = "chatRoomHidden"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/positionBottom.png"></div>
 
         <!-- 訊息區 -->
         <div id="chatWindow" class="chat-window">
             <div id="messageArea" class="message-area"></div>
         </div>
 
-        <!-- 創建合約按鈕 -->
-        <button id="createContractBtn">創建合約</button>
-
         <!-- 聊天輸入框 -->
         <div class="chat-input">
+            <button id="createContractBtn"><img src="https://seanproject.s3.ap-northeast-1.amazonaws.com/draw.png"></button>
             <input type="text" id="messageInput" placeholder="輸入訊息...">
-            <button id="sendMessageBtn">送出</button>
+            <button id="sendMessageBtn" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                <svg class="w-6 h-6 rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+            </button>
         </div>
     </div>
 </div>
-
 <!-- 合約生成區塊 -->
 <div class="contract-signature-container">
     <button class="contract-close-btn" id="contract-closeBtn">x</button>
     <div class="contract-input-container">
-        <h2>產生合約</h2>
+        <h2>制定合約</h2>
 
         <div class="contract-input-field">
             <label for="clientName">委託者名稱</label>
@@ -369,6 +476,64 @@
         <button id="sendAcceptBtn" class=" contract-signature-button">接受合約</button>
     </div>
 </div>
+<!-- 委託狀態彈出視窗 -->
+<div class="popup-overlay" id="successPopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('successPopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="failurePopup">
+    <div class="popup failure">
+        <div class="popup-icon">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+                <circle cx="50" cy="50" r="35" fill="#F44336"/>
+                <path d="M35 35 L65 65 M65 35 L35 65" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">委託失敗</div>
+        <div class="popup-message">很抱歉，代理者駁回合約，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('failurePopup')">關閉</button>
+    </div>
+</div>
+<!-- 代理狀態彈出視窗 -->
+<div class="popup-overlay" id="agentAgreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">代理成功</div>
+        <div class="popup-message">您的合約已生效，請至我的合約查看。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentAgreePopup')">確定</button>
+    </div>
+</div>
+<div class="popup-overlay" id="agentDisagreePopup">
+    <div class="popup success">
+        <div class="popup-icon">
+            <svg viewBox="0 0  100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="#E8F5E9"/>
+                <circle cx="50" cy="50" r="35" fill="#4CAF50"/>
+                <path d="M40 50 L47 57 L60 44" stroke="white" stroke-width="6" fill="none"/>
+            </svg>
+        </div>
+        <div class="popup-title">駁回成功</div>
+        <div class="popup-message">合約已成功撤銷，請重新擬約。</div>
+        <button class="popup-button" onclick="closeResultPopup('agentDisagreePopup')">確定</button>
+    </div>
+</div>
 
 <!-- 引入js -->
 <script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
@@ -376,6 +541,7 @@
 <script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script src = "assets/js/header.js"></script>
 <script src ="assets/js/chat.js"></script>
+<script src ="assets/js/popup.js"></script>
 <script src ="assets/js/contract.js"></script>
 <script>
     let currentTab = 'undelegated';
@@ -447,13 +613,90 @@
         });
     }
 
-    function showDetails(productId) {
-        console.log(`顯示商品 ID ${productId} 的詳細資訊`);
-        // 實現詳細信息顯示邏輯
-    }
 
     function navigateToAddProduct() {
         window.location.href = 'product-upload.html';
+    }
+
+    function getProductDetail(productId) {
+        fetch(`/api/1.0/product/${productId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showDetails(data.data);
+            })
+            .catch(error => {
+                console.error('Error fetching product details:', error);
+                alert('無法獲取商品詳情，請稍後再試。');
+            });
+    }
+
+    // 關閉模態框
+    function closeModal() {
+        const modal = document.querySelector('.modal-overlay');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // 顯示商品詳細資訊
+    function showDetails(product) {
+        if (product) {
+            console.log(product);
+            const modalContent = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">${product.name}</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="${product.mainImage}" alt="${product.name}" class="modal-image">
+                        <div class="modal-details">
+                            <div class="modal-info">
+                                <span class="modal-info-label">介紹:</span>
+                                <p>${product.description}</p>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">特色:</span>
+                                <p>${product.feature}</p>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">價格:</span>
+                                <span class="modal-info-value">$${product.price}</span>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">庫存:</span>
+                                <span class="modal-info-value">${product.stock}</span>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">上架時間:</span>
+                                <span class="modal-info-value">${new Date(product.created_at).toLocaleString()}</span>
+                            </div>
+                            <div class="modal-info">
+                                <span class="modal-info-label">狀態:</span>
+                                <span class="modal-info-value ${product.status === 0 ? 'status-available' : 'status-delegated'}">
+                                    ${product.status === 0 ? '未代理' : '已代理'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+
+            // 添加關閉模態框的事件監聽器
+            document.querySelector('.modal-close').addEventListener('click', closeModal);
+            document.querySelector('.modal-overlay').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
     }
 
     // 初始加載未被代理的商品

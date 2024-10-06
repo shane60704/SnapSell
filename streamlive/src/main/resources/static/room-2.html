@@ -255,7 +255,7 @@
         .purchase-modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 800;
             padding-top: 100px;
             left: 0;
             top: 0;
@@ -290,7 +290,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 5px;
             position: relative;
             padding: 0 15px;
         }
@@ -328,8 +328,9 @@
         }
         .purchase-progress-line {
             position: absolute;
+            width:290px;
             top: 15px;
-            left: 45px;
+            left: 73px;
             right: 45px;
             height: 2px;
             background-color: #e0e0e0;
@@ -351,7 +352,7 @@
 
         .purchase-label {
             display: block;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
             color: #666;
             font-size: 12px;
         }
@@ -363,6 +364,7 @@
             border-radius: 4px;
             box-sizing: border-box;
             font-size: 14px;
+            margin-bottom: 7px;
         }
 
         .purchase-input[readonly] {
@@ -370,13 +372,12 @@
         }
 
         .purchase-button {
-            background-color: #5FB1F7;
+            background-color: #4CAF50;
             color: white;
             padding: 8px 12px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 15px;
             font-size: 14px;
             width: 100%;
         }
@@ -634,8 +635,10 @@
 
         .order-title {
             color:black;
-            font-size: 36px;
+            font-size: 24px;
             font-weight: bold;
+            margin: 15px 0;
+
         }
 
         /* 內文區域樣式 */
@@ -672,6 +675,10 @@
             right: 20px;
             top: 15px;
             cursor: pointer;
+        }
+
+        .margin-adjust{
+            margin-top: 15px;
         }
 
         .custom-close-button:hover,
@@ -757,6 +764,20 @@
             position: relative;
         }
 
+        .adjust-btn{
+            width: 100%;
+            background-color:#4CAF50 ;
+            color:white;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            border:none;
+        }
+
+        .adjust-btn:hover{
+            background-color:#45a049 ;
+            color:white;
+        }
+
         .close {
             color: #aaa;
             float: right;
@@ -792,6 +813,7 @@
             transform: scale(1.2);
             opacity: 1;
         }
+
 
         #commentBox {
             width: 100%;
@@ -976,7 +998,7 @@
                 </div>
                 <div class="purchase-form-row">
                     <div class="purchase-form-col">
-                        <label class="purchase-label" for="senderName">寄件者姓名：</label>
+                        <label class="purchase-label" for="senderName">下單者姓名：</label>
                         <input class="purchase-input" type="text" id="senderName" name="senderName" readonly>
                     </div>
                     <div class="purchase-form-col">
@@ -1006,7 +1028,7 @@
         <div id="orderSummary" style="display:none;">
             <p class = "order-title">確認訂單資訊</p>
             <div id="summaryContent" class="purchase-summary-content"></div>
-            <button type="button" id="payButton" class="purchase-button">付款</button>
+            <button type="button" id="payButton" class="purchase-button margin-adjust">結帳</button>
         </div>
 
         <!-- 第三階段：付款 -->
@@ -1025,7 +1047,7 @@
                     <label for="ccv" class="control-label">卡片後三碼</label>
                     <div class="form-control ccv"></div>
                 </div>
-                <button type="submit" class="btn btn-default pay-button">付 款</button>
+                <button type="submit" class="btn btn-default pay-button adjust-btn">付款</button>
             </form>
         </div>
     </div>
@@ -1554,9 +1576,9 @@
 
     function initializeWebSocket() {
         // 測試環境使用
-        ws = new WebSocket('ws://localhost:8080/socket');
+        // ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        // ws = new WebSocket('wss://techwavelab.com/socket');
+        ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {
@@ -1680,7 +1702,6 @@
                 displayChatMessage(message.content, message.sender);
                 break;
             case 'gift':
-                // 處理禮物消息，讓禮物動畫出現在主播和觀眾端
                 showGiftAnimation(message.sender, message.gift);
                 const giftMessage = `${message.sender} 送出了一個 ${message.gift} 禮物！`;
                 displayChatMessage(giftMessage, '系統');
@@ -1924,7 +1945,7 @@
         const gift = document.createElement('div');
         gift.className = 'gift';
         gift.textContent = giftEmoji;
-        gift.style.left = `${Math.random() * 80 + 10}%`;  // 隨機水平位置
+        gift.style.left = `${Math.random() * 80 + 10}%`;
         videoPlaceholder.appendChild(gift);
 
         setTimeout(() => {

@@ -102,5 +102,4 @@ public class SaleDaoImpl implements SaleDao {
         return namedParameterJdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(OrderDetail.class));
     }
 
-
 }

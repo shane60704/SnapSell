@@ -27,6 +27,7 @@
     display: none;
     width: 750px;
     height: 600px;
+    border: 2px solid lightgrey;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     overflow: hidden;
@@ -192,8 +193,9 @@
     margin: auto;
     display: flex;
     padding: 7px 5px;
-    background-color: #ebf2fa;
-    border-radius: 13px;
+    background-color: white;
+    border-radius: 30px;
+    border: 1px solid #e9ecef;
 }
 
 .chat-input input {
