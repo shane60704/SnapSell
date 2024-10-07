@@ -52,7 +52,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        /* 模態框樣式 */
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -242,7 +242,7 @@
                 display: block;
             }
             .product-list-container {
-                width: calc(100% - 20px);  /* 在小屏幕上減少邊距 */
+                width: calc(100% - 20px);
                 margin: 10px auto;
                 padding: 15px;
             }
@@ -596,7 +596,7 @@
                     <td data-label="庫存">${product.stock || 0}</td>
                     <td data-label="上架時間">${formatDate(product.created_at)}</td>
                     <td data-label="操作">
-                        <button class="detail-button" onclick="showDetails(${product.id})">詳細資訊</button>
+                        <button class="detail-button" onclick="getProductDetail(${product.id})">詳細資訊</button>
                     </td>
                 </tr>
             `;
@@ -619,6 +619,7 @@
     }
 
     function getProductDetail(productId) {
+        console.log("productId:"+productId);
         fetch(`/api/1.0/product/${productId}`)
             .then(response => {
                 if (!response.ok) {
@@ -635,7 +636,7 @@
             });
     }
 
-    // 關閉模態框
+
     function closeModal() {
         const modal = document.querySelector('.modal-overlay');
         if (modal) {
@@ -645,8 +646,8 @@
 
     // 顯示商品詳細資訊
     function showDetails(product) {
+        console.log(product);
         if (product) {
-            console.log(product);
             const modalContent = `
             <div class="modal-overlay">
                 <div class="modal-content">

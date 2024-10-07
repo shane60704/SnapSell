@@ -456,8 +456,24 @@
             background-color: #c0392b;
             transform: scale(1);
         }
+        #step1 h3{
+            font-weight: 800;
+            font-size: 18px;
+        }
 
-        /* 響應式設計 */
+        #step2 h3{
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        #step1 h4{
+            font-weight: 800;
+        }
+
+        #step2 h4{
+            font-weight: 800;
+        }
+
         @media (max-width: 768px) {
             .item-room {
                 max-width: 100%;
@@ -909,7 +925,7 @@
 
                             const label = document.createElement('label');
                             label.setAttribute('for', `product-${product.id}`);
-                            label.textContent = ` 商品名稱: ${product.name} | 價格: ${product.price} | 庫存：${product.stock}`;
+                            label.textContent = ` 商品名稱 : ${product.name} | 價格 : ${product.price} | 庫存：${product.stock}`;
 
                             listItem.appendChild(checkbox);
                             listItem.appendChild(label);
@@ -981,9 +997,9 @@
 
         // --------- websocket ------------------------------------------------------------------ //
         // 測試環境使用
-        // let ws = new WebSocket('ws://localhost:8080/socket');
+        let ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        let ws = new WebSocket('wss://techwavelab.com/socket');
+        // let ws = new WebSocket('wss://techwavelab.com/socket');
 
         ws.onopen = () => {
             console.log('已連接到 WebSocket');

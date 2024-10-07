@@ -45,6 +45,8 @@
             text-align: center;
             color: #333333;
             margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 800;
         }
 
         .product-listing__container hr {
@@ -194,6 +196,32 @@
             background-color: #2563EB;
         }
 
+        .custom-file-upload{
+            border:1px solid #dddddd;
+            padding: 12px 3px;
+            border-radius: 7px;
+        }
+        .custom-upload-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .custom-upload-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .file-name {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #555555;
+        }
 
         @media (max-width: 768px) {
             .product-listing__content {
@@ -288,7 +316,11 @@
         <div class="product-listing__image-section">
             <div class="product-listing__form-group">
                 <label class="product-listing__label" for="mainImage">商品圖片上傳:</label>
-                <input class="product-listing__input" type="file" id="mainImage" name="mainImage" accept="image/*" onchange="previewImage(event)" required>
+                <div class="custom-file-upload">
+                    <label for="mainImage" class="custom-upload-btn">+ 選擇檔案</label>
+                    <input class="product-listing__input" type="file" id="mainImage" name="mainImage" accept="image/*" onchange="previewImage(event)" style="display: none;" required>
+                    <span id="file-name" class="file-name">未選擇任何檔案</span>
+                </div>
                 <div class="product-listing__image-preview" id="imagePreviewContainer">
                     <img class="product-listing__preview-img" id="imagePreview" src="#" alt="圖片預覽" />
                 </div>
@@ -553,11 +585,21 @@
 
     function previewImage(event) {
         const reader = new FileReader();
+        const output = document.getElementById('imagePreview');
+        const fileNameElement = document.getElementById('file-name');
+
         reader.onload = function() {
-            const output = document.getElementById('imagePreview');
             output.src = reader.result;
         };
-        reader.readAsDataURL(event.target.files[0]);
+
+        const file = event.target.files[0];
+
+        if (file) {
+            reader.readAsDataURL(file);
+            fileNameElement.textContent = file.name; // 顯示檔案名稱
+        } else {
+            fileNameElement.textContent = "未選擇任何檔案"; // 如果沒有選擇檔案
+        }
     }
 
     let featureCount = 1;

@@ -1159,9 +1159,8 @@
         const productArray = products ? products.split(',') : [];
         const  description = urlParams.get('description');
         console.log('Selected Products:', productArray);
-        // 獲取產品資料並渲染
-        getProductInfo(productArray);
 
+        getProductInfo(productArray);
         document.querySelector('.streamer-details h2').textContent = `主播 : ${description}`;
         document.querySelector('.streamer-details p').textContent = `正在直播：${title}`;
 
@@ -1180,22 +1179,18 @@
                     .then(data => {
                         const product = data.data;
 
-                        // 創建 HTML 結構來顯示產品資訊
                         const productDiv = document.createElement('div');
                         productDiv.className = 'product-item';
-
-                        // 渲染產品詳細資料 product.mainImage
+                        const mainImage = product.mainImage || 'https://via.placeholder.com/300';
                         productDiv.innerHTML = `
-                        <img src="${"https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png"}" alt="${product.name}" >
+                        <img src="${mainImage}" alt="${product.name}" >
                         <h3>${product.name}</h3>
                         <p>價格: NT$ ${product.price}</p>
                         <button class="buy-button">立即購買</button>
                     `;
 
-                        // 將產品資料添加到產品容器中.
                         productsContainer.appendChild(productDiv);
 
-                        // 處理「我要購買」按鈕點擊事件
                         const buyButton = productDiv.querySelector('.buy-button');
                         buyButton.addEventListener('click', () => {
                             initializeForm(product.name, product.price, localStorage.getItem("userName"));
@@ -1436,11 +1431,11 @@
 
     let localStream;
     let peerConnection;
-    let peerConnections = {}; // 新增：用於管理多個觀眾的連線
+    let peerConnections = {}; // 管理多位觀眾的連線
     let ws;
     let roomId;
     let isBroadcaster = false;
-    let viewerId; // 新增：觀眾的唯一識別碼
+    let viewerId; // 觀眾的唯一識別碼
 
     const configuration = {
         iceServers: [
@@ -1576,9 +1571,9 @@
 
     function initializeWebSocket() {
         // 測試環境使用
-        // ws = new WebSocket('ws://localhost:8080/socket');
+        ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        ws = new WebSocket('wss://techwavelab.com/socket');
+        // ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {

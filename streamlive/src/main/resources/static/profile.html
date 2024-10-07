@@ -305,6 +305,8 @@
         }
         .comment-time{
             text-align: right;
+            font-size: 15px;
+            color: grey;
         }
         .comment-header {
             display: flex;
@@ -366,8 +368,10 @@
             font-size: 14px;
             margin: 0 5px;
             cursor: pointer;
-            border-radius: 20px;
+            border-radius: 30px;
+            font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .snap-dashboard-btn:hover {
@@ -543,7 +547,7 @@
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .stat-item, .snap-dashboard-stat-item {
                 flex-basis: 100%;
             }
@@ -667,7 +671,7 @@
                 <div id="salesChart"></div>
             </div>
             <div class="snap-dashboard-chart-container">
-                <h2>銷售總額</h2>
+                <h2>銷售額</h2>
                 <div id="figuresChart"></div>
             </div>
             <div class="snap-dashboard-chart-container">
@@ -976,28 +980,6 @@
 
         profileStats.innerHTML = '';
 
-        // if (showAgent) {
-        //     profileStats.appendChild(createStatItem(0, '總觀看數'));
-        //     profileStats.appendChild(createStatItem(0, '總銷售數'));
-        //     profileStats.appendChild(createStatItem(0, '總銷售額'));
-        //     profileStats.appendChild(createStatItem(0, '代理次數'));
-        // } else {
-        //     profileStats.appendChild(createStatItem(0, '上架商品數'));
-        //     profileStats.appendChild(createStatItem(0, '平均商品評價'));
-        // }
-        //
-        // setTimeout(() => {
-        //     const statValues = profileStats.querySelectorAll('.stat-value');
-        //     if (showAgent) {
-        //         animateValue(statValues[0], 0, data.totalViewers || 0, 1500);
-        //         animateValue(statValues[1], 0, data.totalQuantity || 0, 1500);
-        //         animateValue(statValues[2], 0, data.totalFigures || 0, 1500);
-        //         animateValue(statValues[3], 0, data.totalDelegationCount || 0, 1500);
-        //     } else {
-        //         animateValue(statValues[0], 0, data.totalProducts || 0, 1500);
-        //         animateValue(statValues[1], 0, data.averageProductScore || 0, 1500);
-        //     }
-        // }, 75);
     }
 
     function toggleDataView() {
@@ -1039,7 +1021,9 @@
             const end = start + commentsPerPage;
             const commentsToShow = data.satisfactions.slice(start, end);
 
-            commentsContainer.innerHTML = commentsToShow.map(comment => `
+            commentsContainer.innerHTML = commentsToShow.map(comment => {
+                const formattedTime = formatDate(comment.createdTime || '2024-09-22 23:00:00');
+                return `
             <div class="comment">
                 <img src="${comment.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png'}" alt="${comment.name || '匿名用戶'}" class="comment-avatar">
                 <div class="comment-content">
@@ -1049,13 +1033,24 @@
                     </div>
                     <div class="comment-info">
                         <div class="comment-text">${comment.comment}</div>
-                        <div class="comment-time">${comment.createdTime || '2024/9/22 23:00'}</div>
+                        <div class="comment-time">${formattedTime}</div>
                     </div>
                 </div>
             </div>
-        `).join('');
+        `;
+            }).join('');
 
             updatePagination();
+        }
+
+        function formatDate(dateTime) {
+            const date = new Date(dateTime);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}/${month}/${day} ${hours}:${minutes}`;
         }
 
         function updatePagination() {
@@ -1128,7 +1123,7 @@
             accumulator += y;
             return {
                 x,
-                y: [accumulator, y]  // [累積值, 當前值]
+                y: [accumulator, y]
             };
         });
     }
@@ -1406,6 +1401,7 @@
         }
     }
 
+
     function openModal(type) {
         currentUploadType = type;
         modalTitle.textContent = type === 'avatar' ? '上傳頭像' : '上傳背景圖片';
@@ -1493,7 +1489,6 @@
         }
     });
 
-    // 當 DOM 內容加載完成時初始化頁面
     document.addEventListener('DOMContentLoaded', initializePage);
 
 
