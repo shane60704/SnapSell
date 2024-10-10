@@ -7,7 +7,7 @@
     background-color: #ffffff;
     padding: 20px;
     width: 90%;
-    max-width: 500px; /* 縮小最大寬度 */
+    max-width: 500px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     font-family: 'Arial', sans-serif;
@@ -33,7 +33,6 @@
     padding: 5px 0;
 }
 
-/* 輸入欄位容器 */
 .contract-input-container {
     display: flex;
     flex-direction: column;
@@ -41,7 +40,6 @@
     margin-bottom: 20px;
 }
 
-/* 輸入欄位樣式 */
 .contract-input-field {
     width: 100%;
 }
@@ -60,7 +58,6 @@
     border-radius: 4px;
 }
 
-/* 按鈕樣式 */
 .contract-signature-button {
     display: block;
     width: 100%;
@@ -90,7 +87,6 @@
     color: white;
 }
 
-/* 簽名區塊樣式 */
 .contract-signature-block {
     display: flex;
     flex-direction: column;
@@ -118,7 +114,6 @@
     touch-action: none;
 }
 
-/* 圖像預覽區塊 */
 #signature-preview {
     display: flex;
     flex-direction: column;
@@ -148,16 +143,20 @@
     margin: 0 auto; /* 水平居中 */
 }
 
-/* 可選：如果您希望限制圖片的最大寬度，可以添加以下規則 */
 #signature-preview img {
-    max-width: 300px; /* 或您希望的任何其他值 */
+    max-width: 400px;
 }
 
-/* 發送按鈕容器 */
 .contract-signature-send-button-container {
     display: flex;
     gap: 10px;
     margin-top: 20px;
+}
+
+.contract-content-container h3 {
+    font-weight: 800;
+    font-size: 24px;
+    text-align: center;
 }
 
 .contract-signature-send-button-container .contract-signature-button {

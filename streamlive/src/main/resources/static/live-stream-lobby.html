@@ -98,7 +98,7 @@
             border: none;
             width: 90%;
             max-width: 600px;
-            height: 62%;
+            height:562px;
             border-radius: 15px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
             position: fixed;
@@ -997,9 +997,9 @@
 
         // --------- websocket ------------------------------------------------------------------ //
         // 測試環境使用
-        let ws = new WebSocket('ws://localhost:8080/socket');
+        // let ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        // let ws = new WebSocket('wss://techwavelab.com/socket');
+        let ws = new WebSocket('wss://techwavelab.com/socket');
 
         ws.onopen = () => {
             console.log('已連接到 WebSocket');

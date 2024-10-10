@@ -80,14 +80,14 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/profile/background-image")
-    public ResponseEntity<?> updateProfileBackgroundImage(@PathVariable Long userId, @RequestBody MultipartFile file) {
+    public ResponseEntity<?> updateProfileBackgroundImage(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         return userService.updateProfileBackgroundImage(userId, file)
                 ? ResponseEntity.ok(new ApiResponse<>("Success"))
                 : new ResponseEntity<>(ErrorResponseDto.error("failed"), HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/{userId}/profile/profile-image")
-    public ResponseEntity<?> updateProfileProfileImage(@PathVariable Long userId, @RequestBody MultipartFile file) {
+    public ResponseEntity<?> updateProfileProfileImage(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         return userService.updateUserImage(userId, file)
                 ? ResponseEntity.ok(new ApiResponse<>("Success"))
                 : new ResponseEntity<>(ErrorResponseDto.error("failed"), HttpStatus.BAD_REQUEST);

@@ -217,8 +217,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAllUserStatisticsExceptCurrentUser(Long userId,String sortBy, String sortOrder,int limit, int offset) {
-        String sql = "SELECT u.id , u.name, u.email, u.image, " +
-                "SUM(lr.viewers) AS totalViewers, " +
+        String sql = "SELECT u.id, u.name, u.email, u.image, " +
+                "(SELECT SUM(lr.viewers) FROM live_record lr WHERE lr.user_id = u.id) AS totalViewers, " +
                 "SUM(lr.sales_quantity) AS totalQuantity, " +
                 "SUM(lr.sales_figures) AS totalFigures, " +
                 "AVG(s.score) AS averageScore, " +
@@ -227,7 +227,7 @@ public class UserDaoImpl implements UserDao {
                 "LEFT JOIN live_record lr ON u.id = lr.user_id " +
                 "LEFT JOIN satisfaction s ON lr.id = s.live_id " +
                 "WHERE u.id != :userId " +
-                "GROUP BY u.id, u.name, u.email, u.image "+
+                "GROUP BY u.id, u.name, u.email, u.image " +
                 "ORDER BY " + sortBy + " " + sortOrder + " " +
                 "LIMIT :limit OFFSET :offset";
         Map<String, Object> params = new HashMap<>();
@@ -293,7 +293,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<AgentProfile> getTop3AgentByTotalViewers() {
         String sql = "SELECT u.id , u.name, u.image, u.background_image AS backgroundImage, u.description, u.followers, " +
-                "SUM(lr.viewers) AS totalViewers, " +
+                "(SELECT SUM(lr.viewers) FROM live_record lr WHERE lr.user_id = u.id) AS totalViewers, " +
                 "SUM(lr.sales_quantity) AS totalQuantity, " +
                 "SUM(lr.sales_figures) AS totalFigures, " +
                 "AVG(s.score) AS averageScore " +

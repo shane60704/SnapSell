@@ -120,7 +120,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private String getBucketName() {
-        // 從s3BaseUrl中提取bucket名稱
         return s3BaseUrl.split("\\.")[0];
     }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品列表</title>
+    <title>SnapSell 我的商品</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/flowbite@1.4.4/dist/flowbite.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -76,6 +76,18 @@
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
+            animation: fadeInContract 0.3s ease-in-out;
+        }
+
+        @keyframes fadeInContract {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .modal-header {
@@ -88,17 +100,29 @@
         }
 
         .modal-title {
-            color: #333;
             font-size: 24px;
             margin: 0;
+            font-weight: bold;
+            color: #2c3e50;
         }
 
         .modal-close {
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
             color: #888;
+            position: absolute;
+            font-weight: bold;
+            top:0;
+            right: 13px;
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
         }
 
         .modal-body {
@@ -589,12 +613,14 @@
     }
 
     function createProductRow(product) {
+        const createdAt = new Date(product.created_at);
+        const formattedDate = `${createdAt.getFullYear()}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`;
         return `
                 <tr>
                     <td data-label="商品名稱">${product.name || '無名稱'}</td>
                     <td data-label="價格">NT$${(product.price || 0).toLocaleString()}</td>
                     <td data-label="庫存">${product.stock || 0}</td>
-                    <td data-label="上架時間">${formatDate(product.created_at)}</td>
+                    <td data-label="上架時間">${formattedDate}</td>
                     <td data-label="操作">
                         <button class="detail-button" onclick="getProductDetail(${product.id})">詳細資訊</button>
                     </td>
@@ -648,6 +674,8 @@
     function showDetails(product) {
         console.log(product);
         if (product) {
+            const createdAt = new Date(product.created_at);
+            const formattedDate = `${createdAt.getFullYear()}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`;
             const modalContent = `
             <div class="modal-overlay">
                 <div class="modal-content">
@@ -676,7 +704,7 @@
                             </div>
                             <div class="modal-info">
                                 <span class="modal-info-label">上架時間:</span>
-                                <span class="modal-info-value">${new Date(product.created_at).toLocaleString()}</span>
+                                <span class="modal-info-value">${formattedDate}</span>
                             </div>
                             <div class="modal-info">
                                 <span class="modal-info-label">狀態:</span>

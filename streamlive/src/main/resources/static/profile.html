@@ -327,28 +327,36 @@
             font-size: 0.95em;
             color: #4a5568;
         }
-        .pagination {
+        .pagination-controls {
             display: flex;
             justify-content: center;
+            align-items: center;
             margin-top: 20px;
         }
 
-        .pagination button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background-color: #f8f9fa;
-            cursor: pointer;
-        }
-
-        .pagination button.active {
-            background-color: #007bff;
+        .pagination-button {
+            padding: 8px 16px;
+            margin: 0 10px;
+            background-color: #3498db;
             color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .pagination button:disabled {
-            opacity: 0.5;
+        .pagination-button:hover {
+            background-color: #2980b9;
+        }
+
+        .pagination-button:disabled {
+            background-color: #bdc3c7;
             cursor: not-allowed;
+        }
+
+        #pageInfo {
+            font-size: 14px;
+            margin: 0 10px;
         }
 
         .snap-dashboard-controls {
@@ -1015,6 +1023,7 @@
 
         const commentsPerPage = 5;
         let currentPage = 1;
+        const totalPages = Math.ceil(data.satisfactions.length / commentsPerPage);
 
         function renderComments(page) {
             const start = (page - 1) * commentsPerPage;
@@ -1024,23 +1033,47 @@
             commentsContainer.innerHTML = commentsToShow.map(comment => {
                 const formattedTime = formatDate(comment.createdTime || '2024-09-22 23:00:00');
                 return `
-            <div class="comment">
-                <img src="${comment.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png'}" alt="${comment.name || '匿名用戶'}" class="comment-avatar">
-                <div class="comment-content">
-                    <div class="comment-header">
-                        <span class="comment-name">${comment.name || '匿名用戶'}</span>
-                        <span class="comment-score">${'★'.repeat(comment.score)}${'☆'.repeat(5 - comment.score)}</span>
-                    </div>
-                    <div class="comment-info">
-                        <div class="comment-text">${comment.comment}</div>
-                        <div class="comment-time">${formattedTime}</div>
+                <div class="comment">
+                    <img src="${comment.image || 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png'}" alt="${comment.name || '匿名用戶'}" class="comment-avatar">
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-name">${comment.name || '匿名用戶'}</span>
+                            <span class="comment-score">${'★'.repeat(comment.score)}${'☆'.repeat(5 - comment.score)}</span>
+                        </div>
+                        <div class="comment-info">
+                            <div class="comment-text">${comment.comment}</div>
+                            <div class="comment-time">${formattedTime}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
             }).join('');
 
             updatePagination();
+        }
+
+        function updatePagination() {
+            commentsPagination.innerHTML = `
+            <div class="pagination-controls">
+                <button id="prevPage" class="pagination-button" ${currentPage === 1 ? 'disabled' : ''}>上一頁</button>
+                <span id="pageInfo">第 ${currentPage} 頁，共 ${totalPages} 頁</span>
+                <button id="nextPage" class="pagination-button" ${currentPage === totalPages ? 'disabled' : ''}>下一頁</button>
+            </div>
+        `;
+
+            document.getElementById('prevPage').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderComments(currentPage);
+                }
+            });
+
+            document.getElementById('nextPage').addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderComments(currentPage);
+                }
+            });
         }
 
         function formatDate(dateTime) {
@@ -1051,26 +1084,6 @@
             const hours = String(date.getHours()).padStart(2, '0');
             const minutes = String(date.getMinutes()).padStart(2, '0');
             return `${year}/${month}/${day} ${hours}:${minutes}`;
-        }
-
-        function updatePagination() {
-            const totalPages = Math.ceil(data.satisfactions.length / commentsPerPage);
-            let paginationHTML = '';
-
-            if (totalPages > 1) {
-                paginationHTML += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>上一頁</button>`;
-                for (let i = 1; i <= totalPages; i++) {
-                    paginationHTML += `<button onclick="changePage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
-                }
-                paginationHTML += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>下一頁</button>`;
-            }
-
-            commentsPagination.innerHTML = paginationHTML;
-        }
-
-        window.changePage = function(page) {
-            currentPage = page;
-            renderComments(currentPage);
         }
 
         renderComments(currentPage);
@@ -1440,14 +1453,14 @@
         }
 
         const formData = new FormData();
-        formData.append('image', file);
+        formData.append('file', file);
 
         const endpoint = currentUploadType === 'avatar'
             ? `/api/1.0/user/${userId}/profile/profile-image`
             : `/api/1.0/user/${userId}/profile/background-image`;
 
         fetch(endpoint, {
-            method: 'POST',
+            method: 'PUT',
             body: formData
         })
             .then(response => response.json())

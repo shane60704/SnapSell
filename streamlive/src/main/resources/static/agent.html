@@ -37,7 +37,7 @@
         }
         .page-container {
             flex-grow: 1;
-            padding: 20px;
+            padding: 1rem;
             max-width: 1400px;
             width: 100%;
             margin: 0 auto;
@@ -52,6 +52,7 @@
         }
         .description h2 {
             font-size: 32px;
+            font-weight: 700;
             color: #fff;
         }
         .description p {
@@ -77,6 +78,7 @@
             color: #333;
             margin-bottom: 20px;
             text-align: center;
+            font-weight: bold;
         }
         .top-agents-container {
             display: flex;
@@ -131,7 +133,6 @@
             color: #007bff;
         }
 
-        /* 搜索和排序部分的樣式 */
         .search-sort {
             display: flex;
             justify-content: space-between;
@@ -150,10 +151,10 @@
 
         .search-input {
             flex-grow: 1;
-            padding: 0.55rem 2.5rem 0.55rem 0.75rem;
-            border: 1px solid var(--secondary-color);
+            padding: 0.7rem 2.5rem 0.55rem 0.75rem;
             border-radius: 4px;
             font-size: 1rem;
+            border: 1px solid lightgrey;
         }
 
         .search-button {
@@ -174,7 +175,7 @@
 
         .status-select, .sort-select {
             padding: 0.52rem;
-            border: 1px solid var(--secondary-color);
+            border: 1px solid lightgrey;
             background-color: white;
             font-size: 1rem;
             border-radius: 4px;
@@ -192,7 +193,7 @@
             background-color: #FFFFFF;
             color: white;
             border-radius: 4px;
-            border: 1px solid var(--secondary-color);
+            border: 1px solid lightgrey;
             cursor: pointer;
             font-size: 1rem;
             font-weight: bold;
@@ -307,6 +308,38 @@
         .custom-message-btn i {
             margin-right: 5px;
             font-size: 0.9em;
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pagination-button {
+            padding: 8px 16px;
+            margin: 0 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .pagination-button:hover {
+            background-color: #2980b9;
+        }
+
+        .pagination-button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #pageInfo {
+            font-size: 14px;
+            margin: 0 10px;
         }
 
         @media (max-width: 768px) {
@@ -627,12 +660,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         const userId = localStorage.getItem("userId");
         let currentSortDirection = 'desc';
-        // 初始化頁面
+        let currentSortField = 'id';
+        let currentPage = 1;
+        const itemsPerPage = 9;
+        let allUsers = [];
+
         setupEventListeners();
         fetchTopAgents();
         fetchUsers(userId);
 
-        function fetchUsers(currentUserId,sortBy,sortOrder) {
+        function fetchUsers(currentUserId, sortBy, sortOrder) {
             let url = `/api/1.0/user/others?currentUserId=${currentUserId}`;
             if (sortBy && sortOrder) {
                 url += `&sortBy=${sortBy}&sortOrder=${sortOrder}`;
@@ -640,17 +677,82 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    const userList = document.getElementById('userList');
-                    userList.innerHTML = '';
-
-                    data.data.users.forEach(user => {
-                        const userCard = createUserCard(user);
-                        userList.appendChild(userCard);
-                    });
+                    allUsers = data.data.users;
+                    displayUsers(currentPage);
+                    setupPagination();
                 })
                 .catch(error => console.error('Error fetching users:', error));
         }
 
+        function displayUsers(page) {
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedUsers = allUsers.slice(startIndex, endIndex);
+
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+
+            paginatedUsers.forEach(user => {
+                const userCard = createUserCard(user);
+                userList.appendChild(userCard);
+            });
+        }
+
+        function setupPagination() {
+            const totalPages = Math.ceil(allUsers.length / itemsPerPage);
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'pagination-controls';
+
+            const prevButton = document.createElement('button');
+            prevButton.id = 'prevPage';
+            prevButton.className = 'pagination-button';
+            prevButton.innerText = '上一頁';
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayUsers(currentPage);
+                    updatePaginationUI();
+                }
+            });
+
+            const nextButton = document.createElement('button');
+            nextButton.id = 'nextPage';
+            nextButton.className = 'pagination-button';
+            nextButton.innerText = '下一頁';
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayUsers(currentPage);
+                    updatePaginationUI();
+                }
+            });
+
+            const pageInfo = document.createElement('span');
+            pageInfo.id = 'pageInfo';
+
+            paginationContainer.appendChild(prevButton);
+            paginationContainer.appendChild(pageInfo);
+            paginationContainer.appendChild(nextButton);
+
+            const userList = document.getElementById('userList');
+            const existingPagination = document.querySelector('.pagination-controls');
+            if (existingPagination) {
+                existingPagination.remove();
+            }
+            userList.parentNode.insertBefore(paginationContainer, userList.nextSibling);
+            updatePaginationUI();
+        }
+
+        function updatePaginationUI() {
+            const totalPages = Math.ceil(allUsers.length / itemsPerPage);
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
+            const pageInfo = document.getElementById('pageInfo');
+
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === totalPages;
+            pageInfo.textContent = `第 ${currentPage} 頁，共 ${totalPages} 頁`;
+        }
 
         function createUserCard(user) {
             const card = document.createElement('div');
@@ -664,43 +766,44 @@
             const averageScore = user.liveStatistics.averageScore ? user.liveStatistics.averageScore.toFixed(1) : '0';
 
             card.innerHTML = `
-                <div class="custom-user-image-container">
-                    <img src="${imageUrl}" alt="${user.userInfo.name}" class="custom-user-image">
-                </div>
-                <div class="custom-user-info">
-                    <div class="custom-user-name">${user.userInfo.name}</div>
-                    <div class="custom-user-stats">
-                        <div class="custom-stat-item">
-                            <div class="custom-stat-value">${totalViewers}</div>
-                            <div class="custom-stat-label">總觀看數</div>
-                        </div>
-                        <div class="custom-stat-item">
-                            <div class="custom-stat-value">${totalDelegationCount}</div>
-                            <div class="custom-stat-label">總代理數</div>
-                        </div>
-                        <div class="custom-stat-item">
-                            <div class="custom-stat-value">${totalQuantity}</div>
-                            <div class="custom-stat-label">總銷量</div>
-                        </div>
-                        <div class="custom-stat-item">
-                            <div class="custom-stat-value">${totalFigures.toLocaleString()}</div>
-                            <div class="custom-stat-label">總銷售額</div>
-                        </div>
-                        <div class="custom-stat-item">
-                            <div class="custom-stat-value">${averageScore}</div>
-                            <div class="custom-stat-label">平均分數</div>
-                        </div>
+            <div class="custom-user-image-container">
+                <img src="${imageUrl}" alt="${user.userInfo.name}" class="custom-user-image">
+            </div>
+            <div class="custom-user-info">
+                <div class="custom-user-name">${user.userInfo.name}</div>
+                <div class="custom-user-stats">
+                    <div class="custom-stat-item">
+                        <div class="custom-stat-value">${totalViewers}</div>
+                        <div class="custom-stat-label">總觀看數</div>
+                    </div>
+                    <div class="custom-stat-item">
+                        <div class="custom-stat-value">${totalDelegationCount}</div>
+                        <div class="custom-stat-label">總代理數</div>
+                    </div>
+                    <div class="custom-stat-item">
+                        <div class="custom-stat-value">${totalQuantity}</div>
+                        <div class="custom-stat-label">總銷量</div>
+                    </div>
+                    <div class="custom-stat-item">
+                        <div class="custom-stat-value">${totalFigures.toLocaleString()}</div>
+                        <div class="custom-stat-label">總銷售額</div>
+                    </div>
+                    <div class="custom-stat-item">
+                        <div class="custom-stat-value">${averageScore}</div>
+                        <div class="custom-stat-label">平均分數</div>
                     </div>
                 </div>
-                <div class="custom-user-actions">
-                    <button class="custom-message-btn" data-id="${user.userInfo.id}">
-                        <i class="fas fa-user"></i> 查看檔案
-                    </button>
-                    <button class="custom-message-btn" data-userid="${user.userInfo.id}">
-                        <i class="fas fa-comment"></i> 私訊
-                    </button>
-                </div>
-            `;
+            </div>
+            <div class="custom-user-actions">
+                <button class="custom-message-btn" data-id="${user.userInfo.id}">
+                    <i class="fas fa-user"></i> 查看檔案
+                </button>
+                <button class="custom-message-btn" data-userid="${user.userInfo.id}">
+                    <i class="fas fa-comment"></i> 私訊
+                </button>
+            </div>
+        `;
+
             // 綁定私訊按鈕的事件
             const messageBtn = card.querySelector('.custom-message-btn[data-userid]');
             messageBtn.addEventListener('click', function() {
@@ -742,34 +845,28 @@
         }
 
         function toggleSortDirection() {
-            const sortSelect = document.getElementById('sortSelect');
-            currentSortField = sortSelect.value;
             currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
             const sortDirectionImg = document.getElementById('sortDirectionImg');
             sortDirectionImg.src = currentSortDirection === 'asc' ? 'https://seanproject.s3.ap-northeast-1.amazonaws.com/north_28.png' : 'https://seanproject.s3.ap-northeast-1.amazonaws.com/south28.png';
-            fetchUsers(userId,currentSortField,currentSortDirection);
+            fetchUsers(userId, currentSortField, currentSortDirection);
         }
 
         function handleSortChange() {
             currentSortField = document.getElementById('sortSelect').value;
-            fetchUsers(userId,currentSortField,currentSortDirection);
+            fetchUsers(userId, currentSortField, currentSortDirection);
         }
 
-        function searchAgentsByKeyword(userId,keyword,sortBy,sortOrder){
+        function searchAgentsByKeyword(userId, keyword, sortBy, sortOrder){
             const url = `/api/1.0/user/search?userId=${userId}&keyword=${keyword}&sortBy=${sortBy}&sortOrder=${sortOrder}`;
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    const userList = document.getElementById('userList');
-                    userList.innerHTML = '';
-
-                    data.data.users.forEach(user => {
-                        const userCard = createUserCard(user);
-                        userList.appendChild(userCard);
-                    });
+                    allUsers = data.data.users;
+                    currentPage = 1;
+                    displayUsers(currentPage);
+                    setupPagination();
                 })
                 .catch(error => console.error('Error fetching users:', error));
-
         }
 
         function fetchTopAgents() {
@@ -798,26 +895,26 @@
             const totalFigures = agent.totalFigures || 0;
 
             card.innerHTML = `
-        <div class="agent-rank">#${index + 1}</div>
-        <img src="${imageUrl}" alt="${agent.name}" class="agent-image">
-        <div class="agent-info">
-            <div class="agent-name">${agent.name}</div>
-            <div class="agent-stats">
-                <div class="stat-item">
-                    <div class="stat-value">${totalViewers}</div>
-                    <div>總觀看數</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${totalQuantity}</div>
-                    <div>總銷售數</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${totalFigures.toLocaleString()}</div>
-                    <div>總銷售額</div>
+            <div class="agent-rank">#${index + 1}</div>
+            <img src="${imageUrl}" alt="${agent.name}" class="agent-image">
+            <div class="agent-info">
+                <div class="agent-name">${agent.name}</div>
+                <div class="agent-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">${totalViewers}</div>
+                        <div>總觀看數</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${totalQuantity}</div>
+                        <div>總銷售數</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${totalFigures.toLocaleString()}</div>
+                        <div>總銷售額</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
             return card;
         }
 
@@ -826,6 +923,10 @@
             document.getElementById('searchButton').addEventListener('click', handleSearch);
             document.getElementById('sortSelect').addEventListener('change', handleSortChange);
             document.getElementById('sortDirectionBtn').addEventListener('click', toggleSortDirection);
+        }
+
+        function getCurrentUserId() {
+            return localStorage.getItem("userId");
         }
     });
 </script>

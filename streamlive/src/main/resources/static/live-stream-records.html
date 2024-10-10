@@ -122,7 +122,6 @@
             }
         }
 
-        /* 彈出視窗樣式 */
         .modal {
             display: none;
             position: fixed;
@@ -137,6 +136,7 @@
 
         .modal-content {
             background-color: #fefefe;
+            position: relative;
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
@@ -144,11 +144,34 @@
             max-width: 600px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            animation: fadeInContract 0.3s ease-in-out;
+        }
+        .modal-content h2{
+            display: block;
+            padding-bottom: 5px;
+            font-weight: bold;
+            font-size: 20px;
+            color: #2c3e50;
+            margin: 0;
+            border-bottom:1px solid #e0e0e0 ;
+        }
+
+        @keyframes fadeInContract {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .close {
             color: #aaa;
-            float: right;
+            top:0;
+            right:13px;
+            position: absolute;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
@@ -168,6 +191,13 @@
             margin: 20px 0;
             padding-bottom: 20px;
             border-bottom: 1px solid #e9ecef;
+        }
+
+        .no-data{
+            display: block;
+            text-align: center;
+            color: gray;
+            margin:20px 0 5px 0;
         }
 
         .review:last-child {
@@ -747,7 +777,7 @@
                 reviewsContainer.innerHTML = '';
 
                 if (data.data.length === 0) {
-                    reviewsContainer.innerHTML = '<p>暫無評價</p>';
+                    reviewsContainer.innerHTML = '<p class="no-data">暫無評價</p>';
                 } else {
                     data.data.forEach(review => {
                         const stars = '★'.repeat(review.score) + '☆'.repeat(5 - review.score);

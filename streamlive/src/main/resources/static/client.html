@@ -86,8 +86,8 @@
 
         .search-input {
             flex-grow: 1;
-            padding: 0.55rem 2.5rem 0.55rem 0.75rem;
-            border: 1px solid var(--secondary-color);
+            padding: 0.7rem 2.5rem 0.55rem 0.75rem;
+            border: 1px solid lightgrey;
             border-radius: 4px;
             font-size: 1rem;
         }
@@ -110,7 +110,7 @@
 
         .status-select, .sort-select {
             padding: 0.52rem;
-            border: 1px solid var(--secondary-color);
+            border: 1px solid lightgrey;
             background-color: white;
             font-size: 1rem;
             border-radius: 4px;
@@ -128,7 +128,7 @@
             background-color: #FFFFFF;
             color: white;
             border-radius: 4px;
-            border: 1px solid var(--secondary-color);
+            border: 1px solid lightgrey;
             cursor: pointer;
             font-size: 1rem;
             font-weight: bold;
@@ -347,6 +347,38 @@
             background-color: #4CAF50;
             color: white;
         }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pagination-button {
+            padding: 8px 16px;
+            margin: 0 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .pagination-button:hover {
+            background-color: #2980b9;
+        }
+
+        .pagination-button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        #pageInfo {
+            font-size: 14px;
+            margin: 0 10px;
+        }
         .custom-message-btn {
             padding: 8px 12px;
             background-color: transparent;
@@ -512,6 +544,11 @@
 
     <div id="productList" class="product-list">
         <!-- 動態插入產品項目 -->
+    </div>
+    <div class="pagination-controls">
+        <button id="prevPage" class="pagination-button">上一頁</button>
+        <span id="pageInfo"></span>
+        <button id="nextPage" class="pagination-button">下一頁</button>
     </div>
 </div>
 <footer>
@@ -696,116 +733,154 @@
 <script src ="assets/js/popup.js"></script>
 <script src ="assets/js/contract.js"></script>
 <script>
-    const userId = localStorage.getItem("userId");
-    let currentSortField = 'product_id';
-    let currentSortDirection = 'desc';
-
-    // 初始化頁面
     document.addEventListener("DOMContentLoaded", function() {
+        const userId = localStorage.getItem("userId");
+        let currentSortField = 'product_id';
+        let currentSortDirection = 'desc';
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let allProducts = [];
+
+        // 初始化頁面
         getForDelegation(userId, 0, currentSortField, currentSortDirection);
         setupEventListeners();
-    });
 
-    // 設置事件監聽器
-    function setupEventListeners() {
-        document.getElementById('searchInput').addEventListener('input', handleSearch);
-        document.getElementById('searchButton').addEventListener('click', handleSearch);
-        document.getElementById('statusSelect').addEventListener('change', handleStatusFilter);
-        document.getElementById('sortSelect').addEventListener('change', handleSortChange);
-        document.getElementById('sortDirectionBtn').addEventListener('click', toggleSortDirection);
-    }
+        // 設置事件監聽器
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('searchButton').addEventListener('click', handleSearch);
+            document.getElementById('statusSelect').addEventListener('change', handleStatusFilter);
+            document.getElementById('sortSelect').addEventListener('change', handleSortChange);
+            document.getElementById('sortDirectionBtn').addEventListener('click', toggleSortDirection);
+            document.getElementById('prevPage').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderProductList(allProducts);
+                }
+            });
+            document.getElementById('nextPage').addEventListener('click', () => {
+                const totalPages = Math.ceil(allProducts.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderProductList(allProducts);
+                }
+            });
+        }
 
-    // 渲染商品列表
-    function renderProductList(productsToRender) {
-        const container = document.getElementById('productList');
-        container.innerHTML = "";
-        productsToRender.forEach(product => {
-            const intValue = Number(product.productInfo.id);
-            const productItem = `
-                    <div class="product-item">
-                        <div class="product-info">
-                            <h3 class="product-name">${product.productInfo.name}</h3>
-                            <div class="product-details">
-                                <span>價格: $${product.productInfo.price}</span>
-                                <span>庫存: ${product.productInfo.stock}</span>
-                                <span>委託者: ${product.clientInfo.name}</span>
-                                <span>上架時間: ${new Date(product.productInfo.created_at).toLocaleString()}</span>
-                            </div>
-                        </div>
-                        <div class="product-actions">
-                            <button class="custom-message-btn" onclick="viewProfile('${product.clientInfo.id}')">
-                                <i class="fas fa-user"></i> 查看委託人檔案
-                            </button>
-                            <button class="custom-message-btn" onclick="getProductDetail('${product.productInfo.id}')">
-                                <i class="fas fa-info-circle"></i> 商品資訊
-                            </button>
-                            <button class="custom-message-btn" onclick="sendMessage('${localStorage.getItem("userId")}','${product.clientInfo.id}')">
-                                <i class="fas fa-comment"></i> 私訊
-                            </button>
+        // 渲染商品列表
+        function renderProductList(productsToRender) {
+            const container = document.getElementById('productList');
+            container.innerHTML = "";
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedProducts = productsToRender.slice(startIndex, endIndex);
+
+            paginatedProducts.forEach(product => {
+                const createdAt = new Date(product.productInfo.created_at);
+                const formattedDate = `${createdAt.getFullYear()}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`;
+                const productItem = `
+                <div class="product-item">
+                    <div class="product-info">
+                        <h3 class="product-name">${product.productInfo.name}</h3>
+                        <div class="product-details">
+                            <span>價格: $${product.productInfo.price}</span>
+                            <span>庫存: ${product.productInfo.stock}</span>
+                            <span>委託者: ${product.clientInfo.name}</span>
+                            <span>上架時間: ${formattedDate}</span>
                         </div>
                     </div>
-                `;
-            container.innerHTML += productItem;
-        });
-    }
-
-    // 處理搜索
-    function handleSearch() {
-        const keyword = document.getElementById('searchInput').value;
-        const status = document.getElementById('statusSelect').value;
-        searchProducts(userId, keyword, status);
-    }
-
-    // 搜尋商品
-    function searchProducts(userId, keyword, status) {
-        const url = `/api/1.0/product/search?userId=${userId}&keyword=${encodeURIComponent(keyword)}&status=${status}`;
-
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data.data.products);
-                renderProductList(data.data.products);
-            })
-            .catch(error => {
-                console.error('Error fetching products:', error);
-                alert('無法獲取商品列表，請稍後再試。');
+                    <div class="product-actions">
+                        <button class="custom-message-btn" onclick="viewProfile('${product.clientInfo.id}')">
+                            <i class="fas fa-user"></i> 查看委託人檔案
+                        </button>
+                        <button class="custom-message-btn" onclick="getProductDetail('${product.productInfo.id}')">
+                            <i class="fas fa-info-circle"></i> 商品資訊
+                        </button>
+                        <button class="custom-message-btn" onclick="sendMessage('${localStorage.getItem("userId")}','${product.clientInfo.id}')">
+                            <i class="fas fa-comment"></i> 私訊
+                        </button>
+                    </div>
+                </div>
+            `;
+                container.innerHTML += productItem;
             });
-    }
 
-    // 處理狀態篩選 [ 已代理、未代理 ]
-    function handleStatusFilter() {
-        const status = document.getElementById('statusSelect').value;
-        getForDelegation(userId, status, currentSortField, currentSortDirection);
-    }
+            updatePaginationControls(productsToRender.length);
+        }
 
-    // 處理排序目標 [建立時間、價格、庫存]
-    function handleSortChange() {
-        currentSortField = document.getElementById('sortSelect').value;
-        const status = document.getElementById('statusSelect').value;
-        getForDelegation(userId, status, currentSortField, currentSortDirection);
-    }
+        function updatePaginationControls(totalItems) {
+            const pageInfo = document.getElementById('pageInfo');
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
 
-    // 切換排序方向
-    function toggleSortDirection() {
-        const sortSelect = document.getElementById('sortSelect');
-        currentSortField = sortSelect.value;
-        const status = document.getElementById('statusSelect').value;
-        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-        const sortDirectionImg = document.getElementById('sortDirectionImg');
-        sortDirectionImg.src = currentSortDirection === 'asc' ? 'https://seanproject.s3.ap-northeast-1.amazonaws.com/north_28.png' : 'https://seanproject.s3.ap-northeast-1.amazonaws.com/south28.png';
-        getForDelegation(userId, status, currentSortField, currentSortDirection);
-    }
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            pageInfo.textContent = `第 ${currentPage} 頁，共 ${totalPages} 頁`;
 
-    // 顯示商品詳細資訊
-    function showDetails(product) {
-        if (product) {
-            console.log(product);
-            const modalContent = `
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === totalPages;
+        }
+
+        // 處理搜索
+        function handleSearch() {
+            const keyword = document.getElementById('searchInput').value;
+            const status = document.getElementById('statusSelect').value;
+            searchProducts(userId, keyword, status);
+        }
+
+        // 搜尋商品
+        function searchProducts(userId, keyword, status) {
+            const url = `/api/1.0/product/search?userId=${userId}&keyword=${encodeURIComponent(keyword)}&status=${status}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    allProducts = data.data.products;
+                    currentPage = 1; // 重置頁碼
+                    renderProductList(allProducts);
+                })
+                .catch(error => {
+                    console.error('Error fetching products:', error);
+                    alert('無法獲取商品列表，請稍後再試。');
+                });
+        }
+
+        // 處理狀態篩選 [ 已代理、未代理 ]
+        function handleStatusFilter() {
+            const status = document.getElementById('statusSelect').value;
+            getForDelegation(userId, status, currentSortField, currentSortDirection);
+        }
+
+        // 處理排序目標 [建立時間、價格、庫存]
+        function handleSortChange() {
+            currentSortField = document.getElementById('sortSelect').value;
+            const status = document.getElementById('statusSelect').value;
+            getForDelegation(userId, status, currentSortField, currentSortDirection);
+        }
+
+        // 切換排序方向
+        function toggleSortDirection() {
+            const sortSelect = document.getElementById('sortSelect');
+            currentSortField = sortSelect.value;
+            const status = document.getElementById('statusSelect').value;
+            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            const sortDirectionImg = document.getElementById('sortDirectionImg');
+            sortDirectionImg.src = currentSortDirection === 'asc' ? 'https://seanproject.s3.ap-northeast-1.amazonaws.com/north_28.png' : 'https://seanproject.s3.ap-northeast-1.amazonaws.com/south28.png';
+            getForDelegation(userId, status, currentSortField, currentSortDirection);
+        }
+
+        // 顯示商品詳細資訊
+        function showDetails(product) {
+            if (product) {
+                console.log(product);
+                const createdAt = new Date(product.created_at);
+                const formattedDate = `${createdAt.getFullYear()}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`;
+                const modalContent = `
             <div class="modal-overlay">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -833,7 +908,7 @@
                             </div>
                             <div class="modal-info">
                                 <span class="modal-info-label">上架時間:</span>
-                                <span class="modal-info-value">${new Date(product.created_at).toLocaleString()}</span>
+                                <span class="modal-info-value">${formattedDate}</span>
                             </div>
                             <div class="modal-info">
                                 <span class="modal-info-label">狀態:</span>
@@ -847,89 +922,96 @@
             </div>
         `;
 
-            document.body.insertAdjacentHTML('beforeend', modalContent);
+                document.body.insertAdjacentHTML('beforeend', modalContent);
 
-            // 添加關閉模態框的事件監聽器
-            document.querySelector('.modal-close').addEventListener('click', closeModal);
-            document.querySelector('.modal-overlay').addEventListener('click', function(e) {
-                if (e.target === this) closeModal();
-            });
+                // 添加關閉模態框的事件監聽器
+                document.querySelector('.modal-close').addEventListener('click', closeModal);
+                document.querySelector('.modal-overlay').addEventListener('click', function(e) {
+                    if (e.target === this) closeModal();
+                });
+            }
         }
-    }
 
-    // 關閉模態框
-    function closeModal() {
-        const modal = document.querySelector('.modal-overlay');
-        if (modal) {
-            modal.remove();
+        // 關閉模態框
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
         }
-    }
 
-    // 獲取商品詳情
-    function getProductDetail(productId) {
-        fetch(`/api/1.0/product/${productId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                showDetails(data.data);
-            })
-            .catch(error => {
-                console.error('Error fetching product details:', error);
-                alert('無法獲取商品詳情，請稍後再試。');
-            });
-    }
-
-    // 查看委託人檔案
-    function viewProfile(clientId) {
-        window.location.href = `profile.html?userId=${clientId}`;
-    }
-
-    // 發送訊息給委託人
-    function sendMessage(currentId,clientId) {
-        if (currentId && clientId) {
-            fetch(`/api/1.0/chatroom?user1Id=${currentId}&user2Id=${clientId}`, {
-                method: 'POST'
-            })
-                .then(response => response.json())
-                .then(chatRoom => {
-                    console.log(chatRoom);
-                    loadUserChatRooms(currentId);
-                    getChatRoomInfo(currentId,clientId);
-                    document.querySelector('.floating-circle').style.display = "none";
-                    document.querySelector('.chat-container').style.display = "flex";
+        // 獲取商品詳情
+        function getProductDetail(productId) {
+            fetch(`/api/1.0/product/${productId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
                 })
-                .catch(error => console.error('創建聊天室失敗:', error));
-        } else {
-            console.log("請輸入有效的用戶 ID");
-        }
-    }
-
-    // 獲取代理商品列表
-    function getForDelegation(userId, status, sortBy, sortOrder) {
-        let url = `/api/1.0/product/for-delegation?userId=${userId}&status=${status}`;
-        if (sortBy && sortOrder) {
-            url += `&sortBy=${sortBy}&sortOrder=${sortOrder}`;
+                .then(data => {
+                    showDetails(data.data);
+                })
+                .catch(error => {
+                    console.error('Error fetching product details:', error);
+                    alert('無法獲取商品詳情，請稍後再試。');
+                });
         }
 
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                renderProductList(data.data);
-            })
-            .catch(error => {
-                console.error('Error fetching products:', error);
-                alert('無法獲取商品列表，請稍後再試。');
-            });
-    }
+        // 查看委託人檔案
+        function viewProfile(clientId) {
+            window.location.href = `profile.html?userId=${clientId}`;
+        }
+
+        // 發送訊息給委託人
+        function sendMessage(currentId, clientId) {
+            if (currentId && clientId) {
+                fetch(`/api/1.0/chatroom?user1Id=${currentId}&user2Id=${clientId}`, {
+                    method: 'POST'
+                })
+                    .then(response => response.json())
+                    .then(chatRoom => {
+                        console.log(chatRoom);
+                        loadUserChatRooms(currentId);
+                        getChatRoomInfo(currentId, clientId);
+                        document.querySelector('.floating-circle').style.display = "none";
+                        document.querySelector('.chat-container').style.display = "flex";
+                    })
+                    .catch(error => console.error('創建聊天室失敗:', error));
+            } else {
+                console.log("請輸入有效的用戶 ID");
+            }
+        }
+
+        // 獲取代理商品列表
+        function getForDelegation(userId, status, sortBy, sortOrder) {
+            let url = `/api/1.0/product/for-delegation?userId=${userId}&status=${status}`;
+            if (sortBy && sortOrder) {
+                url += `&sortBy=${sortBy}&sortOrder=${sortOrder}`;
+            }
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    allProducts = data.data;
+                    currentPage = 1; // 重置頁碼
+                    renderProductList(allProducts);
+                })
+                .catch(error => {
+                    console.error('Error fetching products:', error);
+                    alert('無法獲取商品列表，請稍後再試。');
+                });
+        }
+
+        window.viewProfile = viewProfile;
+        window.getProductDetail = getProductDetail;
+        window.sendMessage = sendMessage;
+    });
 </script>
 </body>
 </html>

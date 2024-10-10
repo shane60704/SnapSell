@@ -133,7 +133,10 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Product findProductById(int productId){
-        String sql = "SELECT * FROM product WHERE id = :productId";
+        String sql = "SELECT p.*, d.status " +
+                "FROM product p " +
+                "LEFT JOIN delegation d ON p.id = d.product_id " +
+                "WHERE p.id = :productId";
         Map<String, Object> map = new HashMap<>();
         map.put("productId", productId);
         SqlParameterSource paramSource = new MapSqlParameterSource(map);

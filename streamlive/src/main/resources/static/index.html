@@ -110,6 +110,16 @@
             color: #0077b6;
         }
 
+        .hero-btn-login{
+            background-color: #0077b6;
+            color: #ffffff;
+            border: 2px solid #0077b6;
+        }
+        .hero-btn-login:hover{
+            background-color: transparent;
+            color: #0077b6;
+        }
+
         .hero-btn-agent {
             background-color: transparent;
             color: #ffffff;
@@ -269,7 +279,7 @@
         <div class="user-info">
             <div id="user-name"></div>
             <div class="user-actions">
-                <img class="icon-user" src='https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png' alt="User Avatar">
+                <img class="icon-user" src='' alt="User Avatar">
                 <div class="info-window">
                     <div class = "log-out" id = "my-profile-btn">
                         <div class="log-out-content">個人檔案</div>
@@ -306,6 +316,7 @@
             <p>SnapSell 讓潛力商品與頂尖帶貨專家完美結合，激發無限可能</p>
             <a href="my-products.html" class="hero-btn hero-btn-commission">開始委託</a>
             <a href="client.html" class="hero-btn hero-btn-agent">開始代理</a>
+            <a href="login.html" class="hero-btn hero-btn-login">登入探索完整功能</a>
         </div>
     </div>
 </section>
@@ -535,11 +546,23 @@
         <button class="popup-button" onclick="closeResultPopup('agentDisagreePopup')">確定</button>
     </div>
 </div>
+<!-- 未登入彈出視窗 -->
+<div class="snapsell-login-prompt-overlay" id="snapsellLoginPrompt">
+    <div class="snapsell-login-prompt-content">
+        <h2 class="snapsell-login-prompt-title">請先登入</h2>
+        <p class="snapsell-login-prompt-message">您需要登入才能繼續操作。是否前往登入頁面？</p>
+        <div class="snapsell-login-prompt-buttons">
+            <button class="snapsell-login-prompt-btn snapsell-login-prompt-btn-primary" id="snapsellLoginConfirm">前往登入</button>
+            <button class="snapsell-login-prompt-btn snapsell-login-prompt-btn-secondary" id="snapsellLoginCancel">取消</button>
+        </div>
+    </div>
+</div>
 
 <!-- 引入js -->
 <script src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 <script src = "https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
 <script src = "https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src = "assets/js/checkstatus.js"></script>
 <script src = "assets/js/header.js"></script>
 <script src ="assets/js/chat.js"></script>
 <script src ="assets/js/popup.js"></script>

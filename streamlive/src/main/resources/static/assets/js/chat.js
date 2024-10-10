@@ -12,8 +12,6 @@ function connectWebSocket() {
         if (userId) {
             subscribeToNewChatRoomNotifications(userId);
             loadUserChatRooms(userId); // 加載用戶的聊天室清單
-        } else {
-            alert("請先登入");
         }
     }, function(error) {
         console.error('連接失敗:', error);
