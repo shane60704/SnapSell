@@ -3,108 +3,367 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登入</title>
+    <title>SnapSell 登入/註冊</title>
     <style>
-        body {
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
             font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        .container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f2f5;
+            height: 100%;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         }
-        .products-container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
+        .auth-box {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 40px;
+            width: 360px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         h1 {
+            margin: 0 0 30px;
             text-align: center;
-            color: #333;
-            margin-bottom: 1.5rem;
+            font-size: 28px;
+            color: #f1f5f9;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
-        .form-group {
-            margin-bottom: 1rem;
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
         }
-        input, button {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+        input {
+            width: calc(100% - 40px);
+            padding: 15px 20px 12px 10px;
+            border: none;
+            border-bottom: 2px solid #475569;
+            font-size: 16px;
+            background: transparent;
+            color: #f1f5f9;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-bottom-color: white;
+        }
+        label {
+            position: absolute;
+            top: 15px;
+            left: 5px;
+            font-size: 16px;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        input:focus + label,
+        input:not(:placeholder-shown) + label {
+            top: -10px;
+            left: 0;
+            font-size: 12px;
+            color: white;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 16px;
+            display: none;
+        }
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
         }
         button {
-            background-color: #1877f2;
-            color: white;
+            width: 100%;
+            padding: 10px;
             border: none;
-            padding: 0.5rem;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 20px;
         }
-        button:hover {
-            background-color: #166fe5;
+        .primary-btn {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
         }
-        .switch {
+        .primary-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px -1px rgba(59, 130, 246, 0.5);
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            margin-right: 8px;
+            margin-bottom: 5px;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        .logo {
             text-align: center;
-            margin-top: 1rem;
         }
-        .switch a {
-            color: #1877f2;
+        .logo svg {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        .toggle-form a {
+            color: #3b82f6;
             text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .form-container {
+            transition: all 0.3s ease-in-out;
+        }
+        .hidden {
+            display: none;
+            opacity: 0;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>登入</h1>
-    <div class="form-group">
-        <input type="email" id="email" placeholder="電子郵件" required>
-    </div>
-    <div class="form-group">
-        <input type="password" id="password" placeholder="密碼" required>
-    </div>
-    <div class="form-group">
-        <button id="loginButton">登入</button>
-    </div>
-    <div class="switch">
-        還沒有帳號？<a href="register.html">立即註冊</a>
+    <div class="auth-box">
+        <div class="logo">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect x="10" y="10" width="80" height="80" rx="20" fill="url(#gradient)"/>
+                <polygon points="40,30 70,50 40,70" fill="white"/>
+            </svg>
+        </div>
+        <h1><span class="live-indicator"></span>SnapSell</h1>
+
+        <div id="loginForm" class="form-container">
+            <div class="input-group">
+                <input type="email" id="loginUsername" placeholder=" " required>
+                <label for="loginUsername">信箱</label>
+                <div id="loginEmailError" class="error-message">請輸入有效的信箱格式</div>
+            </div>
+            <div class="input-group">
+                <input type="password" id="loginPassword" placeholder=" " required oninput="togglePasswordIcon('loginPassword', 'loginPasswordIcon')">
+                <label for="loginPassword">密碼</label>
+                <span class="password-toggle" id="loginPasswordIcon" onclick="togglePasswordVisibility('loginPassword', 'loginPasswordIcon')">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12c-2.75 0-5.5-1.52-8-4 2.5-2.48 5.25-4 8-4s5.5 1.52 8 4c-2.5 2.48-5.25 4-8 4zm0-6c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2z"/>
+                    </svg>
+                </span>
+            </div>
+            <button type="submit" class="primary-btn" onclick="handleLogin()">登入</button>
+            <div class="toggle-form">
+                還沒有帳號？ <a onclick="toggleForm('register')">立即註冊</a>
+            </div>
+        </div>
+
+        <div id="registerForm" class="form-container hidden">
+            <div class="input-group">
+                <input type="text" id="registerUsername" placeholder=" " required>
+                <label for="registerUsername">用戶名稱</label>
+            </div>
+            <div class="input-group">
+                <input type="email" id="registerEmail" placeholder=" " required>
+                <label for="registerEmail">信箱</label>
+                <div id="registerEmailError" class="error-message">請輸入有效的信箱格式</div>
+            </div>
+            <div class="input-group">
+                <input type="password" id="registerPassword" placeholder=" " required oninput="togglePasswordIcon('registerPassword', 'registerPasswordIcon')">
+                <label for="registerPassword">密碼</label>
+                <span class="password-toggle" id="registerPasswordIcon" onclick="togglePasswordVisibility('registerPassword', 'registerPasswordIcon')">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12c-2.75 0-5.5-1.52-8-4 2.5-2.48 5.25-4 8-4s5.5 1.52 8 4c-2.5 2.48-5.25 4-8 4zm0-6c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2z"/>
+                    </svg>
+                </span>
+            </div>
+            <button type="submit" class="primary-btn" onclick="handleRegister()">註冊</button>
+            <div class="toggle-form">
+                已有帳號？ <a onclick="toggleForm('login')">立即登入</a>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('loginButton').addEventListener('click', function() {
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
+    function toggleForm(formType) {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
 
+        if (formType === 'register') {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+        } else {
+            registerForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        }
+    }
+
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    function handleLogin() {
+        const email = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const emailError = document.getElementById('loginEmailError');
+
+        if (!validateEmail(email)) {
+            emailError.style.display = 'block';
+            return;
+        }
+
+        emailError.style.display = 'none';
+
+        if (email && password) {
+            login(email,password);
+        }
+        return;
+    }
+
+    function handleRegister() {
+        const username = document.getElementById('registerUsername').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const emailError = document.getElementById('registerEmailError');
+
+        if (!validateEmail(email)) {
+            emailError.style.display = 'block';
+            return;
+        }
+
+        emailError.style.display = 'none';
+
+        if (username && email && password) {
+            register(username,email,password);
+        }
+        return;
+    }
+
+    function togglePasswordVisibility(passwordFieldId, iconId) {
+        const passwordField = document.getElementById(passwordFieldId);
+        const icon = document.getElementById(iconId).querySelector('svg');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            icon.innerHTML = `<path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm1 10c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2z"/>`;
+        } else {
+            passwordField.type = 'password';
+            icon.innerHTML = `<path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12c-2.75 0-5.5-1.52-8-4 2.5-2.48 5.25-4 8-4s5.5 1.52 8 4c-2.5 2.48-5.25 4-8 4zm0-6c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2z" />`;
+        }
+    }
+
+    function togglePasswordIcon(passwordFieldId, iconId) {
+        const passwordField = document.getElementById(passwordFieldId);
+        const icon = document.getElementById(iconId);
+
+        if (passwordField.value.length > 0) {
+            icon.style.display = 'block';
+        } else {
+            icon.style.display = 'none';
+        }
+    }
+
+    function login(email,password){
         fetch('/api/1.0/user/signin', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email: emailInput.value,
-                password: passwordInput.value,
+                email: email,
+                password: password,
                 provider: "native"
             })
         })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok){
+                    return response.json();
+                }else{
+                    throw new Error("failed");
+                }
+            })
             .then(data => {
-                localStorage.setItem("userId",data.user.id);
-                localStorage.setItem("userName",data.user.name);
-                localStorage.setItem("userEmail",data.user.email);
-                localStorage.setItem("userImage",data.user.image);
+                localStorage.setItem("userId", data.user.id);
+                localStorage.setItem("userName", data.user.name);
+                localStorage.setItem("userEmail", data.user.email);
+                localStorage.setItem("userImage", data.user.image);
                 window.location.href = 'index.html';
-
             })
             .catch((error) => {
                 console.error('錯誤:', error);
-                alert("登入失敗，請重新輸入。")
+                alert("登入失敗，請重新輸入。");
             });
-    });
+    }
+
+    function register(username, email, password){
+        fetch('/api/1.0/user/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: username,
+                email: email,
+                password: password,
+                provider: "native"
+            })
+        })
+            .then(response => {
+                if (response.ok){
+                    return response.json();
+                }else{
+                    throw new Error("failed");
+                }
+            })
+            .then(data => {
+                localStorage.setItem("userId", data.user.id);
+                localStorage.setItem("userName", data.user.name);
+                localStorage.setItem("userEmail", data.user.email);
+                localStorage.setItem("userImage", data.user.image);
+                alert("註冊成功!");
+                window.location.href = 'index.html';
+            })
+            .catch((error) =>{
+                alert("註冊失敗，請重新嘗試。");
+            });
+    }
 </script>
 </body>
 </html>
