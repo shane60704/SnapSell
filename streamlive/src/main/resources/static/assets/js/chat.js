@@ -4,25 +4,24 @@ let currentSubscription = null; // 儲存當前的訂閱
 
 // 連接 WebSocket 伺服器
 function connectWebSocket() {
-    const socket = new SockJS('/chat'); // 確認 WebSocket 端點為 /chat
+    const socket = new SockJS('/chat');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function(frame) {
         console.log('已連接: ' + frame);
-        const userId = getCurrentUserId(); // 從 localStorage 取得目前登入的用戶 ID
+        const userId = getCurrentUserId();
         if (userId) {
             subscribeToNewChatRoomNotifications(userId);
-            loadUserChatRooms(userId); // 加載用戶的聊天室清單
+            loadUserChatRooms(userId);
         }
     }, function(error) {
         console.error('連接失敗:', error);
-        setTimeout(connectWebSocket, 5000); // 5 秒後重試
+        setTimeout(connectWebSocket, 5000);
     });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     const chatIcon = document.querySelector('.floating-circle');
 
-    // 點擊聊天室區塊時移除 new-message 類別
     chatIcon.addEventListener('click', function () {
         chatIcon.classList.remove('new-message');
     });
@@ -87,8 +86,6 @@ function addChatRoomToList(chatRoom) {
         listItem.classList.add("chat-room-item");
         listItem.dataset.chatRoomId = chatRoom.id;
         listItem.onclick = function() {
-            console.log(chatRoom.id);
-            console.log(contactInfo.name);
             joinChatRoom(chatRoom.id, contactInfo.name);
         };
 
@@ -272,7 +269,6 @@ function displayMessage(message, clientInfo, agentInfo, shouldScroll) {
         messageWrapper.appendChild(messageDisplay);
     }
 
-
     messageWrapper.appendChild(timestampElement);
     // 加入訊息區域
     messageArea.appendChild(messageWrapper);
@@ -328,7 +324,6 @@ function displayCurrentMessage(message,scroll){
         messageWrapper.appendChild(messageDisplay);
     }
 
-
     messageWrapper.appendChild(timestampElement);
     // 加入訊息區域
     messageArea.appendChild(messageWrapper);
@@ -340,8 +335,6 @@ function displayCurrentMessage(message,scroll){
         messageWrapper.scrollIntoView({ behavior: 'auto', block: 'end' });
     }
 }
-
-
 
 // 發送訊息
 document.getElementById("sendMessageBtn").addEventListener("click", function() {
