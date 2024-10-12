@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
+    const userId = localStorage.getItem("userId");
 
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {

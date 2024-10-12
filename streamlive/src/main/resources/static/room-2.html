@@ -1449,17 +1449,16 @@
     });
 
     let localStream;
-    let peerConnection;
     let peerConnections = {}; // 管理多位觀眾的連線
-    let ws;
-    let signalingWs;
+    let ws; // 主 WebSocket
+    let signalingWs; // Signaling WebSocket
     let roomId;
     let isBroadcaster = false;
     let viewerId; // 觀眾的唯一識別碼
 
     const configuration = {
         iceServers: [
-            {urls: 'stun:stun.l.google.com:19302'},
+            { urls: 'stun:stun.l.google.com:19302' },
             {
                 urls: 'turn:54.238.140.240:3478',
                 username: 'sean',
@@ -1488,6 +1487,7 @@
     statusDiv.style.display = "none";
     let currentRating = 0;
 
+    // UI 控制邏輯
     exitBtn.onclick = function () {
         ratingModal.style.display = "block";
     }
@@ -1543,7 +1543,6 @@
                 console.log("Success:", data);
             })
             .catch((error) => {
-
                 console.error("Error:", error);
             });
         console.log(`Rating: ${currentRating}, Comment: ${comment}`);
@@ -1562,8 +1561,8 @@
     hangupButton.onclick = hangup;
     sendMessageBtn.onclick = sendChatMessage;
     messageInput.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' && messageInput.value.trim() !== '') {  // 檢查是否按下 Enter 鍵 且輸入框的值不為空
-            sendChatMessage();  // 呼叫送出訊息的函數
+        if (event.key === 'Enter' && messageInput.value.trim() !== '') {
+            sendChatMessage();
         }
     });
 
@@ -1589,14 +1588,21 @@
     });
 
     function initializeWebSocket() {
-        // 測試環境使用
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            alert("用戶未登錄！");
+            window.location.href = "login.html";
+            return;
+        }
+
+        // 主 WebSocket 連接（處理業務相關消息，如聊天室、禮物等）
         ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
         // ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 main service websocket 連接...');
 
         ws.onopen = () => {
-            console.log('WebSocket 連接成功');
+            console.log('Main WebSocket 連接成功');
             if (isBroadcaster) {
                 console.log('作為主播設置媒體流');
                 document.getElementById("products").style.display = "none";
@@ -1606,107 +1612,46 @@
             } else {
                 console.log('作為觀眾加入房間');
                 hangupButton.style.display = "none";
-                ws.send(JSON.stringify({type: 'join', roomId}));
+                ws.send(JSON.stringify({ type: 'join', roomId, userId }));
             }
         };
         ws.onclose = () => {
             document.getElementById('status').innerHTML = '<p>直播已結束。</p>';
             hangup();
-            console.log('WebSocket 連接關閉');
+            console.log('Main WebSocket 連接關閉');
         };
         ws.onerror = (error) => {
-            updateStatus('WebSocket 錯誤: ' + error.message);
-            console.error('WebSocket 錯誤:', error);
+            updateStatus('Main WebSocket 錯誤: ' + error.message);
+            console.error('Main WebSocket 錯誤:', error);
         };
 
-        ws.onmessage = handleMessage;
+        ws.onmessage = handleMainMessage;
 
+        // Signaling WebSocket 連接（處理 WebRTC 信令消息）
         signalingWs = new WebSocket('ws://localhost:3000/signaling');
         console.log('正在初始化 signaling service websocket 連接...');
         signalingWs.onopen = () => {
-            console.log(' signaling service websocket 連接成功');
+            console.log('Signaling WebSocket 連接成功');
             signalingWs.send(JSON.stringify({
                 type: 'identify',
-                userId: localStorage.getItem('userId'),
+                userId: userId,
                 roomId: roomId,
                 role: isBroadcaster ? 'broadcaster' : 'viewer'
             }));
         }
         signalingWs.onclose = () => {
-            console.log('signaling service websocket 連接關閉');
+            console.log('Signaling WebSocket 連接關閉');
         };
         signalingWs.onerror = (error) => {
-            console.error('signaling service websocket 連接錯誤:', error);
+            console.error('Signaling WebSocket 錯誤:', error);
         };
 
         signalingWs.onmessage = handleSignalingMessage;
-
     }
 
-    function handleSignalingMessage(event) {
+    function handleMainMessage(event) {
         const message = JSON.parse(event.data);
-        console.log('收到 Signaling 消息:', message);
-
-        switch (message.type) {
-            case 'offer':
-                if (!isBroadcaster) {
-                    handleOffer(message.offer);
-                }
-                break;
-            case 'answer':
-                if (isBroadcaster) {
-                    handleAnswer(message.answer, message.viewerId);
-                }
-                break;
-            case 'candidate':
-                if (isBroadcaster) {
-                    handleCandidate(message.candidate, message.viewerId);
-                } else {
-                    handleCandidate(message.candidate);
-                }
-                break;
-        }
-    }
-
-    function setupMediaStream() {
-        console.log('正在獲取用戶媒體設備...');
-        navigator.mediaDevices.getUserMedia({audio: true, video: true})
-            .then(stream => {
-                console.log('成功獲取媒體流');
-                videoStream.srcObject = stream;
-                videoStream.muted = true;
-                localStream = stream;
-                videoLabel.textContent = '直播畫面';
-
-                const urlParams2 = new URLSearchParams(window.location.search);
-                const title = urlParams2.get('title');
-                const description = urlParams2.get('description');
-                const products = urlParams2.get('products');
-                const productArray = products ? products.split(',') : [];
-
-                console.log('發送創建房間請求，並附加產品陣列:', productArray);
-
-                // 發送 WebSocket 訊息，包含 roomId 和 productArray
-                ws.send(JSON.stringify({
-                    type: 'create',
-                    roomId: roomId,
-                    userId: localStorage.getItem("userId"),
-                    title: title,
-                    description: description,
-                    products: productArray
-                }));
-                hangupButton.disabled = false;
-                enableChat();
-            })
-            .catch(e => {
-                updateStatus('獲取媒體設備失敗: ' + e.message);
-                console.error('獲取媒體設備失敗:', e);
-            });
-    }
-
-    function handleMessage(event) {
-        const message = JSON.parse(event.data);
-        console.log('收到消息:', message);
+        console.log('收到 Main WebSocket 消息:', message);
 
         switch (message.type) {
             case 'created':
@@ -1723,25 +1668,8 @@
                 if (isBroadcaster) {
                     console.log('新觀眾加入，創建對等連接');
                     document.getElementById('status').style.display = "none";
-                    const newViewerId = message.viewerId;
+                    const newViewerId = message.viewerId; // 這裡應該是 viewer 的 userId
                     createPeerConnection(newViewerId);
-                }
-                break;
-            case 'offer':
-                if (!isBroadcaster) {
-                    handleOffer(message.offer);
-                }
-                break;
-            case 'answer':
-                if (isBroadcaster) {
-                    handleAnswer(message.answer, message.viewerId);
-                }
-                break;
-            case 'candidate':
-                if (isBroadcaster) {
-                    handleCandidate(message.candidate, message.viewerId);
-                } else {
-                    handleCandidate(message.candidate);
                 }
                 break;
             case 'broadcasterLeft':
@@ -1766,50 +1694,80 @@
                 const giftMessage = `${message.sender} 送出了一個 ${message.gift} 禮物！`;
                 displayChatMessage(giftMessage, '系統');
                 break;
+            default:
+                console.log("未知的 Main WebSocket 消息類型:", message.type);
+        }
+    }
+
+    function handleSignalingMessage(event) {
+        const message = JSON.parse(event.data);
+        console.log('收到 Signaling 消息:', message);
+
+        switch (message.type) {
+            case 'offer':
+                if (!isBroadcaster) {
+                    handleOffer(message.offer, message.userId); // 確保 userId 是實際的 userId
+                }
+                break;
+            case 'answer':
+                if (isBroadcaster) {
+                    handleAnswer(message.answer, message.userId); // 確保 userId 是實際的 userId
+                }
+                break;
+            case 'candidate':
+                if (isBroadcaster) {
+                    handleCandidate(message.candidate, message.userId); // 確保 userId 是實際的 userId
+                } else {
+                    handleCandidate(message.candidate, message.userId); // 確保 userId 是實際的 userId
+                }
+                break;
+            default:
+                console.log("未知的 Signaling 消息類型:", message.type);
         }
     }
 
     // 建立連線
-    function createPeerConnection(viewerId) {
-        console.log('創建對等連接，觀眾 ID:', viewerId);
+    function createPeerConnection(newViewerUserId) { // viewerUserId 是 viewer 的實際 userId
+        console.log('創建對等連接，觀眾 User ID:', newViewerUserId);
         const peerConnection = new RTCPeerConnection(configuration);
-        peerConnections[viewerId] = peerConnection;
+        peerConnections[newViewerUserId] = peerConnection;
 
         peerConnection.onicecandidate = e => {
             if (e.candidate) {
-                console.log('發送 ICE 候選項給觀眾:', viewerId);
-                signalingWs.send(JSON.stringify({
+                console.log('發送 ICE 候選項給觀眾:', newViewerUserId);
+                sendSignalingMessage({
                     type: 'candidate',
                     candidate: e.candidate,
-                    roomId,
-                    viewerId
-                }));
+                    roomId: roomId,
+                    viewerId: newViewerUserId // 使用 viewer 的 userId
+                });
             }
         };
 
         peerConnection.oniceconnectionstatechange = () => {
-            console.log('ICE 連接狀態變更（觀眾 ID:', viewerId, '）:', peerConnection.iceConnectionState);
+            console.log('ICE 連接狀態變更（觀眾 User ID:', newViewerUserId, '）:', peerConnection.iceConnectionState);
             if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'disconnected') {
-                console.log('ICE 連接失敗或已斷開，觀眾 ID:', viewerId);
+                console.log('ICE 連接失敗或已斷開，觀眾 User ID:', newViewerUserId);
                 peerConnection.close();
-                delete peerConnections[viewerId];
+                delete peerConnections[newViewerUserId];
             }
         };
+
         localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
         peerConnection.createOffer()
             .then(offer => {
-                console.log('設置本地描述，觀眾 ID:', viewerId);
+                console.log('設置本地描述，觀眾 User ID:', newViewerUserId);
                 return peerConnection.setLocalDescription(offer);
             })
             .then(() => {
-                console.log('發送連線請求給觀眾:', viewerId);
-                signalingWs.send(JSON.stringify({
+                console.log('發送連線請求給觀眾:', newViewerUserId);
+                sendSignalingMessage({
                     type: 'offer',
                     offer: peerConnection.localDescription,
-                    roomId,
-                    viewerId
-                }));
+                    roomId: roomId,
+                    viewerId: newViewerUserId // 使用 viewer 的 userId
+                });
             })
             .catch(e => {
                 updateStatus('創建連線請求失敗: ' + e.message);
@@ -1817,14 +1775,13 @@
             });
     }
 
-
     // 清除連線釋放資源
-    function removePeerConnection(viewerId) {
-        const peerConnection = peerConnections[viewerId];
+    function removePeerConnection(viewerUserId) { // viewerUserId 是 viewer 的實際 userId
+        const peerConnection = peerConnections[viewerUserId];
         if (peerConnection) {
             peerConnection.close();
-            delete peerConnections[viewerId];
-            console.log(`已釋放觀眾 ${viewerId} 的連線資源`);
+            delete peerConnections[viewerUserId];
+            console.log(`已釋放觀眾 ${viewerUserId} 的連線資源`);
         }
     }
 
@@ -1833,23 +1790,27 @@
         viewersElement.textContent = `在線人數: ${viewerCount}`;
     }
 
-    function handleOffer(offer) {
+    function handleOffer(offer, senderUserId) { // senderUserId 是發送 offer 的 broadcaster 的 userId
         console.log('處理連線請求...');
-        peerConnection = new RTCPeerConnection(configuration);
+        const peerConnection = new RTCPeerConnection(configuration);
+        peerConnections[senderUserId] = peerConnection;
+
         peerConnection.onicecandidate = e => {
             if (e.candidate) {
-                signalingWs.send(JSON.stringify({
+                sendSignalingMessage({
                     type: 'candidate',
                     candidate: e.candidate,
-                    roomId,
-                    viewerId
-                }));
+                    roomId: roomId,
+                    viewerId: senderUserId // 使用 viewer 的 userId
+                });
             }
         };
+
         peerConnection.ontrack = e => {
             console.log('接收到遠程媒體軌道');
             videoStream.srcObject = e.streams[0];
         };
+
         peerConnection.oniceconnectionstatechange = () => {
             console.log('ICE 連接狀態變更:', peerConnection.iceConnectionState);
             if (peerConnection.iceConnectionState === 'failed' || peerConnection.iceConnectionState === 'disconnected') {
@@ -1869,12 +1830,12 @@
             })
             .then(() => {
                 console.log('發送連線回應給主播');
-                signalingWs.send(JSON.stringify({
+                sendSignalingMessage({
                     type: 'answer',
                     answer: peerConnection.localDescription,
-                    roomId,
-                    viewerId
-                }));
+                    roomId: roomId,
+                    viewerId: senderUserId // 使用 viewer 的 userId
+                });
             })
             .catch(e => {
                 updateStatus('處理連線請求失敗: ' + e.message);
@@ -1882,9 +1843,9 @@
             });
     }
 
-    function handleAnswer(answer, viewerId) {
-        console.log('處理連線回應，觀眾 ID:', viewerId);
-        const peerConnection = peerConnections[viewerId];
+    function handleAnswer(answer, senderUserId) { // senderUserId 是發送 answer 的 viewer 的 userId
+        console.log('處理連線回應，觀眾 User ID:', senderUserId);
+        const peerConnection = peerConnections[senderUserId];
         if (peerConnection) {
             peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
                 .catch(e => {
@@ -1892,62 +1853,35 @@
                     console.error('設置遠端描述失敗:', e);
                 });
         } else {
-            console.error('找不到對應的 peerConnection，觀眾 ID:', viewerId);
+            console.error('找不到對應的 peerConnection，觀眾 User ID:', senderUserId);
         }
     }
 
-    function handleCandidate(candidate, viewerId) {
-        if (isBroadcaster) {
-            console.log('處理 ICE 候選項，觀眾 ID:', viewerId);
-            const peerConnection = peerConnections[viewerId];
-            if (peerConnection) {
-                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-                    .catch(e => {
-                        updateStatus('添加 ICE 候選項失敗: ' + e.message);
-                        console.error('添加 ICE 候選項失敗:', e);
-                    });
-            } else {
-                console.error('找不到對應的 peerConnection，觀眾 ID:', viewerId);
-            }
+    function handleCandidate(candidate, senderUserId) { // senderUserId 是發送 candidate 的 viewer 的 userId
+        const peerConnection = peerConnections[senderUserId];
+        if (peerConnection) {
+            peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                .catch(e => {
+                    updateStatus('添加 ICE 候選項失敗: ' + e.message);
+                    console.error('添加 ICE 候選項失敗:', e);
+                });
         } else {
-            console.log('處理 ICE 候選項');
-            if (peerConnection) {
-                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-                    .catch(e => {
-                        updateStatus('添加 ICE 候選項失敗: ' + e.message);
-                        console.error('添加 ICE 候選項失敗:', e);
-                    });
-            } else {
-                console.error('peerConnection 尚未建立');
-            }
+            console.error('找不到對應的 peerConnection，觀眾 User ID:', senderUserId);
         }
     }
 
     function hangup() {
         console.log('執行掛斷操作...');
-        if (peerConnection) {
-            peerConnection.onicecandidate = null;
-            peerConnection.ontrack = null;
-            peerConnection.oniceconnectionstatechange = null;
-            peerConnection.close();
-            peerConnection = null;
-        }
-        if (isBroadcaster) {
-            for (let viewerId in peerConnections) {
-                const peerConnection = peerConnections[viewerId];
-                if (peerConnection) {
-                    console.log('關閉對等連接，觀眾 ID:', viewerId);
-                    peerConnection.close();
-                }
-            }
-            peerConnections = {};
-            window.location.href = "live-stream-lobby.html";
-        } else {
+        for (let viewerId in peerConnections) {
+            const peerConnection = peerConnections[viewerId];
             if (peerConnection) {
-                console.log('關閉對等連接');
+                console.log('關閉對等連接，觀眾 ID:', viewerId);
                 peerConnection.close();
-                peerConnection = null;
             }
+        }
+        peerConnections = {};
+        if (isBroadcaster) {
+            window.location.href = "live-stream-lobby.html";
         }
 
         if (localStream) {
@@ -1955,10 +1889,17 @@
             localStream.getTracks().forEach(track => track.stop());
             localStream = null;
         }
+
         if (ws && ws.readyState === WebSocket.OPEN) {
-            console.log('關閉 WebSocket 連接');
+            console.log('關閉主 WebSocket 連接');
             ws.close();
         }
+
+        if (signalingWs && signalingWs.readyState === WebSocket.OPEN) {
+            console.log('關閉 Signaling WebSocket 連接');
+            signalingWs.close();
+        }
+
         videoStream.srcObject = null;
         videoLabel.textContent = '';
         videoLabel.style.display = 'none';
@@ -1972,23 +1913,22 @@
 
         document.getElementById("videoLabel").style.display = "none";
         document.querySelector(".viewers").style.display = "none";
+
     }
 
     function sendChatMessage() {
-        const messageInput = document.getElementById('messageInput');
         const message = messageInput.value.trim();
         if (message && ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({type: 'chat', content: message, roomId}));
+            ws.send(JSON.stringify({ type: 'chat', content: message, roomId }));
             messageInput.value = '';
         }
     }
 
     function sendGift(giftEmoji) {
-        const roomId = urlParams.get('roomId');
         const sender = localStorage.getItem('userName');
         giftModal.style.display = "none";
 
-        const message = `${localStorage.getItem('userName')}送出了一個 ${giftEmoji} 禮物！`;
+        const message = `${sender}送出了一個 ${giftEmoji} 禮物！`;
 
         if (message && ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
@@ -2034,6 +1974,55 @@
         document.getElementById('messageInput').disabled = true;
         document.getElementById('sendMessage').disabled = true;
     }
+
+    // Helper function to send signaling messages with required fields
+    function sendSignalingMessage(message) {
+        const userId = localStorage.getItem("userId");
+        const completeMessage = {
+            ...message,
+            userId: userId,
+            roomId: roomId
+        };
+        console.log('發送 Signaling 消息:', completeMessage);
+        signalingWs.send(JSON.stringify(completeMessage));
+    }
+
+    function setupMediaStream() {
+        console.log('正在獲取用戶媒體設備...');
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+            .then(stream => {
+                console.log('成功獲取媒體流');
+                videoStream.srcObject = stream;
+                videoStream.muted = true;
+                localStream = stream;
+                videoLabel.textContent = '直播畫面';
+
+                const urlParams2 = new URLSearchParams(window.location.search);
+                const title = urlParams2.get('title');
+                const description = urlParams2.get('description');
+                const products = urlParams2.get('products');
+                const productArray = products ? products.split(',') : [];
+
+                console.log('發送創建房間請求，並附加產品陣列:', productArray);
+
+                ws.send(JSON.stringify({
+                    type: 'create',
+                    roomId: roomId,
+                    userId: localStorage.getItem("userId"),
+                    title: title,
+                    description: description,
+                    products: productArray
+                }));
+                hangupButton.disabled = false;
+                enableChat();
+            })
+            .catch(e => {
+                updateStatus('獲取媒體設備失敗: ' + e.message);
+                console.error('獲取媒體設備失敗:', e);
+            });
+    }
+
+
 
 </script>
 </body>

@@ -438,12 +438,28 @@
 
     <div class="contract-input-field">
         <label for="salesPeriod">銷售期間</label>
-        <input type="text" id="salesPeriod" placeholder="輸入銷售期間">
+        <select id="salesPeriod">
+            <option value="" disabled selected>選擇銷售期間</option>
+            <!-- 使用 JavaScript 動態生成 7 到 30 的選項 -->
+            <script>
+                for (let i = 7; i <= 30; i++) {
+                    document.write(`<option value="${i}日">${i} 日</option>`);
+                }
+            </script>
+        </select>
     </div>
 
     <div class="contract-input-field">
         <label for="commissionRate">佣金比例 (%)</label>
-        <input type="number" id="commissionRate" placeholder="輸入佣金比例">
+        <input
+                type="number"
+                id="commissionRate"
+                placeholder="輸入佣金比例"
+                min="1"
+                max="100"
+                step="1"
+                required
+        >
     </div>
 
     <button id="generateContractBtn" class="contract-signature-button">生成合約</button>

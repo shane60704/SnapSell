@@ -1,3 +1,4 @@
+let contractRoomId = null;
 document.addEventListener('DOMContentLoaded', function () {
 
     // 初始隱藏合約彈出視窗
@@ -68,6 +69,15 @@ document.getElementById('generateContractBtn').addEventListener('click', functio
         salesPeriod: document.getElementById('salesPeriod').value,
         commissionRate: document.getElementById('commissionRate').value
     };
+    if (!contractData.clientName || !contractData.sellerName || !contractData.productName || !contractData.salesPeriod || !contractData.commissionRate) {
+        alert("請填寫完整合約資訊");
+        return;
+    }
+    const commissionRate = Number(contractData.commissionRate);
+    if (isNaN(commissionRate) || commissionRate < 1 || commissionRate > 100 || !Number.isInteger(commissionRate)) {
+        alert("佣金比例僅能設定1到100%");
+        return;
+    }
     const productSelect = document.getElementById('productName');
     const selectedProductName = productSelect.options[productSelect.selectedIndex].text;
     const contract_container = document.querySelector('.contract-content-container');
@@ -196,8 +206,6 @@ document.getElementById("clearSignatureA").addEventListener('click',function (){
 function clearSignature(ctx,signaturePad) {
     ctx.clearRect(0, 0, signaturePad.width, signaturePad.height);
 }
-
-let contractRoomId = null;
 
 function connectWebSocketForContract(chatRoomId) {
     const socket = new SockJS('/contract'); // 確認 WebSocket 端點為 /contract
