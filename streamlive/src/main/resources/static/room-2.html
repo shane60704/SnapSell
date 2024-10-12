@@ -1596,9 +1596,9 @@
         }
 
         // 主 WebSocket 連接（處理業務相關消息，如聊天室、禮物等）
-        ws = new WebSocket('ws://localhost:8080/socket');
+        // ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        // ws = new WebSocket('wss://techwavelab.com/socket');
+        ws = new WebSocket('wss://techwavelab.com/socket');
         console.log('正在初始化 main service websocket 連接...');
 
         ws.onopen = () => {
@@ -1628,7 +1628,8 @@
         ws.onmessage = handleMainMessage;
 
         // Signaling WebSocket 連接（處理 WebRTC 信令消息）
-        signalingWs = new WebSocket('ws://localhost:3000/signaling');
+        // signalingWs = new WebSocket('ws://localhost/signaling');
+        signalingWs = new WebSocket('ws://35.77.172.232/signaling');
         console.log('正在初始化 signaling service websocket 連接...');
         signalingWs.onopen = () => {
             console.log('Signaling WebSocket 連接成功');
@@ -1668,7 +1669,7 @@
                 if (isBroadcaster) {
                     console.log('新觀眾加入，創建對等連接');
                     document.getElementById('status').style.display = "none";
-                    const newViewerId = message.viewerId; // 這裡應該是 viewer 的 userId
+                    const newViewerId = message.viewerId;
                     createPeerConnection(newViewerId);
                 }
                 break;
