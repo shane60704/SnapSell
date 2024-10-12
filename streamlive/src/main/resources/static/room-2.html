@@ -1438,7 +1438,6 @@
                 })
         }
 
-        // 初始化表單
         function initializeForm(productName, unitPrice, senderName) {
             document.getElementById('productName').value = productName;
             document.getElementById('unitPrice').value = unitPrice;
@@ -1629,7 +1628,7 @@
 
         // Signaling WebSocket 連接（處理 WebRTC 信令消息）
         // signalingWs = new WebSocket('ws://localhost/signaling');
-        signalingWs = new WebSocket('ws://35.77.172.232/signaling');
+        signalingWs = new WebSocket('wss://seanlife.site/signaling');
         console.log('正在初始化 signaling service websocket 連接...');
         signalingWs.onopen = () => {
             console.log('Signaling WebSocket 連接成功');
