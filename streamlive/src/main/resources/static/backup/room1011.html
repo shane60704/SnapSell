@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SnapSell | 直播間</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/popup.css"/>
     <style>
         * {
@@ -36,8 +35,8 @@
         #mainArea {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding-right: 10px;
+            gap:10px;
+            padding-right:10px;
             flex: 1.6;
         }
 
@@ -50,11 +49,11 @@
             overflow: hidden;
         }
 
-        #status {
+        #status{
             position: absolute;
             width: 100%;
-            height: 100%;
-            top: 0;
+            height:100%;
+            top:0;
             left: 0;
             display: flex;
             align-items: center;
@@ -63,8 +62,8 @@
             background: rgba(0, 0, 0, 0.5);
         }
 
-        #status p {
-            color: white;
+        #status p{
+            color:white;
             font-size: 24px;
         }
 
@@ -85,12 +84,11 @@
             border-radius: 3px;
             font-size: 14px;
         }
-
         .video-label::before {
             content: '';
             position: absolute;
             left: 6px;
-            top: 14px;
+            top:14px;
             width: 10px;
             height: 10px;
             background-color: red;
@@ -99,15 +97,9 @@
         }
 
         @keyframes blink {
-            0% {
-                opacity: 0;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-            }
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         .viewers {
@@ -156,7 +148,7 @@
             margin-bottom: 10px;
             border-radius: 5px;
             background-color: #2C2F3F;
-            color: white;
+            color:white;
         }
 
         #chatInput {
@@ -197,7 +189,7 @@
         /* 商品區域 */
         #products {
             border-radius: 8px;
-            flex: 1.7;
+            flex:1.7;
             display: flex;
             gap: 10px;
             padding: 10px 0;
@@ -270,7 +262,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0,0,0,0.4);
         }
 
         .purchase-modal-content {
@@ -281,7 +273,7 @@
             padding: 20px;
             background-color: #f9f9f9;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: relative;
         }
 
@@ -302,7 +294,6 @@
             position: relative;
             padding: 0 15px;
         }
-
         .purchase-progress-step {
             display: flex;
             flex-direction: column;
@@ -310,7 +301,6 @@
             z-index: 1;
             flex: 1;
         }
-
         .purchase-progress-step-circle {
             width: 30px;
             height: 30px;
@@ -323,12 +313,10 @@
             font-size: 14px;
             margin-bottom: 5px;
         }
-
         .purchase-progress-step.active .purchase-progress-step-circle {
             background-color: #4CAF50;
             color: white;
         }
-
         .purchase-progress-step-name {
             font-size: 12px;
             color: #666;
@@ -338,10 +326,9 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .purchase-progress-line {
             position: absolute;
-            width: 290px;
+            width:290px;
             top: 15px;
             left: 73px;
             right: 45px;
@@ -413,21 +400,19 @@
             .purchase-progress-bar {
                 padding: 0 5px;
             }
-
             .purchase-progress-step-circle {
                 width: 25px;
                 height: 25px;
                 font-size: 12px;
             }
-
             .purchase-progress-step-name {
                 font-size: 10px;
             }
-
             .purchase-progress-line {
                 left: 30px;
                 right: 30px;
             }
+
 
 
             .modal {
@@ -439,7 +424,7 @@
                 width: 100%;
                 height: 100%;
                 overflow: auto;
-                background-color: rgba(0, 0, 0, 0.7);
+                background-color: rgba(0,0,0,0.7);
                 animation: fadeIn 0.3s;
             }
 
@@ -451,7 +436,7 @@
                 width: 90%;
                 max-width: 500px;
                 border-radius: 15px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
                 position: relative;
             }
 
@@ -495,7 +480,7 @@
                 margin-top: 10px;
                 border: 2px solid #e94560;
                 border-radius: 8px;
-                background-color: rgba(255, 255, 255, 0.1);
+                background-color: rgba(255,255,255,0.1);
                 color: #fff;
             }
 
@@ -582,20 +567,20 @@
         .tappay-field-focus {
             border-color: #66afe9;
             outline: 0;
-            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
         }
 
         .has-error .form-control {
             border-color: #a94442;
-            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
         }
 
         .has-success .form-control {
             border-color: #3c763d;
-            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
         }
 
         /* 整體彈出視窗樣式 */
@@ -649,7 +634,7 @@
         }
 
         .order-title {
-            color: black;
+            color:black;
             font-size: 24px;
             font-weight: bold;
             margin: 15px 0;
@@ -692,7 +677,7 @@
             cursor: pointer;
         }
 
-        .margin-adjust {
+        .margin-adjust{
             margin-top: 15px;
         }
 
@@ -720,15 +705,14 @@
         .streamer-details {
             flex-grow: 1;
         }
-
-        .streamer-info h2 {
+        .streamer-info h2{
             margin-top: 13px;
             margin-bottom: 4px;
             font-size: 24px;
         }
 
-        .streamer-info p, h2 {
-            color: white;
+        .streamer-info p,h2{
+            color:white;
         }
 
         .action-buttons {
@@ -750,7 +734,7 @@
             color: white;
         }
 
-        #exitButton, #hangupButton {
+        #exitButton ,#hangupButton{
             background-color: #e94560;
             color: white;
         }
@@ -763,7 +747,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0,0,0,0.7);
             animation: fadeIn 0.3s;
             z-index: 1000;
         }
@@ -776,22 +760,22 @@
             width: 90%;
             max-width: 500px;
             border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             position: relative;
         }
 
-        .adjust-btn {
+        .adjust-btn{
             width: 100%;
-            background-color: #4CAF50;
-            color: white;
+            background-color:#4CAF50 ;
+            color:white;
             font-weight: bold;
             transition: background-color 0.3s ease;
-            border: none;
+            border:none;
         }
 
-        .adjust-btn:hover {
-            background-color: #45a049;
-            color: white;
+        .adjust-btn:hover{
+            background-color:#45a049 ;
+            color:white;
         }
 
         .close {
@@ -801,7 +785,7 @@
             font-weight: bold;
             cursor: pointer;
             position: absolute;
-            top: 5px;
+            top:5px;
             right: 10px;
         }
 
@@ -838,7 +822,7 @@
             margin-top: 10px;
             border: 2px solid #e94560;
             border-radius: 8px;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255,255,255,0.1);
             color: #fff;
         }
 
@@ -895,13 +879,11 @@
             flex-wrap: wrap;
             justify-content: space-around;
         }
-
-        .item-container {
+        .item-container{
             display: flex;
             margin: auto;
         }
-
-        .item-header {
+        .item-header{
             display: flex;
             margin: auto auto 10px auto;
         }
@@ -929,7 +911,7 @@
         .gift-name {
             font-size: 16px;
             margin-top: 5px;
-            color: white;
+            color:white;
         }
     </style>
 </head>
@@ -952,7 +934,7 @@
             <div class="action-buttons">
                 <button id="giftButton" class="action-button">送禮物</button>
                 <button id="exitButton" class="action-button">離開直播</button>
-                <button id="hangupButton" class="action-button" disabled>結束直播</button>
+                <button id="hangupButton"  class="action-button" disabled>結束直播</button>
             </div>
         </div>
         <!-- 商品區域 -->
@@ -992,7 +974,7 @@
 
         <!-- 第一階段：填寫訂單資訊 -->
         <div id="orderForm">
-            <p class="order-title">填寫訂單資訊</p>
+            <p class = "order-title">填寫訂單資訊</p>
             <form>
                 <div class="purchase-form-row">
                     <div class="purchase-form-col">
@@ -1044,14 +1026,14 @@
 
         <!-- 第二階段：確認訂單資訊 -->
         <div id="orderSummary" style="display:none;">
-            <p class="order-title">確認訂單資訊</p>
+            <p class = "order-title">確認訂單資訊</p>
             <div id="summaryContent" class="purchase-summary-content"></div>
             <button type="button" id="payButton" class="purchase-button margin-adjust">結帳</button>
         </div>
 
         <!-- 第三階段：付款 -->
         <div id="paymentForm" style="display:none;">
-            <p class="order-title">付款資訊</p>
+            <p class = "order-title">付款資訊</p>
             <form id="tpForm">
                 <div class="form-group card-number-group">
                     <label for="card-number" class="control-label"><span id="cardtype"></span>卡號</label>
@@ -1076,7 +1058,7 @@
     <div class="custom-modal-content">
         <span class="custom-close-button">&times;</span>
         <div class="custom-modal-header">
-            <p class="order-title">付款成功</p>
+            <p class = "order-title">付款成功</p>
         </div>
         <div class="custom-modal-body">
             <p>您的訂單已經完成，感謝您的購買！</p>
@@ -1141,10 +1123,10 @@
 <div id="giftModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <div class="item-header">
+        <div class ="item-header">
             <h2>選擇禮物</h2>
         </div>
-        <div class="item-container">
+        <div class ="item-container">
             <div class="gift-item" onclick="sendGift('🌹')">
                 <div class="gift-icon">🌹</div>
                 <div class="gift-name">玫瑰</div>
@@ -1167,16 +1149,15 @@
 
 <!-- TapPay SDK -->
 <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.18.0"></script>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"
-        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-<script src="assets/js/popup.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src ="assets/js/popup.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
         const products = urlParams.get('products');
         const title = urlParams.get('title');
         const productArray = products ? products.split(',') : [];
-        const description = urlParams.get('description');
+        const  description = urlParams.get('description');
         console.log('Selected Products:', productArray);
 
         getProductInfo(productArray);
@@ -1452,7 +1433,6 @@
     let peerConnection;
     let peerConnections = {}; // 管理多位觀眾的連線
     let ws;
-    let signalingWs;
     let roomId;
     let isBroadcaster = false;
     let viewerId; // 觀眾的唯一識別碼
@@ -1483,9 +1463,9 @@
     const emojis = document.querySelectorAll(".emoji");
     const submitBtn = document.getElementById("submitRating");
     const skipBtn = document.getElementById("skipRating");
-    const statusDiv = document.getElementById('status');
+    const statusDiv =document.getElementById('status');
 
-    statusDiv.style.display = "none";
+    statusDiv.style.display= "none";
     let currentRating = 0;
 
     exitBtn.onclick = function () {
@@ -1550,13 +1530,13 @@
         alert("感謝您的評價！您的意見對我們很重要。");
         ratingModal.style.display = "none";
         hangup();
-        window.location.href = "live-stream-lobby.html";
+        window.location.href="live-stream-lobby.html";
     }
 
     skipBtn.onclick = function () {
         ratingModal.style.display = "none";
         hangup();
-        window.location.href = "live-stream-lobby.html";
+        window.location.href="live-stream-lobby.html";
     }
 
     hangupButton.onclick = hangup;
@@ -1590,10 +1570,10 @@
 
     function initializeWebSocket() {
         // 測試環境使用
-        ws = new WebSocket('ws://localhost:8080/socket');
+        // ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        // ws = new WebSocket('wss://techwavelab.com/socket');
-        console.log('正在初始化 main service websocket 連接...');
+        ws = new WebSocket('wss://techwavelab.com/socket');
+        console.log('正在初始化 WebSocket 連接...');
 
         ws.onopen = () => {
             console.log('WebSocket 連接成功');
@@ -1620,52 +1600,6 @@
         };
 
         ws.onmessage = handleMessage;
-
-        signalingWs = new WebSocket('ws://localhost:3000/signaling');
-        console.log('正在初始化 signaling service websocket 連接...');
-        signalingWs.onopen = () => {
-            console.log(' signaling service websocket 連接成功');
-            signalingWs.send(JSON.stringify({
-                type: 'identify',
-                userId: localStorage.getItem('userId'),
-                roomId: roomId,
-                role: isBroadcaster ? 'broadcaster' : 'viewer'
-            }));
-        }
-        signalingWs.onclose = () => {
-            console.log('signaling service websocket 連接關閉');
-        };
-        signalingWs.onerror = (error) => {
-            console.error('signaling service websocket 連接錯誤:', error);
-        };
-
-        signalingWs.onmessage = handleSignalingMessage;
-
-    }
-
-    function handleSignalingMessage(event) {
-        const message = JSON.parse(event.data);
-        console.log('收到 Signaling 消息:', message);
-
-        switch (message.type) {
-            case 'offer':
-                if (!isBroadcaster) {
-                    handleOffer(message.offer);
-                }
-                break;
-            case 'answer':
-                if (isBroadcaster) {
-                    handleAnswer(message.answer, message.viewerId);
-                }
-                break;
-            case 'candidate':
-                if (isBroadcaster) {
-                    handleCandidate(message.candidate, message.viewerId);
-                } else {
-                    handleCandidate(message.candidate);
-                }
-                break;
-        }
     }
 
     function setupMediaStream() {
@@ -1778,7 +1712,7 @@
         peerConnection.onicecandidate = e => {
             if (e.candidate) {
                 console.log('發送 ICE 候選項給觀眾:', viewerId);
-                signalingWs.send(JSON.stringify({
+                ws.send(JSON.stringify({
                     type: 'candidate',
                     candidate: e.candidate,
                     roomId,
@@ -1804,7 +1738,7 @@
             })
             .then(() => {
                 console.log('發送連線請求給觀眾:', viewerId);
-                signalingWs.send(JSON.stringify({
+                ws.send(JSON.stringify({
                     type: 'offer',
                     offer: peerConnection.localDescription,
                     roomId,
@@ -1816,7 +1750,6 @@
                 console.error('創建連線請求失敗:', e);
             });
     }
-
 
     // 清除連線釋放資源
     function removePeerConnection(viewerId) {
@@ -1838,7 +1771,8 @@
         peerConnection = new RTCPeerConnection(configuration);
         peerConnection.onicecandidate = e => {
             if (e.candidate) {
-                signalingWs.send(JSON.stringify({
+                console.log('發送 ICE 候選項給主播');
+                ws.send(JSON.stringify({
                     type: 'candidate',
                     candidate: e.candidate,
                     roomId,
@@ -1869,7 +1803,7 @@
             })
             .then(() => {
                 console.log('發送連線回應給主播');
-                signalingWs.send(JSON.stringify({
+                ws.send(JSON.stringify({
                     type: 'answer',
                     answer: peerConnection.localDescription,
                     roomId,
@@ -1961,7 +1895,7 @@
         }
         videoStream.srcObject = null;
         videoLabel.textContent = '';
-        videoLabel.style.display = 'none';
+        videoLabel.style.display='none';
         hangupButton.disabled = true;
         disableChat();
 
@@ -1970,8 +1904,8 @@
         statusDiv.style.display = 'flex';
         statusDiv.style.color = 'white';
 
-        document.getElementById("videoLabel").style.display = "none";
-        document.querySelector(".viewers").style.display = "none";
+        document.getElementById("videoLabel").style.display= "none";
+        document.querySelector(".viewers").style.display= "none";
     }
 
     function sendChatMessage() {
