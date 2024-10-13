@@ -349,7 +349,7 @@
         </div>
         <div class="popup-title">上架成功</div>
         <div class="popup-message">您的商品已成功上架。</div>
-        <button class="popup-button" onclick="closeResultPopup('successPopup')">確定</button>
+        <button class="popup-button" onclick="closeListResultPopup('successPopup')">確定</button>
     </div>
 </div>
 <div class="popup-overlay" id="failurePopup">
@@ -366,8 +366,6 @@
         <button class="popup-button" onclick="closeResultPopup('failurePopup')">關閉</button>
     </div>
 </div>
-
-
 
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
@@ -427,12 +425,28 @@
 
         <div class="contract-input-field">
             <label for="salesPeriod">銷售期間</label>
-            <input type="text" id="salesPeriod" placeholder="輸入銷售期間">
+            <select id="salesPeriod">
+                <option value="" disabled selected>選擇銷售期間</option>
+                <!-- 使用 JavaScript 動態生成 7 到 30 的選項 -->
+                <script>
+                    for (let i = 7; i <= 30; i++) {
+                        document.write(`<option value="${i}日">${i} 日</option>`);
+                    }
+                </script>
+            </select>
         </div>
 
         <div class="contract-input-field">
             <label for="commissionRate">佣金比例 (%)</label>
-            <input type="number" id="commissionRate" placeholder="輸入佣金比例">
+            <input
+                    type="number"
+                    id="commissionRate"
+                    placeholder="輸入佣金比例"
+                    min="1"
+                    max="100"
+                    step="1"
+                    required
+            >
         </div>
 
         <button id="generateContractBtn" class="contract-signature-button">生成合約</button>
@@ -546,6 +560,11 @@
 <script src ="assets/js/contract.js"></script>
 <script>
 
+    function closeListResultPopup(popupId) {
+        document.getElementById(popupId).classList.remove('active');
+        window.location.href="my-products.html";
+    }
+
     function submitProduct() {
         const userId = document.getElementById('userId').value;
         const name = document.getElementById('name').value;
@@ -596,9 +615,9 @@
 
         if (file) {
             reader.readAsDataURL(file);
-            fileNameElement.textContent = file.name; // 顯示檔案名稱
+            fileNameElement.textContent = file.name;
         } else {
-            fileNameElement.textContent = "未選擇任何檔案"; // 如果沒有選擇檔案
+            fileNameElement.textContent = "未選擇任何檔案";
         }
     }
 

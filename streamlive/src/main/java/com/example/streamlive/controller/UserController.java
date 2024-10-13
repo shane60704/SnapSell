@@ -100,6 +100,15 @@ public class UserController {
                 : new ResponseEntity<>(ErrorResponseDto.error("failed"), HttpStatus.BAD_REQUEST);
     }
 
+    @GetMapping("/solve-jwt")
+    public ResponseEntity<?> solveJwt(@RequestParam("token") String token){
+        Map<String, Object> claims = userService.solveJwt(token);
+        if (claims != null)
+            return ResponseEntity.ok(claims);
+        else
+            return new ResponseEntity(ErrorResponseDto.error("Invalid JWT"), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidEmailFormatException.class)
     public ResponseEntity<ErrorResponseDto<String>> handleInvalidEmailFormatException(InvalidEmailFormatException ex) {
         ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());

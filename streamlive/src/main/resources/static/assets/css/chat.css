@@ -19,6 +19,16 @@
     height: 50px;
 }
 
+.alert-img{
+    position: fixed;
+    bottom:60px;
+    right: 18px;
+    width: 40px;
+    height: 40px;
+    z-index: 900;
+    display: none;
+}
+
 .chat-container {
     position: fixed;
     z-index: 801;
@@ -253,6 +263,10 @@
 }
 
 .floating-circle.new-message {
+    animation: blink 1s infinite;
+}
+
+.alert-img.new-message{
     animation: blink 1s infinite;
 }
 

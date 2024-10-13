@@ -34,8 +34,8 @@ public class SignalingHandler extends TextWebSocketHandler {
     private final LiveStreamDao liveStreamDao;
     private final UserDao userDao;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final SessionManager sessionManager; // 注入 SessionManager
-    private final ObjectMapper objectMapper; // 注入 ObjectMapper
+    private final SessionManager sessionManager;
+    private final ObjectMapper objectMapper;
 
     // Redis Key 定義
     private static final String ROOMS_KEY = "rooms"; // Hash key 用於存儲 RoomInfo
@@ -44,14 +44,13 @@ public class SignalingHandler extends TextWebSocketHandler {
     private static final String TOTAL_VIEWER_COUNT_KEY = "totalViewerCount"; // Hash key 用於存儲房間總觀眾數量
     private static final String LOBBY_SESSIONS_KEY = "lobbySessions"; // Set key 用於存儲大廳連線
 
-    // 每個房間的觀眾連線會以 room:session:{roomId} 的形式儲存在 Redis 中
+    // 每個房間的觀眾連線會以 room:session:{roomId} 儲存在 Redis
     private String getRoomSessionsKey(String roomId) {
         return "room:session:" + roomId;
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        // 將 sessionId 與 WebSocketSession 進行映射
         sessionManager.addSession(session.getId(), session);
         log.info("新的連線建立，sessionId: {}", session.getId());
         super.afterConnectionEstablished(session);
@@ -176,7 +175,7 @@ public class SignalingHandler extends TextWebSocketHandler {
     }
 
     /**
-     * 處理聊天訊息的邏輯
+     * 處理聊天訊息
      */
     private void handleChat(JSONObject jsonMessage, WebSocketSession sender) throws IOException {
         String chatRoomId = jsonMessage.getString("roomId");
@@ -376,9 +375,6 @@ public class SignalingHandler extends TextWebSocketHandler {
         log.info("觀眾數量已廣播至房間 {}", roomId);
     }
 
-    /**
-     * 廣播禮物訊息給所有房間內的成員
-     */
     /**
      * 廣播禮物訊息給所有房間內的成員
      */

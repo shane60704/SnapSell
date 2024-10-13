@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SnapSell | 直播間</title>
+    <title>SnapSell 直播間</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/popup.css"/>
@@ -32,7 +32,6 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* 上方區域（視頻和聊天區域） */
         #mainArea {
             display: flex;
             flex-direction: column;
@@ -41,7 +40,6 @@
             flex: 1.6;
         }
 
-        /* 視訊區 */
         .video-container {
             position: relative;
             flex: 3.5;
@@ -145,8 +143,8 @@
 
         #messageInput,
         #sendMessage {
-            border: none; /* 移除邊框 */
-            box-shadow: none; /* 移除陰影 */
+            border: none;
+            box-shadow: none;
         }
 
         #chatMessages {
@@ -194,7 +192,6 @@
             background-color: #4C9FE4;
         }
 
-        /* 商品區域 */
         #products {
             border-radius: 8px;
             flex: 1.7;
@@ -259,7 +256,6 @@
             background-color: #1e7e34;
         }
 
-        /* 購物彈出視窗樣式 */
         .purchase-modal {
             display: none;
             position: fixed;
@@ -598,7 +594,6 @@
             box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
         }
 
-        /* 整體彈出視窗樣式 */
         .custom-modal {
             display: none;
             position: fixed;
@@ -611,7 +606,6 @@
             animation: fadeIn 0.5s;
         }
 
-        /* 彈出視窗內容容器 */
         .custom-modal-content {
             background: linear-gradient(145deg, #f0f0f0, #ffffff); /* 漸層背景 */
             border-radius: 12px;
@@ -623,7 +617,6 @@
             animation: popIn 0.3s forwards; /* 添加彈出動畫 */
         }
 
-        /* 淡入效果 */
         @keyframes fadeIn {
             from {
                 background-color: rgba(0, 0, 0, 0);
@@ -633,14 +626,12 @@
             }
         }
 
-        /* 彈出動畫 */
         @keyframes popIn {
             to {
                 transform: scale(1);
             }
         }
 
-        /* 標題區域樣式 */
         .custom-modal-header {
             text-align: center;
             border-bottom: 1px solid #ddd;
@@ -656,16 +647,14 @@
 
         }
 
-        /* 內文區域樣式 */
         .custom-modal-body {
             text-align: center;
             font-size: 18px;
             color: #333;
         }
 
-        /* 彈出視窗按鈕 */
         .custom-confirm-button {
-            background-color: #5FB1F7; /* 按鈕顏色 */
+            background-color: #5FB1F7;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -678,10 +667,9 @@
         }
 
         .custom-confirm-button:hover {
-            background-color: #45a049; /* 按鈕懸停效果 */
+            background-color: #45a049;
         }
 
-        /* 關閉按鈕樣式 */
         .custom-close-button {
             color: #aaa;
             font-size: 28px;
@@ -701,7 +689,6 @@
             color: black;
         }
 
-        /* 彈出視窗的底部樣式 */
         .custom-modal-footer {
             text-align: center;
             margin-top: 20px;
@@ -1239,7 +1226,7 @@
             document.getElementById('quantity').addEventListener('input', updateTotalPrice);
             // 初始化訂單資料
             orderData.productId = product.id;
-            orderData.unitPrice = product.price;
+            // orderData.unitPrice = product.price;
         }
 
         function updateTotalPrice() {
@@ -1448,12 +1435,12 @@
     });
 
     let localStream;
-    let peerConnections = {}; // 管理多位觀眾的連線
-    let ws; // 主 WebSocket
-    let signalingWs; // Signaling WebSocket
+    let peerConnections = {};
+    let ws;
+    let signalingWs;
     let roomId;
     let isBroadcaster = false;
-    let viewerId; // 觀眾的唯一識別碼
+    let viewerId;
 
     const configuration = {
         iceServers: [
@@ -1486,7 +1473,6 @@
     statusDiv.style.display = "none";
     let currentRating = 0;
 
-    // UI 控制邏輯
     exitBtn.onclick = function () {
         ratingModal.style.display = "block";
     }
@@ -1595,9 +1581,8 @@
         }
 
         // 主 WebSocket 連接（處理業務相關消息，如聊天室、禮物等）
-        // ws = new WebSocket('ws://localhost:8080/socket');
-        // 正式環境使用
-        ws = new WebSocket('wss://techwavelab.com/socket');
+        // ws = new WebSocket('ws://localhost:8080/socket'); // 測試環境
+        ws = new WebSocket('wss://techwavelab.com/socket'); // 正式環境使用
         console.log('正在初始化 main service websocket 連接...');
 
         ws.onopen = () => {
@@ -1627,8 +1612,8 @@
         ws.onmessage = handleMainMessage;
 
         // Signaling WebSocket 連接（處理 WebRTC 信令消息）
-        // signalingWs = new WebSocket('ws://localhost/signaling');
-        signalingWs = new WebSocket('wss://seanlife.site/signaling');
+        // signalingWs = new WebSocket('ws://localhost:3000/signaling'); // 測試環境
+        signalingWs = new WebSocket('wss://seanlife.site/signaling'); //正式環境
         console.log('正在初始化 signaling service websocket 連接...');
         signalingWs.onopen = () => {
             console.log('Signaling WebSocket 連接成功');
@@ -1706,19 +1691,19 @@
         switch (message.type) {
             case 'offer':
                 if (!isBroadcaster) {
-                    handleOffer(message.offer, message.userId); // 確保 userId 是實際的 userId
+                    handleOffer(message.offer, message.userId);
                 }
                 break;
             case 'answer':
                 if (isBroadcaster) {
-                    handleAnswer(message.answer, message.userId); // 確保 userId 是實際的 userId
+                    handleAnswer(message.answer, message.userId);
                 }
                 break;
             case 'candidate':
                 if (isBroadcaster) {
-                    handleCandidate(message.candidate, message.userId); // 確保 userId 是實際的 userId
+                    handleCandidate(message.candidate, message.userId);
                 } else {
-                    handleCandidate(message.candidate, message.userId); // 確保 userId 是實際的 userId
+                    handleCandidate(message.candidate, message.userId);
                 }
                 break;
             default:
@@ -1727,7 +1712,7 @@
     }
 
     // 建立連線
-    function createPeerConnection(newViewerUserId) { // viewerUserId 是 viewer 的實際 userId
+    function createPeerConnection(newViewerUserId) {
         console.log('創建對等連接，觀眾 User ID:', newViewerUserId);
         const peerConnection = new RTCPeerConnection(configuration);
         peerConnections[newViewerUserId] = peerConnection;
@@ -1766,7 +1751,7 @@
                     type: 'offer',
                     offer: peerConnection.localDescription,
                     roomId: roomId,
-                    viewerId: newViewerUserId // 使用 viewer 的 userId
+                    viewerId: newViewerUserId
                 });
             })
             .catch(e => {
@@ -1776,7 +1761,7 @@
     }
 
     // 清除連線釋放資源
-    function removePeerConnection(viewerUserId) { // viewerUserId 是 viewer 的實際 userId
+    function removePeerConnection(viewerUserId) {
         const peerConnection = peerConnections[viewerUserId];
         if (peerConnection) {
             peerConnection.close();
@@ -1790,7 +1775,7 @@
         viewersElement.textContent = `在線人數: ${viewerCount}`;
     }
 
-    function handleOffer(offer, senderUserId) { // senderUserId 是發送 offer 的 broadcaster 的 userId
+    function handleOffer(offer, senderUserId) {
         console.log('處理連線請求...');
         const peerConnection = new RTCPeerConnection(configuration);
         peerConnections[senderUserId] = peerConnection;
@@ -1801,7 +1786,7 @@
                     type: 'candidate',
                     candidate: e.candidate,
                     roomId: roomId,
-                    viewerId: senderUserId // 使用 viewer 的 userId
+                    viewerId: senderUserId
                 });
             }
         };
@@ -1834,7 +1819,7 @@
                     type: 'answer',
                     answer: peerConnection.localDescription,
                     roomId: roomId,
-                    viewerId: senderUserId // 使用 viewer 的 userId
+                    viewerId: senderUserId
                 });
             })
             .catch(e => {
@@ -1843,7 +1828,7 @@
             });
     }
 
-    function handleAnswer(answer, senderUserId) { // senderUserId 是發送 answer 的 viewer 的 userId
+    function handleAnswer(answer, senderUserId) {
         console.log('處理連線回應，觀眾 User ID:', senderUserId);
         const peerConnection = peerConnections[senderUserId];
         if (peerConnection) {
@@ -1857,7 +1842,7 @@
         }
     }
 
-    function handleCandidate(candidate, senderUserId) { // senderUserId 是發送 candidate 的 viewer 的 userId
+    function handleCandidate(candidate, senderUserId) {
         const peerConnection = peerConnections[senderUserId];
         if (peerConnection) {
             peerConnection.addIceCandidate(new RTCIceCandidate(candidate))

@@ -14,6 +14,7 @@ import com.example.streamlive.service.user.UserService;
 import com.example.streamlive.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -169,6 +170,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<AgentProfile> getTop3AgentProfiles() {
         return userDao.getTop3AgentByTotalViewers();
+    }
+
+    @Nullable
+    @Override
+    public Map solveJwt(String token) {
+        return jwtUtil.isTokenValid(token) ? jwtUtil.getClaims(token) : null;
     }
 
     private Boolean checkoutEmailFormat(String email) {

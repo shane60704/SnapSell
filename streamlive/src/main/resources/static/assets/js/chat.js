@@ -20,9 +20,10 @@ function connectWebSocket() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const chatIcon = document.querySelector('.floating-circle');
-
-    chatIcon.addEventListener('click', function () {
+    const chatIcon = document.querySelector('.alert-img');
+    const floatContainer = document.querySelector('.floating-circle');
+    floatContainer.addEventListener('click', function () {
+        chatIcon.style.display ="none";
         chatIcon.classList.remove('new-message');
     });
 });
@@ -34,7 +35,8 @@ function subscribeToNewChatRoomNotifications(userId) {
         console.log("收到新聊天室通知:", chatRoom);
         loadUserChatRooms(chatRoom.userBId);
         getChatRoomInfo(chatRoom.userBId,chatRoom.userAId);
-        const chatIcon = document.querySelector('.floating-circle');
+        const chatIcon = document.querySelector('.alert-img');
+        chatIcon.style.display ="block";
         chatIcon.classList.add('new-message');
         console.log("add new-message")
     });
@@ -399,7 +401,6 @@ function getCurrentUserId() {
     return localStorage.getItem('userId');
 }
 
-// 格式化時間戳
 function formatTimestamp(timestamp) {
     const date = new Date(timestamp);
     const hours = date.getHours();
@@ -409,5 +410,4 @@ function formatTimestamp(timestamp) {
     return `${ampm} ${formattedHours}:${minutes}`;
 }
 
-// 初始化 WebSocket 連接
 connectWebSocket();

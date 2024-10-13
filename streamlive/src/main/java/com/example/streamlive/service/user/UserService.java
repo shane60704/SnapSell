@@ -19,4 +19,5 @@ public interface UserService {
     Boolean updateUserDescription (Long userId,String description);
     Object getUserProfile(Long currentUserId,String type);
     List<AgentProfile> getTop3AgentProfiles();
+    Map solveJwt(String token);
 }

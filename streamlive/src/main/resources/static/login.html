@@ -221,6 +221,35 @@
 </div>
 
 <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const jwtToken = localStorage.getItem('jwtToken');
+        if (jwtToken) {
+            solveJwtToken(jwtToken);
+        }
+    });
+
+    function solveJwtToken(jwtToken){
+        fetch(`/api/1.0/user/solve-jwt?token=${jwtToken}`, {
+            method: 'GET'
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = 'index.html';
+                } else {
+                    throw new Error("Token is invalid or an error occurred during the validation.");
+                }
+            })
+            .catch(error => {
+                localStorage.removeItem("jwtToken");
+                localStorage.removeItem("userEmail");
+                localStorage.removeItem("userId");
+                localStorage.removeItem("userImage");
+                localStorage.removeItem("userName");
+                localStorage.removeItem("UserImage");
+                window.location.href = 'login.html';
+            })
+    }
     function toggleForm(formType) {
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
@@ -324,6 +353,7 @@
                 localStorage.setItem("userName", data.user.name);
                 localStorage.setItem("userEmail", data.user.email);
                 localStorage.setItem("userImage", data.user.image);
+                localStorage.setItem("jwtToken",data.accessToken);
                 window.location.href = 'index.html';
             })
             .catch((error) => {
@@ -357,6 +387,7 @@
                 localStorage.setItem("userName", data.user.name);
                 localStorage.setItem("userEmail", data.user.email);
                 localStorage.setItem("userImage", data.user.image);
+                localStorage.setItem("jwtToken",data.accessToken);
                 alert("註冊成功!");
                 window.location.href = 'index.html';
             })

@@ -57,10 +57,12 @@ document.addEventListener('DOMContentLoaded', function(){
         });
         // 綁定登出功能
         document.getElementById('logout-btn').addEventListener('click',function (){
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('userImage');
+            localStorage.removeItem("jwtToken");
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userImage");
+            localStorage.removeItem("userName");
+            localStorage.removeItem("UserImage");
             window.location.href="login.html";
         });
 

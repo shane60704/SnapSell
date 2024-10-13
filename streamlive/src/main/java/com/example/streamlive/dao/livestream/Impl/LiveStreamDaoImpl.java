@@ -372,7 +372,8 @@ public class LiveStreamDaoImpl implements LiveStreamDao {
 
     @Override
     public List<Map<String, Object>> getCommissionByDay(Long userId) {
-        String sql = "SELECT DATE(lr.start_time) AS day, SUM(o.total_price) AS total_sales, " +
+        String sql = "SELECT DATE(lr.start_time) AS day, " +
+                "SUM(o.total_price) AS total_sales, " +
                 "ROUND(SUM(o.total_price * CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(dd.commission_rate, '%', 1), ' ', -1) AS DECIMAL(5,2)) / 100)) AS total_commission " +
                 "FROM live_record lr " +
                 "JOIN `order` o ON lr.live_id = o.live_id " +
@@ -380,7 +381,8 @@ public class LiveStreamDaoImpl implements LiveStreamDao {
                 "JOIN delegation d ON d.product_id = p.id AND d.agent_id = lr.user_id " +
                 "JOIN delegation_details dd ON dd.delegation_id = d.id " +
                 "WHERE lr.user_id = :userId " +
-                "GROUP BY DATE(lr.start_time)";
+                "GROUP BY DATE(lr.start_time) " +
+                "ORDER BY day ASC";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         return namedParameterJdbcTemplate.queryForList(sql, params);
