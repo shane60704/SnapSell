@@ -1,6 +1,7 @@
 package com.example.streamlive.websocket;
 
 import com.example.streamlive.dao.livestream.LiveStreamDao;
+import com.example.streamlive.dao.product.ProductDao;
 import com.example.streamlive.dao.user.UserDao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ import java.util.Set;
 public class SignalingHandler extends TextWebSocketHandler {
 
     private final LiveStreamDao liveStreamDao;
+    private final ProductDao productDao;
     private final UserDao userDao;
     private final RedisTemplate<String, Object> redisTemplate;
     private final SessionManager sessionManager;
@@ -529,6 +531,34 @@ public class SignalingHandler extends TextWebSocketHandler {
     private boolean isBroadcaster(String roomId, WebSocketSession session) {
         String broadcasterSessionId = (String) redisTemplate.opsForHash().get(BROADCASTERS_KEY, roomId);
         return broadcasterSessionId != null && broadcasterSessionId.equals(session.getId());
+    }
+
+    public void notifyBroadcaster(String roomId, JSONObject message) {
+
+        String broadcasterSessionId = (String) redisTemplate.opsForHash().get(BROADCASTERS_KEY, roomId);
+
+        WebSocketSession broadcasterSession = sessionManager.getSession(broadcasterSessionId);
+        if (broadcasterSession != null && broadcasterSession.isOpen()) {
+            sendToSession(broadcasterSession, message.toString());
+            log.info("已通知直播主 sessionId {} 商品已售出: {}", broadcasterSessionId, message);
+        } else {
+            log.warn("無法找到或廣播者 sessionId: {}，無法通知商品售出", broadcasterSessionId);
+        }
+    }
+
+    public void broadcastToViewers(String roomId, JSONObject message) {
+
+        Set<Object> sessionIds = redisTemplate.opsForSet().members(getRoomSessionsKey(roomId));
+        if (sessionIds != null) {
+            for (Object sessionIdObj : sessionIds) {
+                String sessionId = (String) sessionIdObj;
+                WebSocketSession session = sessionManager.getSession(sessionId);
+                if (session != null && session.isOpen()) {
+                    sendToSession(session, message.toString());
+                }
+            }
+        }
+        log.info("已廣播商品更新消息至房間 {}", roomId);
     }
 
     /**

@@ -6,6 +6,7 @@
     <title>SnapSell 直播間</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <link rel="stylesheet" href="assets/css/popup.css"/>
     <style>
         * {
@@ -59,6 +60,161 @@
             justify-content: center;
             z-index: 100;
             background: rgba(0, 0, 0, 0.5);
+        }
+
+        .fashion-dashboard {
+            height: 290px;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            white-space: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            background-color: #2C2F3F;
+        }
+
+        .fashion-panel {
+            flex: 1;
+            padding: 15px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .fashion-panel::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            bottom: 5px;
+            width: 1.5px;
+            background: linear-gradient(to bottom, transparent, #4a4e69, transparent);
+            left: 0;
+        }
+
+        .fashion-panel:first-child::before {
+            display: none;
+        }
+
+        .fashion-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #00b4d8;
+            margin:0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #00b4d8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fashion-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            height: 180px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #00b4d8 #16213e;
+        }
+
+        .fashion-list-item {
+            font-size: 14px;
+            color: lightgrey;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fashion-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .fashion-stock, .fashion-total {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        .fashion-stock {
+            background-color: rgba(0, 180, 216, 0.2);
+            color: #00b4d8;
+            font-size: 12px;
+        }
+
+        .fashion-total {
+            background-color: rgba(245, 87, 108, 0.2);
+            color: #f5576c;
+        }
+
+        .fashion-order-id {
+            color: #caf0f8;
+            font-weight: 600;
+        }
+
+        .fashion-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .fashion-list::-webkit-scrollbar-track {
+            background: #16213e;
+        }
+
+        .fashion-list::-webkit-scrollbar-thumb {
+            background: #00b4d8;
+            border-radius: 2px;
+        }
+
+        .fashion-list::-webkit-scrollbar-thumb:hover {
+            background: #0077b6;
+        }
+
+        #dashboard {
+            display: none;
+        }
+
+        /* 表格基本樣式 */
+        .fashion-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            color: lightgrey;
+        }
+
+        .fashion-table th, .fashion-table td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fashion-table th {
+            background-color: #2C2F3F;
+            color: #00b4d8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .fashion-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .fashion-panel {
+            flex: 1;
+            padding: 5px 15px 15px 15px;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @media (max-width: 600px) {
+            .fashion-table th, .fashion-table td {
+                padding: 6px;
+                font-size: 12px;
+            }
         }
 
         #status p {
@@ -404,6 +560,52 @@
             font-size: 14px;
         }
 
+        .danmu-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .danmu-message {
+            position: absolute;
+            white-space: nowrap;
+            font-size: 20px;
+            color: white;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .danmu-message {
+            animation: slide-left 8s linear;
+        }
+
+        @keyframes slide-left {
+            from {
+                left: 100%;
+            }
+            to {
+                left: -100%;
+            }
+        }
+
+        .danmu-message.float-up {
+            animation: float-up 6s ease-out;
+        }
+
+        @keyframes float-up {
+            from {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0%);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-150%);
+            }
+        }
+
         /* RWD */
         @media (max-width: 400px) {
             .purchase-progress-bar {
@@ -607,14 +809,14 @@
         }
 
         .custom-modal-content {
-            background: linear-gradient(145deg, #f0f0f0, #ffffff); /* 漸層背景 */
+            background: linear-gradient(145deg, #f0f0f0, #ffffff); /
             border-radius: 12px;
             padding: 20px;
             max-width: 500px;
             margin: 10% auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* 添加陰影 */
-            transform: scale(0.7); /* 初始縮放效果 */
-            animation: popIn 0.3s forwards; /* 添加彈出動畫 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /
+            transform: scale(0.7);
+            animation: popIn 0.3s forwards;
         }
 
         @keyframes fadeIn {
@@ -862,6 +1064,9 @@
             opacity: 0;
         }
 
+
+
+
         @keyframes flyGift {
             0% {
                 transform: translateY(-150%) translateX(-50%);
@@ -918,6 +1123,14 @@
             margin-top: 5px;
             color: white;
         }
+        #noOrdersMessage {
+            color: #ccc;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .adjust-flex{
+            flex:0.6;
+        }
     </style>
 </head>
 <body>
@@ -930,6 +1143,7 @@
             <div class="viewers">在線人數: 0</div>
             <!-- 狀態顯示區域 -->
             <div id="status"></div>
+            <div id="danmuContainer" class="danmu-container"></div>
         </div>
         <div class="streamer-info">
             <div class="streamer-details">
@@ -944,7 +1158,40 @@
         </div>
         <!-- 商品區域 -->
         <div id="products">
-            <!-- 這裡是動態生成的商品區塊 -->
+        </div>
+        <!-- 儀表板 -->
+        <div class="fashion-dashboard" id="dashboard">
+            <div class="fashion-panel adjust-flex" id="inventory">
+                <p class="fashion-title">商品庫存</p>
+                <table id="inventoryTable" class="fashion-table">
+                    <thead>
+                    <tr>
+                        <th>商品名稱</th>
+                        <th>庫存數量</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="fashion-panel" id="orders">
+                <p class="fashion-title">訂單紀錄 (<span id="orderCount">0</span>)</p>
+                <table id="orderTable" class="fashion-table">
+                    <thead>
+                    <tr>
+                        <th>買家姓名</th>
+                        <th>商品名稱</th>
+                        <th>數量</th>
+                        <th>總價</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div id="noOrdersMessage" style="display: none; color: #ccc; text-align: center; margin-top: 20px;">
+                    暫無訂單
+                </div>
+            </div>
         </div>
     </div>
     <!-- 聊天區 -->
@@ -1158,6 +1405,9 @@
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="assets/js/popup.js"></script>
 <script>
+    let productsArray = [];
+    let totalOrders = 0;
+
     document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
         const products = urlParams.get('products');
@@ -1165,17 +1415,17 @@
         const productArray = products ? products.split(',') : [];
         const description = urlParams.get('description');
         console.log('Selected Products:', productArray);
-
+        if (isBroadcaster) {
+            updateNoOrdersMessage();
+        }
         getProductInfo(productArray);
         document.querySelector('.streamer-details h2').textContent = `主播 : ${description}`;
         document.querySelector('.streamer-details p').textContent = `正在直播：${title}`;
 
         function getProductInfo(productArray) {
             const productsContainer = document.getElementById('products');
-
-            // 遍歷每個產品 ID，使用 fetch 獲取資料
-            productArray.forEach(productId => {
-                fetch(`/api/1.0/product/${productId}`)
+            const productPromises = productArray.map(productId => {
+                return fetch(`/api/1.0/product/${productId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`Failed to fetch product with ID ${productId}`);
@@ -1202,10 +1452,20 @@
                             initializeForm(product.name, product.price, localStorage.getItem("userName"));
                             openPurchaseModal(product);
                         });
+
+                        return product;
                     })
                     .catch(error => {
                         console.error('Error fetching product:', error);
+                        return null;
                     });
+            });
+
+            Promise.all(productPromises).then(products => {
+                productsArray = products.filter(p => p !== null);
+                if (isBroadcaster) {
+                    updateInventory(productsArray);
+                }
             });
         }
 
@@ -1226,7 +1486,6 @@
             document.getElementById('quantity').addEventListener('input', updateTotalPrice);
             // 初始化訂單資料
             orderData.productId = product.id;
-            // orderData.unitPrice = product.price;
         }
 
         function updateTotalPrice() {
@@ -1261,6 +1520,8 @@
             // 儲存訂單資料
             orderData.quantity = parseInt(document.getElementById('quantity').value) || 1;
             orderData.totalPrice = parseInt(document.getElementById('totalPrice').value);
+            orderData.name = document.getElementById('senderName').value;
+            orderData.productName = document.getElementById('productName').value;
             orderData.orderTime = new Date().toISOString();
             orderData.recipentDto = {
                 name: document.getElementById('recipientName').value,
@@ -1434,6 +1695,49 @@
 
     });
 
+    function updateInventory(products) {
+        const tbody = document.querySelector('#inventoryTable tbody');
+        tbody.innerHTML = products.map(product => `
+        <tr>
+            <td>${product.name}</td>
+            <td>${product.stock}</td>
+        </tr>
+    `).join('');
+    }
+
+    function addNewOrder(buyerName, productName, quantitySold, totalPrice) {
+        totalOrders++;
+
+        const tbody = document.querySelector('#orderTable tbody');
+        const orderRow = document.createElement('tr');
+        orderRow.innerHTML = `
+        <td>${buyerName}</td>
+        <td>${productName}</td>
+        <td>${quantitySold}</td>
+        <td>$${totalPrice}</td>
+    `;
+        tbody.insertBefore(orderRow, tbody.firstChild);
+
+        updateOrderCount();
+        updateNoOrdersMessage();
+    }
+
+
+    function updateOrderCount() {
+        const orderCountElement = document.getElementById('orderCount');
+        orderCountElement.textContent = totalOrders;
+    }
+
+    function updateNoOrdersMessage() {
+        const noOrdersMessage = document.getElementById('noOrdersMessage');
+        const orderTableBody = document.querySelector('#orderTable tbody');
+
+        if (orderTableBody.children.length === 0) {
+            noOrdersMessage.style.display = 'block';
+        } else {
+            noOrdersMessage.style.display = 'none';
+        }
+    }
     let localStream;
     let peerConnections = {};
     let ws;
@@ -1581,8 +1885,8 @@
         }
 
         // 主 WebSocket 連接（處理業務相關消息，如聊天室、禮物等）
-        ws = new WebSocket('ws://localhost:8080/socket'); // 測試環境
-        // ws = new WebSocket('wss://techwavelab.com/socket'); // 正式環境使用
+        // ws = new WebSocket('ws://localhost:8080/socket'); // 測試環境
+        ws = new WebSocket('wss://techwavelab.com/socket'); // 正式環境使用
         console.log('正在初始化 main service websocket 連接...');
 
         ws.onopen = () => {
@@ -1593,6 +1897,7 @@
                 exitButton.style.display = "none";
                 giftButton.style.display = "none";
                 setupMediaStream();
+                document.getElementById('dashboard').style.display = 'flex';
             } else {
                 console.log('作為觀眾加入房間');
                 hangupButton.style.display = "none";
@@ -1612,8 +1917,8 @@
         ws.onmessage = handleMainMessage;
 
         // Signaling WebSocket 連接（處理 WebRTC 信令消息）
-        signalingWs = new WebSocket('ws://localhost:3000/signaling'); // 測試環境
-        // signalingWs = new WebSocket('wss://seanlife.site/signaling'); //正式環境
+        // signalingWs = new WebSocket('ws://localhost:3000/signaling'); // 測試環境
+        signalingWs = new WebSocket('wss://seanlife.site/signaling'); //正式環境
         console.log('正在初始化 signaling service websocket 連接...');
         signalingWs.onopen = () => {
             console.log('Signaling WebSocket 連接成功');
@@ -1679,6 +1984,51 @@
                 const giftMessage = `${message.sender} 送出了一個 ${message.gift} 禮物！`;
                 displayChatMessage(giftMessage, '系統');
                 break;
+            case 'productSold':
+                const danmuContainer = document.getElementById('danmuContainer');
+                const { buyerName, newStock, productId, quantitySold, productName, totalPrice } = message;
+                const danmuText = `${buyerName} 購買了 ${quantitySold} 件 ${productName}！`;
+
+                if (!isBroadcaster) {
+                    while (danmuContainer.firstChild) {
+                        danmuContainer.removeChild(danmuContainer.firstChild);
+                    }
+
+                    const danmuMessage = document.createElement('div');
+                    danmuMessage.classList.add('danmu-message');
+                    danmuMessage.textContent = danmuText;
+
+                    const randomTop = Math.random() * 80;
+                    danmuMessage.style.top = `${randomTop}%`;
+
+                    danmuContainer.appendChild(danmuMessage);
+
+                    danmuMessage.addEventListener('animationend', () => {
+                        danmuMessage.remove();
+                    });
+                } else {
+                    const product = productsArray.find(p => p.id == productId);
+                    if (product) {
+                        product.stock = newStock;
+                        updateInventory(productsArray);
+                    }
+                    addNewOrder(buyerName, productName, quantitySold, totalPrice);
+
+                    const danmuMessage = document.createElement('div');
+                    danmuMessage.classList.add('danmu-message', 'float-up');
+                    danmuMessage.textContent = danmuText;
+
+                    danmuMessage.style.left = '50%';
+                    danmuMessage.style.bottom = '0';
+                    danmuMessage.style.transform = 'translateX(-50%)';
+
+                    danmuContainer.appendChild(danmuMessage);
+
+                    danmuMessage.addEventListener('animationend', () => {
+                        danmuMessage.remove();
+                    });
+                }
+                break;
             default:
                 console.log("未知的 Main WebSocket 消息類型:", message.type);
         }
@@ -1724,7 +2074,7 @@
                     type: 'candidate',
                     candidate: e.candidate,
                     roomId: roomId,
-                    viewerId: newViewerUserId // 使用 viewer 的 userId
+                    viewerId: newViewerUserId
                 });
             }
         };

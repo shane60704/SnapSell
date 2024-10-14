@@ -899,7 +899,7 @@
 
                             const label = document.createElement('label');
                             label.setAttribute('for', `product-${product.id}`);
-                            label.textContent = ` 商品名稱: ${product.name} - 價格: ${product.price}`;
+                            label.textContent = ` 商品名稱 : ${product.name} | 價格 : ${product.price} | 庫存：${product.stock}`;
 
                             listItem.appendChild(checkbox);
                             listItem.appendChild(label);
@@ -1010,9 +1010,9 @@
 
         // --------- websocket ------------------------------------------------------------------ //
         // 測試環境使用
-        let ws = new WebSocket('ws://localhost:8080/socket');
+        // let ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        // let ws = new WebSocket('wss://techwavelab.com/socket');
+        let ws = new WebSocket('wss://techwavelab.com/socket');
 
         ws.onopen = () => {
             console.log('已連接到 WebSocket');

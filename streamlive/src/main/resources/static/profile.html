@@ -555,7 +555,7 @@
             }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 800px) {
             .stat-item, .snap-dashboard-stat-item {
                 flex-basis: 100%;
             }
@@ -1480,13 +1480,12 @@
             method: 'PUT',
             body: formData
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            .then(response => {
+                if(response.ok){
                     alert('圖片上傳成功');
                     location.reload();
-                } else {
-                    alert('圖片上傳失敗');
+                }else{
+                    throw new Error("Error")
                 }
             })
             .catch(error => {

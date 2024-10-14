@@ -6,8 +6,11 @@ import com.example.streamlive.dto.product.CheckOutDto;
 import com.example.streamlive.model.order.Order;
 import com.example.streamlive.model.order.OrderDetail;
 import com.example.streamlive.service.sale.SaleService;
+import com.example.streamlive.websocket.SignalingHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +36,8 @@ public class SaleServiceImpl implements SaleService {
 
     private final ProductDao productDao;
     private final SaleDao saleDao;
+    private final SignalingHandler signalingHandler;
+    private final ObjectMapper objectMapper;
 
     public Boolean checkout(CheckOutDto checkOutDto){
         try {
@@ -65,6 +70,25 @@ public class SaleServiceImpl implements SaleService {
             }
             //更新付款狀態
             int updateStatus = saleDao.updateOrderStatus(orderId,1);
+            if (updateStatus > 0) {
+
+                String roomId = checkOutDto.getLiveId();
+                int productId = checkOutDto.getProductId();
+                int stock = productDao.findProductStockById(productId);
+
+                JSONObject message = new JSONObject();
+                message.put("type", "productSold");
+                message.put("productId", productId);
+                message.put("buyerName",checkOutDto.getName());
+                message.put("newStock", stock);
+                message.put("totalPrice", checkOutDto.getTotalPrice());
+                message.put("productName",checkOutDto.getProductName());
+                message.put("quantitySold", checkOutDto.getQuantity());
+
+//                signalingHandler.notifyBroadcaster(roomId, message);
+                signalingHandler.broadcastToViewers(roomId, message);
+
+            }
 
             return true;
         } catch (Exception e) {
