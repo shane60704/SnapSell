@@ -1581,8 +1581,8 @@
         }
 
         // 主 WebSocket 連接（處理業務相關消息，如聊天室、禮物等）
-        // ws = new WebSocket('ws://localhost:8080/socket'); // 測試環境
-        ws = new WebSocket('wss://techwavelab.com/socket'); // 正式環境使用
+        ws = new WebSocket('ws://localhost:8080/socket'); // 測試環境
+        // ws = new WebSocket('wss://techwavelab.com/socket'); // 正式環境使用
         console.log('正在初始化 main service websocket 連接...');
 
         ws.onopen = () => {
@@ -1612,8 +1612,8 @@
         ws.onmessage = handleMainMessage;
 
         // Signaling WebSocket 連接（處理 WebRTC 信令消息）
-        // signalingWs = new WebSocket('ws://localhost:3000/signaling'); // 測試環境
-        signalingWs = new WebSocket('wss://seanlife.site/signaling'); //正式環境
+        signalingWs = new WebSocket('ws://localhost:3000/signaling'); // 測試環境
+        // signalingWs = new WebSocket('wss://seanlife.site/signaling'); //正式環境
         console.log('正在初始化 signaling service websocket 連接...');
         signalingWs.onopen = () => {
             console.log('Signaling WebSocket 連接成功');
@@ -1960,7 +1960,6 @@
         document.getElementById('sendMessage').disabled = true;
     }
 
-    // Helper function to send signaling messages with required fields
     function sendSignalingMessage(message) {
         const userId = localStorage.getItem("userId");
         const completeMessage = {

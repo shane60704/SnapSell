@@ -12,15 +12,15 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic"); // 設置消息代理前綴
-        config.setApplicationDestinationPrefixes("/app"); // 設置應用程序目的地前綴
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-//        registry.addEndpoint("/chat").setAllowedOriginPatterns("*").withSockJS();
-//        registry.addEndpoint("/contract").setAllowedOriginPatterns("*").withSockJS();
-        registry.addEndpoint("/chat").setAllowedOrigins("https://techwavelab.com").withSockJS();
-        registry.addEndpoint("/contract").setAllowedOrigins("https://techwavelab.com").withSockJS();
+        registry.addEndpoint("/chat").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/contract").setAllowedOriginPatterns("*").withSockJS();
+//        registry.addEndpoint("/chat").setAllowedOrigins("https://techwavelab.com").withSockJS();
+//        registry.addEndpoint("/contract").setAllowedOrigins("https://techwavelab.com").withSockJS();
     }
 }

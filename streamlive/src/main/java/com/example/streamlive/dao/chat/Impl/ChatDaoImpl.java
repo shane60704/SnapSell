@@ -38,7 +38,6 @@ public class ChatDaoImpl implements ChatDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
 
-        // 查詢結果映射到 ChatRoom 對象
         try {
             return namedParameterJdbcTemplate.query(sql, params, new BeanPropertyRowMapper<>(ChatRoom.class));
         } catch (DataAccessException e) {
@@ -71,7 +70,6 @@ public class ChatDaoImpl implements ChatDao {
         String sql = "INSERT INTO chat_room (user_a_id, user_b_id, unique_chatroom, created_at) " +
                 "VALUES (:user1Id, :user2Id, :uniqueChatroom, :created_at)";
 
-        // 建立參數映射
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("user1Id", user1Id);
         params.addValue("user2Id", user2Id);

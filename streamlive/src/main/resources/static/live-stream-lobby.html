@@ -212,9 +212,9 @@
         .list-product::-webkit-scrollbar {
             width: 6px;
         }
-        /* 確保內容不會被壓縮 */
+
         .list-product > div {
-            width: 100%; /* 確保子元素填滿容器寬度 */
+            width: 100%;
         }
 
         .list-product::-webkit-scrollbar-thumb {
@@ -369,27 +369,25 @@
 
         /* 預覽圖區域樣式 */
         .preview-room {
-            width: 100%; /* 確保寬度填滿 */
-            height: 200px; /* 可以根據需要調整高度 */
-            overflow: hidden; /* 隱藏超出部分 */
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
             position: relative;
         }
 
         .preview-room img {
-            width: 100%; /* 圖片寬度填滿 */
-            height: 100%; /* 圖片高度填滿 */
-            object-fit: cover; /* 確保圖片按比例裁剪並填滿容器 */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             position: absolute;
             top: 0;
             left: 0;
         }
 
-        /* 卡片信息區域樣式 */
         .info-room {
             padding: 15px;
         }
 
-        /* 直播標題樣式 */
         .title-room {
             font-size: 18px;
             font-weight: bold;
@@ -398,7 +396,6 @@
             line-height: 1.3;
         }
 
-        /* 直播描述樣式 */
         .desc-room {
             font-size: 14px;
             color: #666;
@@ -411,7 +408,6 @@
             text-overflow: ellipsis;
         }
 
-        /* 直播詳細信息區域樣式 */
         .details-room {
             font-size: 12px;
             color: #999;
@@ -603,6 +599,7 @@
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
 </div>
+<img class="alert-img" src = "https://seanproject.s3.ap-northeast-1.amazonaws.com/warning.png">
 <div class="chat-container">
 
     <div class="chat-sidebar">
@@ -1013,9 +1010,9 @@
 
         // --------- websocket ------------------------------------------------------------------ //
         // 測試環境使用
-        // let ws = new WebSocket('ws://localhost:8080/socket');
+        let ws = new WebSocket('ws://localhost:8080/socket');
         // 正式環境使用
-        let ws = new WebSocket('wss://techwavelab.com/socket');
+        // let ws = new WebSocket('wss://techwavelab.com/socket');
 
         ws.onopen = () => {
             console.log('已連接到 WebSocket');

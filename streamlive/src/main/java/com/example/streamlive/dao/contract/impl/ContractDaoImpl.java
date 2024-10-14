@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,20 +27,16 @@ public class ContractDaoImpl implements ContractDao {
     @Override
     public Integer updateDelegationByProductId(String productId,String agentId,int status) {
         String sql = "UPDATE delegation SET status = :status, agent_id = :agentId WHERE product_id = :productId";
-        // 設定參數
         Map<String, Object> params = new HashMap<>();
         params.put("productId", productId);
         params.put("agentId", agentId);
         params.put("status", status);
-        // 執行更新操作，並返回受影響的行數
         return namedParameterJdbcTemplate.update(sql, params);
     }
 
     @Override
     public String findDelegationIdByProductId(String productId) {
-        // SQL 查詢語句
         String sql = "SELECT id FROM delegation WHERE product_id = :productId";
-        // 設定參數
         Map<String, Object> params = new HashMap<>();
         params.put("productId", productId);
         try {
@@ -63,7 +60,7 @@ public class ContractDaoImpl implements ContractDao {
         params.put("commissionRate", signatureData.getCommissionRate());
         params.put("clientSignature", signatureData.getSignatureImage());
         params.put("agentSignature", signatureData.getAgentSignatureImage());
-        params.put("createdAt", signatureData.getTimestamp());
+        params.put("createdAt", new Timestamp(System.currentTimeMillis()));
 
         return namedParameterJdbcTemplate.update(sql, params);
     }

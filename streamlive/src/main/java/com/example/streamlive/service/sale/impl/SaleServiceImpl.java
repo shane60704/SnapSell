@@ -65,6 +65,7 @@ public class SaleServiceImpl implements SaleService {
             }
             //更新付款狀態
             int updateStatus = saleDao.updateOrderStatus(orderId,1);
+
             return true;
         } catch (Exception e) {
             log.error("checkout error", e.getMessage());

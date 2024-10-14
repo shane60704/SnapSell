@@ -57,11 +57,14 @@ document.getElementById('contract-closeBtn').addEventListener('click', function 
     document.querySelector('.contract-signature-container').style.display = 'none';
 });
 document.getElementById('createContractBtn').addEventListener('click',function () {
+    document.getElementById('clientName').value = localStorage.getItem('userName');
+    document.getElementById('sellerName').value = document.getElementById('currentChatRoomName').textContent;
     document.querySelector('.contract-signature-container').style.display = 'block';
 });
 
 // 生成合約
 document.getElementById('generateContractBtn').addEventListener('click', function () {
+
     const contractData = {
         clientName: document.getElementById('clientName').value,
         sellerName: document.getElementById('sellerName').value,

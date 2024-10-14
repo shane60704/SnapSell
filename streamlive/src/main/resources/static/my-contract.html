@@ -424,6 +424,7 @@
 <div class="floating-circle">
     <img src="assets/image/messenger.png" alt="Chat Icon">
 </div>
+<img class="alert-img" src = "https://seanproject.s3.ap-northeast-1.amazonaws.com/warning.png">
 <div class="chat-container">
 
     <div class="chat-sidebar">
@@ -614,13 +615,11 @@
 <script src ="assets/js/contract.js"></script>
 
 <script>
-    // 全局變量
     let currentTab = 'as-client';
     const modal = document.getElementById('contract-modal');
     const closeModalBtn = document.getElementById('close-modal');
     const modalDetails = document.getElementById('modal-details');
 
-    // 函數定義
     function closeModal() {
         modal.style.display = "none";
     }
@@ -661,7 +660,7 @@
                             <td data-label="商品名稱">${contract.product.name}</td>
                             <td data-label="商品價格">$${contract.product.price}</td>
                             <td data-label="商品庫存">${contract.product.stock}</td>
-                            <td data-label="合作者">${type === 'as-client' ? contract.client.client_name : contract.agent.agent_name}</td>
+                            <td data-label="合作者">${type === 'as-client' ? contract.agent.agent_name : contract.client.client_name}</td>
                             <td data-label="操作">
                                 <button class="view-contract-btn" onclick="viewContract(${contract.delegationId})">查看詳情</button>
                             </td>
@@ -723,7 +722,6 @@
             .catch(error => console.error('Error fetching contract details:', error));
     }
 
-    // 事件監聽器
     closeModalBtn.addEventListener('click', closeModal);
 
     window.onclick = function(event) {
@@ -732,7 +730,6 @@
         }
     };
 
-    // 初始化
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.tab');
         tabs.forEach(tab => {
