@@ -2,7 +2,7 @@ package com.example.streamlive.controller;
 
 import com.example.streamlive.dto.ErrorResponseDto;
 import com.example.streamlive.dto.product.CheckOutDto;
-import com.example.streamlive.dto.response.ApiResponse;
+import com.example.streamlive.dto.response.APIResponse;
 import com.example.streamlive.service.sale.SaleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +28,11 @@ public class SaleController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getOrdersByUserId(@PathVariable Long userId){
-        return ResponseEntity.ok(new ApiResponse<>(saleService.getUserOrders(userId)));
+        return ResponseEntity.ok(new APIResponse<>(saleService.getUserOrders(userId)));
     }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<?> getOrderDetail(@PathVariable Long orderId) {
-        return ResponseEntity.ok(new ApiResponse<>(saleService.getOrderDetail(orderId)));
+        return ResponseEntity.ok(new APIResponse<>(saleService.getOrderDetail(orderId)));
     }
 }

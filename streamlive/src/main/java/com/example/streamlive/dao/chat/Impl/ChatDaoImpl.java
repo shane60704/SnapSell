@@ -76,13 +76,10 @@ public class ChatDaoImpl implements ChatDao {
         params.addValue("uniqueChatroom", uniqueChatroom);
         params.addValue("created_at", new Timestamp(System.currentTimeMillis()));
 
-        // 使用 KeyHolder 來獲取自動生成的聊天室 ID
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        // 執行插入操作，返回自動生成的 ID
         namedParameterJdbcTemplate.update(sql, params, keyHolder, new String[]{"id"});
 
-        // 返回自動生成的聊天室 ID
         return keyHolder.getKey().longValue();
     }
 
@@ -95,8 +92,8 @@ public class ChatDaoImpl implements ChatDao {
         return namedParameterJdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(ChatRoom.class));
     }
 
-    @Override
     // 保存聊天紀錄
+    @Override
     public void saveMessage(ChatMessage message) {
         String sql = "INSERT INTO messages (chat_room_id, sender_id, content, timestamp) " +
                 "VALUES (:chatRoomId, :senderId, :content, :timestamp)";

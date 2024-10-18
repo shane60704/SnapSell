@@ -19,17 +19,15 @@ public class ChatRoomNotificationController {
     private final ChatDao chatDao;
     private final UserDao userDao;
 
-    // 創建聊天室，並通知 B
     @PostMapping("/chatroom")
     public ChatRoom createOrGetChatRoom(@RequestParam Long user1Id, @RequestParam Long user2Id) {
         ChatRoom chatRoom = chatDao.findChatRoomByUsersId(user1Id, user2Id);
         if (chatRoom == null) {
             log.info("NoRoom");
-            String uniqueChatroom = "room_" + user1Id + "_" + user2Id; // 唯一標識符
+            String uniqueChatroom = "room_" + user1Id + "_" + user2Id;
             Long chatRoomId = chatDao.createChatRoom(user1Id, user2Id, uniqueChatroom);
             chatRoom = chatDao.findChatRoomById(chatRoomId);
             log.info("CreateRoom");
-            // 通知 B 有新聊天室
             simpMessagingTemplate.convertAndSend("/topic/newRoom/" + user2Id, chatRoom);
         }
         return chatRoom;

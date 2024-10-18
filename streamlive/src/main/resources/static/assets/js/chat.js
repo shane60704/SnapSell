@@ -250,9 +250,9 @@ function displayMessage(message, clientInfo, agentInfo, shouldScroll) {
     const userId =localStorage.getItem("userId");
     // 根據訊息發送者設定頭像
     if (String(message.senderId) === String(clientInfo.id)) {
-        chatAvatar.src = clientInfo.image ? clientInfo.image : 'default-avatar.png';
+        chatAvatar.src = clientInfo.image && clientInfo.image !== '' ? clientInfo.image : 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png';
     } else {
-        chatAvatar.src = agentInfo.image ? agentInfo.image : 'default-avatar.png';
+        chatAvatar.src = agentInfo.image && agentInfo.image !== '' ? agentInfo.image : 'https://seanproject.s3.ap-northeast-1.amazonaws.com/user.png';
     }
 
     // 根據訊息發送者決定訊息顯示方向

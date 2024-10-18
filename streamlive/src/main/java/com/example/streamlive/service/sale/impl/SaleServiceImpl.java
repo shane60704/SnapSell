@@ -61,6 +61,7 @@ public class SaleServiceImpl implements SaleService {
 
             // 產生訂單
             int orderId = saleDao.createOrder(checkOutDto);
+
             // 寄件資訊
             int recipentId = saleDao.createRecipent(checkOutDto, orderId);
             //付款狀態
@@ -85,7 +86,6 @@ public class SaleServiceImpl implements SaleService {
                 message.put("productName",checkOutDto.getProductName());
                 message.put("quantitySold", checkOutDto.getQuantity());
 
-//                signalingHandler.notifyBroadcaster(roomId, message);
                 signalingHandler.broadcastToViewers(roomId, message);
 
             }

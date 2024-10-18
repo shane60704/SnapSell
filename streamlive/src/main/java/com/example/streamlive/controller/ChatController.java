@@ -16,10 +16,9 @@ public class ChatController {
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(ChatMessage chatMessage) {
-        // 保存訊息到資料庫
+
         chatService.saveMessage(chatMessage);
 
-        // 將訊息廣播到聊天室的所有訂閱者
         simpMessagingTemplate.convertAndSend("/topic/chat/" + chatMessage.getChatRoomId(), chatMessage);
     }
 

@@ -1,9 +1,9 @@
 package com.example.streamlive.dto.response;
 
-public class ApiResponse<T> {
+public class APIResponse<T> {
     private T data;
 
-    public ApiResponse(T data) {
+    public APIResponse(T data) {
         this.data = data;
     }
 

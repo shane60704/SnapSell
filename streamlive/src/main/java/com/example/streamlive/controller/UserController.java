@@ -2,7 +2,7 @@ package com.example.streamlive.controller;
 
 import com.example.streamlive.dto.ErrorResponseDto;
 import com.example.streamlive.dto.UserDto;
-import com.example.streamlive.dto.response.ApiResponse;
+import com.example.streamlive.dto.response.APIResponse;
 import com.example.streamlive.exception.custom.DuplicatedEmailExcetion;
 import com.example.streamlive.exception.custom.InvalidEmailFormatException;
 import com.example.streamlive.exception.custom.InvalidProviderException;
@@ -48,7 +48,7 @@ public class UserController {
     // 取得當前使用者的統計數據與基本資料
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUserStatistics(@RequestParam Long currentUserId) {
-        return ResponseEntity.ok(new ApiResponse<>(userService.getCurrentUserStatistics(currentUserId)));
+        return ResponseEntity.ok(new APIResponse<>(userService.getCurrentUserStatistics(currentUserId)));
     }
 
     // 取得其他使用者的統計數據與基本資料
@@ -57,7 +57,7 @@ public class UserController {
                                                      @RequestParam(value = "sortBy", defaultValue = "id") String sortBy, // 默認排序欄位為 id (上架時間)
                                                      @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder, // 默認排序順序為desc (降序)
                                                      @RequestParam(value = "paging", defaultValue = "0") int paging) {
-        return ResponseEntity.ok(new ApiResponse<>(userService.getOtherUsersStatistics(currentUserId, sortBy, sortOrder, paging)));
+        return ResponseEntity.ok(new APIResponse<>(userService.getOtherUsersStatistics(currentUserId, sortBy, sortOrder, paging)));
     }
 
     @GetMapping("search")
@@ -66,37 +66,37 @@ public class UserController {
                                          @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
                                          @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder,
                                          @RequestParam(value = "paging", defaultValue = "0") int paging) {
-        return ResponseEntity.ok(new ApiResponse<>(userService.searchUserStatisticsExceptCurrentUserByKeyword(userId, keyword, sortBy, sortOrder, paging)));
+        return ResponseEntity.ok(new APIResponse<>(userService.searchUserStatisticsExceptCurrentUserByKeyword(userId, keyword, sortBy, sortOrder, paging)));
     }
 
     @GetMapping("/top-agent")
     public ResponseEntity<?> getTopAgent() {
-        return ResponseEntity.ok(new ApiResponse<>(userService.getTop3AgentProfiles()));
+        return ResponseEntity.ok(new APIResponse<>(userService.getTop3AgentProfiles()));
     }
 
     @GetMapping("/{userId}/profile")
     public ResponseEntity<?> getUserProfile(@PathVariable Long userId, @RequestParam("type") String type) {
-        return ResponseEntity.ok(new ApiResponse<>(userService.getUserProfile(userId, type)));
+        return ResponseEntity.ok(new APIResponse<>(userService.getUserProfile(userId, type)));
     }
 
     @PutMapping("/{userId}/profile/background-image")
     public ResponseEntity<?> updateProfileBackgroundImage(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         return userService.updateProfileBackgroundImage(userId, file)
-                ? ResponseEntity.ok(new ApiResponse<>("Success"))
+                ? ResponseEntity.ok(new APIResponse<>("Success"))
                 : new ResponseEntity<>(ErrorResponseDto.error("failed"), HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/{userId}/profile/profile-image")
     public ResponseEntity<?> updateProfileProfileImage(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         return userService.updateUserImage(userId, file)
-                ? ResponseEntity.ok(new ApiResponse<>("Success"))
+                ? ResponseEntity.ok(new APIResponse<>("Success"))
                 : new ResponseEntity<>(ErrorResponseDto.error("failed"), HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/{userId}/profile/description")
     public ResponseEntity<?> updateProfileDescription(@PathVariable Long userId, @RequestBody String description) {
         return userService.updateUserDescription(userId, description)
-                ? ResponseEntity.ok(new ApiResponse<>("Success"))
+                ? ResponseEntity.ok(new APIResponse<>("Success"))
                 : new ResponseEntity<>(ErrorResponseDto.error("failed"), HttpStatus.BAD_REQUEST);
     }
 

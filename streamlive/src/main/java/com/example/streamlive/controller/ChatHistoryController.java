@@ -2,7 +2,7 @@ package com.example.streamlive.controller;
 
 import com.example.streamlive.dao.chat.ChatDao;
 import com.example.streamlive.dao.user.UserDao;
-import com.example.streamlive.dto.response.ApiResponse;
+import com.example.streamlive.dto.response.APIResponse;
 import com.example.streamlive.model.ChatRoom;
 import com.example.streamlive.model.Message;
 import com.example.streamlive.model.chat.HistoryMessages;
@@ -24,13 +24,11 @@ public class ChatHistoryController {
     private final UserDao userDao;
     private final ChatService chatService;
 
-    // 查詢用戶參與的所有聊天室
     @GetMapping("/users/{userId}/chatrooms")
     public ResponseEntity<?> getUserChatRooms(@PathVariable int userId) {
-        return ResponseEntity.ok(new ApiResponse<>(chatService.getUserChatRooms(userId)));
+        return ResponseEntity.ok(new APIResponse<>(chatService.getUserChatRooms(userId)));
     }
 
-    // 查詢特定聊天室的歷史聊天記錄
     @GetMapping("/chatrooms/{chatRoomId}/messages")
     public ResponseEntity<?> getChatHistory(
             @PathVariable Long chatRoomId,

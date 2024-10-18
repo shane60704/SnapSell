@@ -1,6 +1,6 @@
 package com.example.streamlive.controller;
 
-import com.example.streamlive.dto.response.ApiResponse;
+import com.example.streamlive.dto.response.APIResponse;
 import com.example.streamlive.service.contract.ContractService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,18 +15,18 @@ public class ContractController {
     // 取得自己是委託者的合約
     @GetMapping("/as-client")
     public ResponseEntity<?> getClientDelegations(@RequestParam int clientId) {
-        return ResponseEntity.ok(new ApiResponse<>(contractService.getClientDelegations(clientId)));
+        return ResponseEntity.ok(new APIResponse<>(contractService.getClientDelegations(clientId)));
     }
 
     // 取得自己是代理者的合約
     @GetMapping("/as-agent")
     public ResponseEntity<?> getAgentDelegations(@RequestParam int agentId) {
-        return ResponseEntity.ok(new ApiResponse<>(contractService.getAgentDelegations(agentId)));
+        return ResponseEntity.ok(new APIResponse<>(contractService.getAgentDelegations(agentId)));
     }
 
     // 取得合約的詳細資訊
     @GetMapping("/{id}")
     public ResponseEntity<?> getDelegationDetails(@PathVariable int id) {
-        return ResponseEntity.ok(new ApiResponse<>(contractService.getDelegationDetails(id)));
+        return ResponseEntity.ok(new APIResponse<>(contractService.getDelegationDetails(id)));
     }
 }

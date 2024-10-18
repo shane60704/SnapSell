@@ -23,7 +23,7 @@ public class ContractDaoImpl implements ContractDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    //更新代理人及商品代理狀態
+    // 更新代理人及商品代理狀態
     @Override
     public Integer updateDelegationByProductId(String productId,String agentId,int status) {
         String sql = "UPDATE delegation SET status = :status, agent_id = :agentId WHERE product_id = :productId";

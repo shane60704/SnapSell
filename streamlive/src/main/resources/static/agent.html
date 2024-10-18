@@ -673,6 +673,7 @@
 <script src ="assets/js/chat.js"></script>
 <script src ="assets/js/popup.js"></script>
 <script src ="assets/js/contract.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const userId = localStorage.getItem("userId");
@@ -821,7 +822,6 @@
             </div>
         `;
 
-            // 綁定私訊按鈕的事件
             const messageBtn = card.querySelector('.custom-message-btn[data-userid]');
             messageBtn.addEventListener('click', function() {
                 const user1Id = getCurrentUserId();

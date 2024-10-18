@@ -18,7 +18,6 @@ public class ContractSignatureController {
 
     @MessageMapping("/contract.sign")
     public void signContract(SignatureData signatureData) {
-        // 廣播簽名到合約頻道
         switch (signatureData.getRequestType()){
             case "request":
                 log.info("request:"+signatureData.getChatRoomId());
