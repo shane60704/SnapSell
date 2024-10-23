@@ -3,7 +3,7 @@ package com.example.streamlive.controller;
 import com.example.streamlive.dto.ErrorResponseDto;
 import com.example.streamlive.dto.UserDto;
 import com.example.streamlive.dto.response.APIResponse;
-import com.example.streamlive.exception.custom.DuplicatedEmailExcetion;
+import com.example.streamlive.exception.custom.DuplicatedEmailException;
 import com.example.streamlive.exception.custom.InvalidEmailFormatException;
 import com.example.streamlive.exception.custom.InvalidProviderException;
 import com.example.streamlive.exception.custom.LoginFailedException;
@@ -45,17 +45,15 @@ public class UserController {
         return ResponseEntity.ok(userService.signUp(userDto));
     }
 
-    // 取得當前使用者的統計數據與基本資料
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUserStatistics(@RequestParam Long currentUserId) {
         return ResponseEntity.ok(new APIResponse<>(userService.getCurrentUserStatistics(currentUserId)));
     }
 
-    // 取得其他使用者的統計數據與基本資料
     @GetMapping("/others")
     public ResponseEntity<?> getOtherUsersStatistics(@RequestParam Long currentUserId,
-                                                     @RequestParam(value = "sortBy", defaultValue = "id") String sortBy, // 默認排序欄位為 id (上架時間)
-                                                     @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder, // 默認排序順序為desc (降序)
+                                                     @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+                                                     @RequestParam(value = "sortOrder", defaultValue = "desc") String sortOrder,
                                                      @RequestParam(value = "paging", defaultValue = "0") int paging) {
         return ResponseEntity.ok(new APIResponse<>(userService.getOtherUsersStatistics(currentUserId, sortBy, sortOrder, paging)));
     }
@@ -116,21 +114,22 @@ public class UserController {
     }
 
     @ExceptionHandler(InvalidProviderException.class)
-    public ResponseEntity<ErrorResponseDto<String>> handleInvalidEmailOrPasswordException(InvalidProviderException ex) {
+    public ResponseEntity<ErrorResponseDto<String>> handleInvalidProviderException(InvalidProviderException ex) {
         ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(LoginFailedException.class)
-    public ResponseEntity<ErrorResponseDto<String>> handleInvalidEmailOrPasswordException(LoginFailedException ex) {
+    public ResponseEntity<ErrorResponseDto<String>> handleLoginFailedException(LoginFailedException ex) {
         ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(DuplicatedEmailExcetion.class)
-    public ResponseEntity<ErrorResponseDto<String>> handleInvalidEmailOrPasswordException(DuplicatedEmailExcetion ex) {
+    @ExceptionHandler(DuplicatedEmailException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleDuplicatedEmailException(DuplicatedEmailException ex) {
         ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
+
 
 }

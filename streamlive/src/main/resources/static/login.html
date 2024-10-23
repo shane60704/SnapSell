@@ -188,6 +188,7 @@
                 </span>
             </div>
             <button type="submit" class="primary-btn" onclick="handleLogin()">登入</button>
+            <button class="primary-btn " onclick="testLogin()">免註冊，點擊即可開始瀏覽網站</button>
             <div class="toggle-form">
                 還沒有帳號？ <a onclick="toggleForm('register')">立即註冊</a>
             </div>
@@ -219,9 +220,7 @@
         </div>
     </div>
 </div>
-
 <script>
-
     document.addEventListener('DOMContentLoaded', function () {
         const jwtToken = localStorage.getItem('jwtToken');
         if (jwtToken) {
@@ -229,7 +228,7 @@
         }
     });
 
-    function solveJwtToken(jwtToken){
+    function solveJwtToken(jwtToken) {
         fetch(`/api/1.0/user/solve-jwt?token=${jwtToken}`, {
             method: 'GET'
         })
@@ -247,9 +246,42 @@
                 localStorage.removeItem("userImage");
                 localStorage.removeItem("userName");
                 localStorage.removeItem("UserImage");
-                window.location.href = 'login.html';
-            })
+            });
     }
+
+    function testLogin(){
+        fetch('/api/1.0/user/signin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: "test@gmail.com",
+                password: "test1234",
+                provider: "native"
+            })
+        })
+            .then(response => {
+                if (response.ok){
+                    return response.json();
+                }else{
+                    throw new Error("failed");
+                }
+            })
+            .then(data => {
+                localStorage.setItem("userId", data.user.id);
+                localStorage.setItem("userName", data.user.name);
+                localStorage.setItem("userEmail", data.user.email);
+                localStorage.setItem("userImage", data.user.image);
+                localStorage.setItem("jwtToken",data.accessToken);
+                window.location.href = 'index.html';
+            })
+            .catch((error) => {
+                console.error('錯誤:', error);
+                alert("登入失敗，請重新輸入。");
+            });
+    }
+
     function toggleForm(formType) {
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');

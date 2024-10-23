@@ -3,6 +3,7 @@ package com.example.streamlive.controller;
 import com.example.streamlive.dto.ErrorResponseDto;
 import com.example.streamlive.dto.product.CheckOutDto;
 import com.example.streamlive.dto.response.APIResponse;
+import com.example.streamlive.exception.custom.*;
 import com.example.streamlive.service.sale.SaleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,8 @@ public class SaleController {
 
     @PostMapping("/checkout")
     public ResponseEntity<?> checkout(@RequestBody CheckOutDto checkOutDto) {
-        if (saleService.checkout(checkOutDto)) {
-            return ResponseEntity.ok("success");
-        }
-        return new ResponseEntity<>(ErrorResponseDto.error("failed"), HttpStatus.BAD_REQUEST);
+        saleService.checkout(checkOutDto);
+        return ResponseEntity.ok("success");
     }
 
     @GetMapping("/user/{userId}")
@@ -35,4 +34,35 @@ public class SaleController {
     public ResponseEntity<?> getOrderDetail(@PathVariable Long orderId) {
         return ResponseEntity.ok(new APIResponse<>(saleService.getOrderDetail(orderId)));
     }
+
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleInsufficientStockException(InsufficientStockException ex) {
+        ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(StockUpdateFailedException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleStockUpdateFailedException(StockUpdateFailedException ex) {
+        ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(OrderCreationFailedException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleOrderCreationFailedException(OrderCreationFailedException ex) {
+        ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RecipientCreationFailedException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleRecipientCreationFailedException(RecipientCreationFailedException ex) {
+        ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PaymentProcessingException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handlePaymentProcessingException(PaymentProcessingException ex) {
+        ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }

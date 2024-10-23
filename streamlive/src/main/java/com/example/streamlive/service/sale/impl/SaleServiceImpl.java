@@ -3,6 +3,7 @@ package com.example.streamlive.service.sale.impl;
 import com.example.streamlive.dao.product.ProductDao;
 import com.example.streamlive.dao.sale.SaleDao;
 import com.example.streamlive.dto.product.CheckOutDto;
+import com.example.streamlive.exception.custom.*;
 import com.example.streamlive.model.order.Order;
 import com.example.streamlive.model.order.OrderDetail;
 import com.example.streamlive.service.sale.SaleService;
@@ -39,63 +40,34 @@ public class SaleServiceImpl implements SaleService {
     private final SignalingHandler signalingHandler;
     private final ObjectMapper objectMapper;
 
-    public Boolean checkout(CheckOutDto checkOutDto){
-        try {
-
-            // 檢查庫存
-            int currentStock = productDao.findProductStockById(checkOutDto.getProductId());
-            int purchaseQuantity = checkOutDto.getQuantity();
-            int newStock = currentStock - purchaseQuantity;
-
-            if(currentStock < purchaseQuantity){
-                log.error("檢查庫存 error");
-                return false;
-            }
-
-            // 更新庫存
-            Integer updateResult = productDao.updateProductStockById(checkOutDto.getProductId(), newStock);
-            if (updateResult == null || updateResult == 0) {
-                log.error("updateResult error");
-                return false;
-            }
-
-            // 產生訂單
-            int orderId = saleDao.createOrder(checkOutDto);
-
-            // 寄件資訊
-            int recipentId = saleDao.createRecipent(checkOutDto, orderId);
-            //付款狀態
-            if (tapPay(checkOutDto) != 0){
-                log.error("pay failed");
-                return false;
-            }
-            //更新付款狀態
-            int updateStatus = saleDao.updateOrderStatus(orderId,1);
-            if (updateStatus > 0) {
-
-                String roomId = checkOutDto.getLiveId();
-                int productId = checkOutDto.getProductId();
-                int stock = productDao.findProductStockById(productId);
-
-                JSONObject message = new JSONObject();
-                message.put("type", "productSold");
-                message.put("productId", productId);
-                message.put("buyerName",checkOutDto.getName());
-                message.put("newStock", stock);
-                message.put("totalPrice", checkOutDto.getTotalPrice());
-                message.put("productName",checkOutDto.getProductName());
-                message.put("quantitySold", checkOutDto.getQuantity());
-
-                signalingHandler.broadcastToViewers(roomId, message);
-
-            }
-
-            return true;
-        } catch (Exception e) {
-            log.error("checkout error", e.getMessage());
-            log.error(e.getMessage());
-            return false;
+    @Override
+    public Boolean checkout(CheckOutDto checkOutDto) {
+        // 檢查庫存
+        if (!checkStock(checkOutDto)) {
+            throw new InsufficientStockException("庫存不足");
         }
+
+        // 更新庫存
+        if (!updateStock(checkOutDto)) {
+            throw new StockUpdateFailedException("更新庫存失敗");
+        }
+
+        // 產生訂單與收件人資訊
+        int orderId = createOrder(checkOutDto);
+        createRecipient(checkOutDto, orderId);
+
+        // 處理支付
+        if (!processPayment(checkOutDto)) {
+            throw new PaymentProcessingException("支付失敗");
+        }
+
+        // 更新訂單狀態
+        saleDao.updateOrderStatus(orderId, 1);
+
+        // 廣播訊息
+        broadcastMessage(checkOutDto, orderId);
+
+        return true;
     }
 
     @Override
@@ -130,4 +102,72 @@ public class SaleServiceImpl implements SaleService {
         log.error(response.getBody().toString());
         return (Integer) response.getBody().get("status");
     }
+
+    private boolean checkStock(CheckOutDto checkOutDto) {
+        int currentStock = productDao.findProductStockById(checkOutDto.getProductId());
+        int purchaseQuantity = checkOutDto.getQuantity();
+
+        if (currentStock < purchaseQuantity) {
+            log.error("庫存不足: currentStock = {}, purchaseQuantity = {}", currentStock, purchaseQuantity);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean updateStock(CheckOutDto checkOutDto) {
+        int currentStock = productDao.findProductStockById(checkOutDto.getProductId());
+        int newStock = currentStock - checkOutDto.getQuantity();
+        Integer updateResult = productDao.updateProductStockById(checkOutDto.getProductId(), newStock);
+
+        if (updateResult == null || updateResult == 0) {
+            log.error("更新庫存失敗");
+            return false;
+        }
+
+        return true;
+    }
+
+    private int createOrder(CheckOutDto checkOutDto) {
+        int orderId = saleDao.createOrder(checkOutDto);
+        if (orderId <= 0) {
+            log.error("訂單創建失敗");
+            throw new OrderCreationFailedException("訂單創建失敗");
+        }
+        return orderId;
+    }
+
+    private void createRecipient(CheckOutDto checkOutDto, int orderId) {
+        int recipientId = saleDao.createRecipent(checkOutDto, orderId);
+        if (recipientId <= 0) {
+            log.error("收件人創建失敗");
+            throw new RecipientCreationFailedException("收件人創建失敗");
+        }
+    }
+
+    private boolean processPayment(CheckOutDto checkOutDto) {
+        if (tapPay(checkOutDto) != 0) {
+            log.error("支付失敗");
+            throw new PaymentProcessingException("支付失敗");
+        }
+        return true;
+    }
+
+    private void broadcastMessage(CheckOutDto checkOutDto, int orderId) {
+        String roomId = checkOutDto.getLiveId();
+        int productId = checkOutDto.getProductId();
+        int stock = productDao.findProductStockById(productId);
+
+        JSONObject message = new JSONObject();
+        message.put("type", "productSold");
+        message.put("productId", productId);
+        message.put("buyerName", checkOutDto.getName());
+        message.put("newStock", stock);
+        message.put("totalPrice", checkOutDto.getTotalPrice());
+        message.put("productName", checkOutDto.getProductName());
+        message.put("quantitySold", checkOutDto.getQuantity());
+
+        signalingHandler.broadcastToViewers(roomId, message);
+    }
+
 }

@@ -34,7 +34,6 @@ public class ContractServiceImpl implements ContractService {
         }
         return delegationLists;
     }
-    //
 
     // 取得自己是代理者的合約
     @Override

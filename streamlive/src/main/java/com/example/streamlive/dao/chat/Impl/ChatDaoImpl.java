@@ -29,8 +29,6 @@ public class ChatDaoImpl implements ChatDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-
-    // 根據用戶 ID 查找其所屬聊天室
     @Override
     public List<ChatRoom> findChatRoomsByUserId(int userId) {
         String sql = "SELECT * FROM chat_room WHERE (user_a_id = :userId OR user_b_id = :userId)";
@@ -46,7 +44,6 @@ public class ChatDaoImpl implements ChatDao {
         }
     }
 
-    // 根據兩個用戶的ID查詢聊天室
     @Override
     public ChatRoom findChatRoomByUsersId(Long user1Id, Long user2Id) {
         String sql = "SELECT * FROM chat_room WHERE (user_a_id = :user1Id AND user_b_id = :user2Id) "
@@ -63,10 +60,8 @@ public class ChatDaoImpl implements ChatDao {
         }
     }
 
-    // 建立聊天室
     @Override
     public Long createChatRoom(Long user1Id, Long user2Id, String uniqueChatroom) {
-        // 定義 SQL 插入語句，插入 user_a_id, user_b_id 和 unique_chatroom
         String sql = "INSERT INTO chat_room (user_a_id, user_b_id, unique_chatroom, created_at) " +
                 "VALUES (:user1Id, :user2Id, :uniqueChatroom, :created_at)";
 
@@ -83,7 +78,6 @@ public class ChatDaoImpl implements ChatDao {
         return keyHolder.getKey().longValue();
     }
 
-    // 根據聊天室 ID 查找聊天室
     @Override
     public ChatRoom findChatRoomById(Long chatRoomId) {
         String sql = "SELECT * FROM chat_room WHERE id = :chatRoomId";
@@ -92,7 +86,6 @@ public class ChatDaoImpl implements ChatDao {
         return namedParameterJdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(ChatRoom.class));
     }
 
-    // 保存聊天紀錄
     @Override
     public void saveMessage(ChatMessage message) {
         String sql = "INSERT INTO messages (chat_room_id, sender_id, content, timestamp) " +

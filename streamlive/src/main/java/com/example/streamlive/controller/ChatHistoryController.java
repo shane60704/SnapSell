@@ -3,17 +3,11 @@ package com.example.streamlive.controller;
 import com.example.streamlive.dao.chat.ChatDao;
 import com.example.streamlive.dao.user.UserDao;
 import com.example.streamlive.dto.response.APIResponse;
-import com.example.streamlive.model.ChatRoom;
-import com.example.streamlive.model.Message;
-import com.example.streamlive.model.chat.HistoryMessages;
-import com.example.streamlive.model.user.UserInfo;
 import com.example.streamlive.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,12 +28,6 @@ public class ChatHistoryController {
             @PathVariable Long chatRoomId,
             @RequestParam(required = false) String start,
             @RequestParam(required = false) String end) {
-
-        ChatRoom chatRoom = chatDao.findChatRoomById(chatRoomId);
-        UserInfo client = userDao.getUserInfoById(chatRoom.getUserAId());
-        UserInfo agent = userDao.getUserInfoById(chatRoom.getUserBId());
-        List<Message> messages = chatDao.findMessagesByChatRoomId(chatRoomId, start, end);
-        HistoryMessages historyMessages = new HistoryMessages(client, agent, messages);
-        return ResponseEntity.ok(historyMessages);
+        return ResponseEntity.ok(chatService.getChatHistory(chatRoomId, start, end));
     }
 }

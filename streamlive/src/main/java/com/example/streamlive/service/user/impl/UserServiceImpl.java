@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.streamlive.dao.user.UserDao;
 import com.example.streamlive.dto.UserDto;
-import com.example.streamlive.exception.custom.DuplicatedEmailExcetion;
+import com.example.streamlive.exception.custom.DuplicatedEmailException;
 import com.example.streamlive.exception.custom.InvalidEmailFormatException;
 import com.example.streamlive.exception.custom.InvalidProviderException;
 import com.example.streamlive.exception.custom.LoginFailedException;
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> signUp(UserDto userDto) {
         if (userDao.getNativeUserByEmailAndProvider(userDto.getEmail()) != null) {
-            throw new DuplicatedEmailExcetion("Email already exists");
+            throw new DuplicatedEmailException("Email already exists");
         }
         int userId = userDao.createNativeUser(userDto);
         return generateAuthResponse(userDao.getUserById(userId));
@@ -196,7 +196,6 @@ public class UserServiceImpl implements UserService {
         userInfo.put("provider", userDto.getProvider());
         userInfo.put("email", userDto.getEmail());
         userInfo.put("image", userDto.getImage());
-//        userInfo.put("role", userDto.getRole());
         String jwtToken = jwtUtil.getToken(userInfo);
         int expiresIn = jwtUtil.getExpiration();
         response.put("accessToken", jwtToken);
@@ -222,7 +221,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private String getBucketName() {
-        // 從s3BaseUrl中提取bucket名稱
         return s3BaseUrl.split("\\.")[0];
     }
 

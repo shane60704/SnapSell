@@ -21,7 +21,6 @@ public class JwtUtil {
     @Value("${jwt.duration}")
     private int duration;
 
-    //generate JWT
     public String getToken(Map<String, Object> dataMap) {
         return JWT.create()
                 .withClaim("user", dataMap)//set data and wrap
@@ -29,7 +28,6 @@ public class JwtUtil {
                 .sign(Algorithm.HMAC256(PRIVATE_KEY));//sign
     }
 
-    //verify and parse JWT token
     public Map<String, Object> getClaims(String token) {
         try {
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(PRIVATE_KEY)).build();//build a decoder
@@ -48,7 +46,6 @@ public class JwtUtil {
             Date expirationDate = decodedJWT.getExpiresAt();
             return expirationDate != null && expirationDate.after(new Date());
         } catch (JWTVerificationException e) {
-            // Token is invalid or expired
             return false;
         }
     }
